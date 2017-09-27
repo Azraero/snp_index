@@ -7,9 +7,20 @@ create_table_cmd = """
                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
                                    CHR VARCHAR(5),
                                    POS VARCHAR(50),
-                                   REF VARCHAR(1),
-                                   ALT VARCHAR(1),
+                                   REF VARCHAR(10),
+                                   ALT VARCHAR(10),
                    """
+
+
+def deal_cell(cell):
+    cell_list = cell.split(',')
+    if len(cell_list) == 1:
+        return 0
+    else:
+        if int(cell_list[1]) == 0:
+            return 0
+        else:
+            return round(float(cell_list[1]) / (int(cell_list[0]) + int(cell_list[1])), 2)
 
 
 def file2db(fileName, split='\t'):
@@ -23,21 +34,25 @@ def file2db(fileName, split='\t'):
             else:
                 header_list[:4] = ('CHR', 'POS', 'REF', 'ALT')
             con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+            tableName = fileName.rsplit('/')[1]
             with con as cur:
-                cmd = 'drop table if exists {}'.format(fileName)
+                cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
                 samples = []
                 for i in header_list[4:]:
-                    samples.append('{} VARCHAR(10)'.format(i))
-                cmd = create_table_cmd.format(fileName) + ','.join(samples) + ')'
+                    samples.append('{} VARCHAR(20)'.format(i))
+                cmd = create_table_cmd.format(tableName) + ','.join(samples) + ')'
                 cur.execute(cmd)
                 row = info.readline()
                 header = ','.join(header_list)
                 while(row):
-                    tmp_list = row.split(split)
-                    tmp_list = ['"'+k+'"' for k in tmp_list]
+                    tmp_list = row.split(split)[:4]
+                    tmp_list_samples = row.split(split)[4:]
+                    tmp_list_samples = [deal_cell(k) for k in tmp_list_samples]
+                    tmp_list.extend(tmp_list_samples)
+                    tmp_list = ['"'+str(k)+'"' for k in tmp_list]
                     each_line = ','.join(tmp_list)
-                    cmd = "insert into {0}({1}) values({2})".format(fileName, header, each_line)
+                    cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
                     row = info.readline()
                 print 'done!'
@@ -48,4 +63,4 @@ def file2db(fileName, split='\t'):
 
 
 if __name__ == '__main__':
-    file2db('mRNA_snp_index')
+    file2db('data/mRNA_filter_hq_snp_ann_table')
