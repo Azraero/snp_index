@@ -66,7 +66,10 @@ def get_info():
                                                          start_pos,
                                                          end_pos,
                                                          samples)
-        return jsonify({'msg': 'ok'})
+
+        return jsonify({'msg': 'ok',
+                        'headData': query_header,
+                        'bodyData': query_data})
 
 
 if __name__ == '__main__':
