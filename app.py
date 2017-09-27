@@ -1,5 +1,7 @@
 # coding=utf-8
 import os
+import json
+import interface
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for
 from flask_script import Manager, Shell
 from datetime import datetime
@@ -8,37 +10,64 @@ import MySQLdb
 
 app = Flask(__name__)
 manager = Manager(app)
-files = ['test1', 'test2', 'test3']
-file_dict = {'test1': ['a', 'b', 'c'],
-             'test2': ['d', 'e', 'f'],
-             'test3': ['whd', 'mhd']}
+get_head_cmd = "select column_name from information_schema.columns where table_schema='snp_index' and table_name='{}';"
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.secret_key = 'djaildhjsdfhjsofjilsfjsfjpjfojgogj'
 
 
 @app.route('/')
 def index():
-    return render_template('index.html', user='chencheng', files=files)
+    cmd = 'show tables'
+    tables = interface.get_db_data(cmd)
+    tables = [table[0] for table in tables]
+    return render_template('index.html', user='chencheng', files=tables)
 
 
 @app.route('/select_file', methods=['GET'])
 def select_file():
     filename = request.args.get('file', '')
-    if file_dict.get(filename):
-        msg = file_dict[filename]
-        return jsonify({'msg': msg})
-    else:
-        msg = 'error'
-        return jsonify({'msg': msg})
+    cmd = get_head_cmd.format(filename)
+    header = interface.get_db_data(cmd)
+    samples = [each[0] for each in header]
+    samples = samples[5:]
+    # only show 30 samples
+    if len(samples) > 30:
+        samples = samples[:30]
+    return jsonify({'msg': samples})
 
 
 @app.route('/search_sampe', methods=['GET'])
 def search_sampe():
+    table = request.args.get('table', '')
     sample = request.args.get('sample', '')
-    # here check smaple whether in table
-    msg = sample
+    # check whether sample in table
+    cmd = get_head_cmd.format(table)
+    header = interface.get_db_data(cmd)
+    samples = [each[0] for each in header]
+    if sample in samples:
+        msg = sample
+    else:
+        msg = 'error'
     return jsonify({'msg': msg})
 
 
+@app.route('/get_info', methods=['POST'])
+def get_info():
+    if request.method == 'POST':
+        info = request.form['all_info']
+        info = json.loads(info)
+        table = info['table']
+        chrom = info['chr']
+        start_pos = info['start_pos']
+        end_pos = info['end_pos']
+        samples = info['selected_sample']
+        query_header, query_data = interface.query_table(table,
+                                                         chrom,
+                                                         start_pos,
+                                                         end_pos,
+                                                         samples)
+        return jsonify({'msg': 'ok'})
+
+
 if __name__ == '__main__':
-    manager.run()
+    app.run(debug=True)
