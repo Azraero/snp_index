@@ -105,7 +105,7 @@
   </div>
   <hr/>
   <h2>Search Results:</h2>
-  <table id="region_table" class="table table-strip table-hover"></table>
+  <div id="results-table"></div>
 {% endblock %}
 
 {% block js %}
@@ -122,7 +122,7 @@ $(document).ready(function(){
         $(".show-samples").empty();
         samples = data.msg;
         for(var i=0;i<samples.length;i++){
-          var tmp = $('<div class="col-xs-1"><div class="checkbox"><label><input type="checkbox" name="dispop" value="' + samples[i] + '">' + samples[i] + '</label></div></div>');
+          var tmp = $('<div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" name="dispop" value="' + samples[i] + '">' + samples[i] + '</label></div></div>');
           tmp.appendTo('.show-samples');
         }
       }
@@ -137,66 +137,40 @@ $(document).ready(function(){
         alert('没有找到相应的样品名称!');
       }else{
         sample = data.msg;
-        var tmp = $('<div class="col-xs-1"><div class="checkbox"><label><input type="checkbox" name="dispop" value="">' + sample + '</label></div></div>');
+        var tmp = $('<div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" name="dispop" value="">' + sample + '</label></div></div>');
         tmp.appendTo('.show-samples');
       }
     });
   });
-  function get_input_data(){
-    var table = $("#select_file").find("option:selected").text();
-    var chr = $("#select-chr").find("option:selected").text();
-    var startPos = $("#pos-start").val();
-    var endPos = $("#pos-end").val();
-    var showSamples_info = [];
-    $("input[type='checkbox']:checked").each(function(){
-      showSamples_info.push($(this).val());
-    });
-    var all_info = {
-      'table': table,
-      'chr': chr,
-      'start_pos': startPos,
-      'end_pos': endPos,
-      'selected_sample': showSamples_info
-    };
-    return all_info;
-    }
 
-    function check_input_data(info){
-      var pos_max = 100000;
-      var error_msg = '';
-      if(! info['chr']){
-        return '请选择染色体!';
-      }else if(! info['start_pos']){
-        return '请输入起始位置!';
-      }else if(! info['end_pos']){
-        return '请输入结束位置!';
-      }else if(info['end_pos'] - info['pos_pos'] > pos_max){
-        return '查看长度应该小于100kb!';
-      }else if(info['selected_sample'].length == 0){
-        return '请选取查看的样品!';
-      }else{
-        return error_msg;
-      }
+  $("#submit").bind('click',function(){
+    var all_info = get_input_data();
+    var error_msg = check_input_data(all_info);
+    if(error_msg.length > 0){
+      alert(error_msg);
+      return;
     }
-
-    $("#submit").bind('click',function(){
-      var all_info = get_input_data();
-      var error_msg = check_input_data(all_info);
-      if(error_msg.length > 0){
-        alert(error_msg);
+    all_info = JSON.stringify(all_info);
+    //console.log(all_info);
+    ajaxSend('/get_info',{'all_info': all_info}, function(data){
+      if(data.msg == 'error'){
+        alert(data.msg);
         return;
+      }else{
+          //console.log(data.headData);
+          //console.log(data.bodyData);
+        tableStr = createTable(data.headData, data.bodyData);
+        $("#results-table").html(tableStr);
+        $("#region_table").DataTable({
+          dom: 'lBfrtip',
+          buttons: [
+            'csv'
+          ]
+        });
       }
-      all_info = JSON.stringify(all_info);
-      console.log(all_info);
-      ajaxSend('/get_info',{'all_info': all_info}, function(data){
-        if(data.msg == 'error'){
-          alert(data.msg);
-          return;
-        }else{
-          alert(data.msg);
-        }
-      }, 'POST')
+    }, 'POST');
     });
+
 });
 </script>
 {% endblock %}

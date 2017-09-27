@@ -9,15 +9,19 @@
     <meta name="author" content="">
 
     <title>show SNP Index</title>
-    <link href={{ url_for('static', filename='css/jquery.dataTables.min.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='css/bootstrap-select.css') }} rel="stylesheet">
+    <link href={{ url_for('static', filename='datatables/jquery.dataTables.min.css') }} rel="stylesheet">
+    <link href={{ url_for('static', filename='datatables/extensions/Buttons/css/buttons.dataTables.min.css') }} rel="stylesheet">
     <link href={{ url_for('static', filename='css/bootstrap.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='css/buttons.dataTables.min.css') }} rel="stylesheet">
+    <link href={{ url_for('static', filename='css/bootstrap-select.css') }} rel="stylesheet">
     <script type="text/javascript" src='/static/js/jquery.min.js'></script>
     <script type="text/javascript" src='/static/js/bootstrap.min.js'></script>
-    <script type="text/javascript" src='/static/js/jquery.dataTables.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/jquery.dataTables.min.js'></script>
     <script type="text/javascript" src='/static/js/bootstrap-select.js'></script>
-    <script type="text/javascript" src='/static/js/dataTables.buttons.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/dataTables.buttons.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.colVis.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.flash.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.html5.min.js'></script>
+    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.print.min.js'></script>
     {% block css %}
     {% endblock %}
   </head>
@@ -31,7 +35,6 @@
             </button>
             <a class="navbar-brand" href="#" data-0="line-height:90px;" data-300="line-height:50px;">Show SNP Index v1.0</a>
           </div>
-
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
             <ul class="nav navbar-nav navbar-right">
               <li><a href='http://www.onmath.com'>Contact</a></li>
