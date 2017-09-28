@@ -15,7 +15,7 @@ def index():
     cmd = 'show tables'
     tables = interface.get_db_data(cmd)
     tables = [table[0] for table in tables]
-    return render_template('index.html', user='chencheng', files=tables)
+    return render_template('index.html', files=tables)
 
 
 @app.route('/select_file', methods=['GET'])
