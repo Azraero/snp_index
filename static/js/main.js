@@ -49,7 +49,7 @@ function check_input_data(info){
     return '请输入起始位置!';
   }else if(! info['end_pos']){
     return '请输入结束位置!';
-  }else if(info['end_pos'] - info['pos_pos'] > pos_max){
+  }else if(info['end_pos'] - info['start_pos'] > pos_max){
     return '查看长度应该小于100kb!';
   }else if(info['selected_sample'].length == 0){
     return '请选取查看的样品!';
