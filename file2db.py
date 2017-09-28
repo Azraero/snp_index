@@ -28,6 +28,7 @@ def file2db(fileName, split='\t'):
         with open(fileName, 'r') as info:
             header = info.readline()
             header_list = header.split(split)
+            header_list = [each.replace('-', '_') for each in header_list]
             if len(header_list) <= 4:
                 print 'file header not allowed < 4!'
                 sys.exit(1)
