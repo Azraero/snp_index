@@ -2,14 +2,9 @@
 import os
 import json
 import interface
-from flask import Flask, render_template, session, request, jsonify, redirect, url_for
-from flask_script import Manager, Shell
-from datetime import datetime
-import MySQLdb
-
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
-manager = Manager(app)
 get_head_cmd = "select column_name from information_schema.columns where table_schema='snp_index' and table_name='{}';"
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.secret_key = 'djaildhjsdfhjsofjilsfjsfjpjfojgogj'
@@ -73,4 +68,4 @@ def get_info():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=9000)
