@@ -1,5 +1,6 @@
 # coding=utf-8
 import sys
+import click
 import MySQLdb
 from consts import DATABASE, HOSTBNAME, USERNAME, PASSWORD
 
@@ -23,9 +24,14 @@ def deal_cell(cell):
             return round(float(cell_list[1]) / (int(cell_list[0]) + int(cell_list[1])), 2)
 
 
-def file2db(fileName, split='\t'):
+@click.command()
+@click.option('--filename', help='a file for snp index table')
+def file2db(filename, split='\t'):
+    '''
+    invert snp index file to mysql table
+    '''
     try:
-        with open(fileName, 'r') as info:
+        with open(filename, 'r') as info:
             header = info.readline()
             header_list = header.split(split)
             header_list = [each.replace('-', '_') for each in header_list]
@@ -35,7 +41,7 @@ def file2db(fileName, split='\t'):
             else:
                 header_list[:4] = ('CHR', 'POS', 'REF', 'ALT')
             con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
-            tableName = fileName.rsplit('/')[1]
+            tableName = filename.rsplit('/')[1]
             with con as cur:
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
@@ -56,7 +62,7 @@ def file2db(fileName, split='\t'):
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
                     row = info.readline()
-                print 'done!'
+                print '{} had been wrote into mysql!'.format(tableName)
     except IOError:
         print 'file not find!'
     except MySQLdb.Error as e:
@@ -64,4 +70,4 @@ def file2db(fileName, split='\t'):
 
 
 if __name__ == '__main__':
-    file2db('data/mRNA_filter_hq_snp_ann_table')
+    file2db()
