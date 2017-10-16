@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 get_head_cmd = "select column_name from information_schema.columns where table_schema='snp_index' and table_name='{}';"
+get_unique_cmd = "select distinct() from {};"
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.secret_key = 'djaildhjsdfhjsofjilsfjsfjpjfojgogj'
 
@@ -13,28 +14,36 @@ app.secret_key = 'djaildhjsdfhjsofjilsfjsfjpjfojgogj'
 @app.route('/')
 def index():
     cmd = 'show tables'
-    tables = interface.get_db_data(cmd)
-    tables = [table[0] for table in tables]
-    return render_template('index.html', files=tables)
+    allTable = interface.get_db_data(cmd)
+    tables = [table[0] for table in allTable if table[0].split('_')[0] == 'table']
+    groups = [table[0] for table in allTable if table[0].split('_')[0] == 'group']
+    return render_template('index.html',
+                           table_files=tables,
+                           group_files=groups)
 
 
-@app.route('/select_file', methods=['GET'])
-def select_file():
+@app.route('/select_group', methods=['GET'])
+def select_group():
     filename = request.args.get('file', '')
     cmd = get_head_cmd.format(filename)
     header = interface.get_db_data(cmd)
-    samples = [each[0] for each in header]
-    samples = samples[5:]
-    # only show 30 samples
-    if len(samples) > 30:
-        samples = samples[:30]
-    return jsonify({'msg': samples})
+    cultivar = [each[0] for each in header]
+    cultivar = cultivar[2:]
+    if cultivar:
+        group_dict = dict.fromkeys(cultivar)
+        for key, value in group_dict.items():
+            result = interface.get_db_data(get_unique_cmd.format(key))
+            result = [each[0] for each in result]
+            group_dict[key] = result
+        return jsonify({'msg': group_dict})
+    else:
+        return jsonify({'msg': 'error'})
 
 
-@app.route('/search_sampe', methods=['GET'])
-def search_sampe():
+@app.route('/search_descibe', methods=['GET'])
+def search_descibe():
     table = request.args.get('table', '')
-    sample = request.args.get('sample', '')
+    descibe = request.args.get('descibe', '')
     # check whether sample in table
     cmd = get_head_cmd.format(table)
     header = interface.get_db_data(cmd)
