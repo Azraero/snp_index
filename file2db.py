@@ -55,7 +55,7 @@ def table2db(filename, split='\t'):
                     samples.append('{} VARCHAR(20)'.format(i))
                 cmd = create_table_cmd.format(tableName) + ','.join(samples) + ')'
                 cur.execute(cmd)
-                row = info.readline()
+                row = info.readline().strip()
                 header = ','.join(header_list)
                 while(row):
                     tmp_list = row.split(split)[:4]
@@ -66,7 +66,7 @@ def table2db(filename, split='\t'):
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
-                    row = info.readline()
+                    row = info.readline().strip()
                 print '{} had been wrote into mysql!'.format(tableName)
     except IOError:
         print 'file not find!'
@@ -99,7 +99,7 @@ def group2db(filename, split='\t'):
                     cultivar.append('{} VARCHAR(20)'.format(i))
                 cmd = create_group_cmd.format(tableName) + ','.join(cultivar) + ')'
                 cur.execute(cmd)
-                row = info.readline()
+                row = info.readline().strip()
                 header = ','.join(header_list)
                 while(row):
                     tmp_list = row.split(split)
@@ -110,7 +110,7 @@ def group2db(filename, split='\t'):
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
-                    row = info.readline()
+                    row = info.readline().strip()
                 print '{} had been wrote into mysql!'.format(tableName)
     except IOError:
         print 'file not find!'
