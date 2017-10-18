@@ -4,13 +4,14 @@
 {% endblock %}
 {% block content %}
 <div class="panel-body">
-<div class="row">
-<div class="col-xs-4">
 <div class="panel">
+  <h2>Search for Variations in Region:</h2>
     <div class="panel-heading">
-        <h3 class="panel-title">{{ user }},Select a file,chromosome and input a range (<span class="text-danger">required</span>, &lt;100kb):</h3>
+        <h3 class="panel-title">Select a file, chromosome and input a range. (<span class="text-danger">required</span>, &lt;100kb):</h3>
     </div>
 <div class="panel-body">
+  <div class="row">
+    <div class="col-xs-6">
         <div class="form-group">
         <div class="input-group input-group-sm">
             <span class="input-group-addon">File name:</span>
@@ -51,24 +52,25 @@
             </select>
         </div>
         </div>
-        <br/>
+      </div>
+    <div class="col-xs-6">
         <div class="form-group">
         <div class="input-group input-group-sm">
             <span class="input-group-addon">Start position:</span>
             <input type="text" id="pos-start" class="form-control input-group-sm"  name="pos_start" >
         </div>
         </div>
-        <br/>
         <div class="form-group">
         <div class="input-group input-group-sm">
             <span class="input-group-addon">End position:</span>
             <input type="text" id="pos-end" class="form-control input-group-sm"  name="pos_end" >
         </div>
         </div>
+      </div>
     </div>
-  </div>
-</div>
+    </div>
 <!-- right -->
+<!--
 <div class="col-xs-8">
 <div class="panel">
     <div class="panel-heading">
@@ -86,18 +88,46 @@
         </div>
     </div>
     <div class="panel-body show-samples">
-      <!--
-      <div class="col-xs-1" >
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name ="dispop" value="" checked>A
-          </label>
-        </div>
-      </div>
-      -->
     </div>
 </div>
 </div>
+</div>
+-->
+</div>
+<div>
+  <h2>Divide groups:</h2>
+  <div class="panel-heading">
+  <h3 class="panel-title">Divide samples which showed below to two groups.</h3>
+  </div>
+  <div class="row">
+    <div class="col-xs-5">
+        <select name="from[]" id="multi_d" class="form-control" size="26" multiple="multiple">
+        </select>
+    </div>
+
+    <div class="col-xs-2">
+        <button type="button" id="multi_d_rightAll" class="btn btn-default btn-block" style="margin-top: 20px;"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+
+        <hr style="margin: 40px 0 60px;" />
+
+        <button type="button" id="multi_d_rightAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+    </div>
+
+    <div class="col-xs-5">
+        <b>group A</b>
+        <select name="to[]" id="multi_d_to" class="form-control" size="8" multiple="multiple"></select>
+
+        <br/><hr/><br/>
+
+        <b>group B</b>
+        <select name="to_2[]" id="multi_d_to_2" class="form-control" size="8" multiple="multiple"></select>
+    </div>
 </div>
 </div>
   <div class="panel-body">
@@ -117,17 +147,99 @@ $(document).ready(function(){
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
-        alert('没有找到相应的样品名称!');
+        alert('没有找到相应的文件!');
+        $("#multi_d").empty();
       }else{
-        $(".show-samples").empty();
+        $("#multi_d").empty();
         samples = data.msg;
         for(var i=0;i<samples.length;i++){
-          var tmp = $('<div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" name="dispop" value="' + samples[i] + '">' + samples[i] + '</label></div></div>');
-          tmp.appendTo('.show-samples');
+          var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
+          tmp.appendTo('#multi_d');
         }
       }
     });
   });
+  // multiselect plugin
+  $('#multi_d').multiselect({
+    right: '#multi_d_to, #multi_d_to_2',
+    rightSelected: '#multi_d_rightSelected, #multi_d_rightSelected_2',
+    leftSelected: '#multi_d_leftSelected, #multi_d_leftSelected_2',
+    rightAll: '#multi_d_rightAll, #multi_d_rightAll_2',
+    leftAll: '#multi_d_leftAll, #multi_d_leftAll_2',
+
+    search: {
+        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />'
+    },
+
+    moveToRight: function(Multiselect, $options, event, silent, skipStack) {
+        var button = $(event.currentTarget).attr('id');
+
+        if (button == 'multi_d_rightSelected') {
+            var $left_options = Multiselect.$left.find('> option:selected');
+            Multiselect.$right.eq(0).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
+            }
+        } else if (button == 'multi_d_rightAll') {
+            var $left_options = Multiselect.$left.children(':visible');
+            Multiselect.$right.eq(0).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
+            }
+        } else if (button == 'multi_d_rightSelected_2') {
+            var $left_options = Multiselect.$left.find('> option:selected');
+            Multiselect.$right.eq(1).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
+            }
+        } else if (button == 'multi_d_rightAll_2') {
+            var $left_options = Multiselect.$left.children(':visible');
+            Multiselect.$right.eq(1).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(1).eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
+            }
+        }
+    },
+
+    moveToLeft: function(Multiselect, $options, event, silent, skipStack) {
+        var button = $(event.currentTarget).attr('id');
+
+        if (button == 'multi_d_leftSelected') {
+            var $right_options = Multiselect.$right.eq(0).find('> option:selected');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftAll') {
+            var $right_options = Multiselect.$right.eq(0).children(':visible');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftSelected_2') {
+            var $right_options = Multiselect.$right.eq(1).find('> option:selected');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftAll_2') {
+            var $right_options = Multiselect.$right.eq(1).children(':visible');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        }
+    }
+  });
+  /*
   $("#search-button").bind('click', function(){
     var searchSample = $("#search-sample").val();
     var table = $("#select_file").find("option:selected").text();
@@ -142,7 +254,7 @@ $(document).ready(function(){
       }
     });
   });
-
+  */
   $("#submit").bind('click',function(){
     var all_info = get_input_data();
     var error_msg = check_input_data(all_info);
