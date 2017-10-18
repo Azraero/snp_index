@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 get_head_cmd = "select column_name from information_schema.columns where table_schema='snp_index' and table_name='{}';"
+get_unique_cmd = "select distinct() from {};"
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.secret_key = 'djaildhjsdfhjsofjilsfjsfjpjfojgogj'
 

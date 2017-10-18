@@ -12,6 +12,12 @@ create_table_cmd = """
                                    ALT VARCHAR(10),
                    """
 
+create_group_cmd = """
+                   create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
+                                   SAMPLE VARCHAR(20),
+                                   DESCRIPTION VARCHAR(100),
+                   """
+
 
 def deal_cell(cell):
     cell_list = cell.split(',')
@@ -25,8 +31,8 @@ def deal_cell(cell):
 
 
 @click.command()
-@click.option('--filename', help='a file for snp index table')
-def file2db(filename, split='\t'):
+@click.option('--filename', help='a file for snp index table or group info')
+def table2db(filename, split='\t'):
     '''
     invert snp index file to mysql table
     '''
@@ -42,6 +48,7 @@ def file2db(filename, split='\t'):
                 header_list[:4] = ('CHR', 'POS', 'REF', 'ALT')
             con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
             tableName = filename.rsplit('/')[1]
+            tableName = '_'.join(['table', tableName])
             with con as cur:
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
@@ -54,9 +61,6 @@ def file2db(filename, split='\t'):
                 header = ','.join(header_list)
                 while(row):
                     tmp_list = row.split(split)
-                    # tmp_list_samples = row.split(split)[4:]
-                    # tmp_list_samples = [deal_cell(k) for k in tmp_list_samples]
-                    # tmp_list.extend(tmp_list_samples)
                     tmp_list = ['"'+str(k)+'"' for k in tmp_list]
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
@@ -69,5 +73,59 @@ def file2db(filename, split='\t'):
         print 'mysql error {}:{}'.format(e.args[0], e.args[1])
 
 
+def group2db(filename, split='\t'):
+    '''
+    invert snp index group info to mysql table
+    '''
+    try:
+        with open(filename, 'r') as info:
+            header = info.readline()
+            header_list = header.split(split)
+            header_list = [each.replace('-', '_') for each in header_list]
+            if len(header_list) <= 2:
+                print 'file header not allowed < 2!'
+                sys.exit(1)
+            else:
+                header_list[:2] = ('SAMPLE', 'DESCRIPTION')
+            con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+            tableName = filename.rsplit('/')[1]
+            tableName = '_'.join(['group', tableName])
+            with con as cur:
+                cmd = 'drop table if exists {}'.format(tableName)
+                cur.execute(cmd)
+                cultivar = []
+                for i in header_list[2:]:
+                    cultivar.append('{} VARCHAR(20)'.format(i))
+                cmd = create_group_cmd.format(tableName) + ','.join(cultivar) + ')'
+                cur.execute(cmd)
+                row = info.readline().strip()
+                header = ','.join(header_list)
+                while(row):
+                    tmp_list = row.split(split)
+                    tmp_list = ['"'+str(k)+'"' for k in tmp_list]
+                    each_line = ','.join(tmp_list)
+                    cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
+                    cur.execute(cmd)
+                    row = info.readline().strip()
+                print '{} had been wrote into mysql!'.format(tableName)
+    except IOError:
+        print 'file not find!'
+    except MySQLdb.Error as e:
+        print 'mysql error {}:{}'.format(e.args[0], e.args[1])
+
+
+@click.command()
+@click.option('--filename', help='a file for snp index table or group info')
+@click.option('--type', help="a string for 'table' or 'group'")
+def data2db(filename, type):
+    if type == 'table':
+        table2db(filename)
+    elif type == 'group':
+        group2db(filename)
+    else:
+        print 'type error!'
+        sys.exit(1)
+
+
 if __name__ == '__main__':
-    file2db()
+    table2db()
