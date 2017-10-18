@@ -26,16 +26,21 @@ function get_input_data(){
   var chr = $("#select-chr").find("option:selected").text();
   var startPos = $("#pos-start").val();
   var endPos = $("#pos-end").val();
-  var showSamples_info = [];
-  $("input[type='checkbox']:checked").each(function(){
-    showSamples_info.push($(this).val());
+  var groupA = [];
+  var groupB = [];
+  $("#multi_d_to option").each(function(){
+    groupA.push($(this).text());
+  });
+  $("#multi_d_to_2 option").each(function(){
+    groupB.push($(this).text());
   });
   var all_info = {
     'table': table,
     'chr': chr,
     'start_pos': startPos,
     'end_pos': endPos,
-    'selected_sample': showSamples_info
+    'groupA': groupA,
+    'groupB': groupB,
   };
   return all_info;
 }
@@ -51,8 +56,10 @@ function check_input_data(info){
     return '请输入结束位置!';
   }else if(info['end_pos'] - info['start_pos'] > pos_max){
     return '查看长度应该小于100kb!';
-  }else if(info['selected_sample'].length == 0){
-    return '请选取查看的样品!';
+  }else if(info['groupA'].length == 0){
+    return '请选取 groupA 比对的样品!';
+  }else if(info['groupB'].length == 0){
+    return '请选取 groupB 比对的样品!';
   }else{
     return error_msg;
   }
