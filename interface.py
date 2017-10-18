@@ -39,7 +39,7 @@ def get_merge_group_data(group_info):
             first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
             second_ratio = round(float(second_pos) / (first_pos + second_pos), 2)
             new_cell = ','.join([str(first_pos), str(second_pos)])
-            new_results.append([new_cell, first_ratio, second_ratio])
+            new_results.append([new_cell, str(first_ratio), str(second_ratio)])
 
     return new_results
 
