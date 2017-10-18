@@ -32,7 +32,7 @@ def file2db(filename, split='\t'):
     '''
     try:
         with open(filename, 'r') as info:
-            header = info.readline()
+            header = info.readline().strip()
             header_list = header.split(split)
             header_list = [each.replace('-', '_') for each in header_list]
             if len(header_list) <= 4:
@@ -50,18 +50,18 @@ def file2db(filename, split='\t'):
                     samples.append('{} VARCHAR(20)'.format(i))
                 cmd = create_table_cmd.format(tableName) + ','.join(samples) + ')'
                 cur.execute(cmd)
-                row = info.readline()
+                row = info.readline().strip()
                 header = ','.join(header_list)
                 while(row):
-                    tmp_list = row.split(split)[:4]
-                    tmp_list_samples = row.split(split)[4:]
-                    tmp_list_samples = [deal_cell(k) for k in tmp_list_samples]
-                    tmp_list.extend(tmp_list_samples)
+                    tmp_list = row.split(split)
+                    # tmp_list_samples = row.split(split)[4:]
+                    # tmp_list_samples = [deal_cell(k) for k in tmp_list_samples]
+                    # tmp_list.extend(tmp_list_samples)
                     tmp_list = ['"'+str(k)+'"' for k in tmp_list]
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
-                    row = info.readline()
+                    row = info.readline().strip()
                 print '{} had been wrote into mysql!'.format(tableName)
     except IOError:
         print 'file not find!'

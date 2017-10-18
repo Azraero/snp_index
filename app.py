@@ -15,7 +15,7 @@ def index():
     cmd = 'show tables'
     tables = interface.get_db_data(cmd)
     tables = [table[0] for table in tables]
-    return render_template('index.html', user='chencheng', files=tables)
+    return render_template('index.html', files=tables)
 
 
 @app.route('/select_file', methods=['GET'])
@@ -23,27 +23,13 @@ def select_file():
     filename = request.args.get('file', '')
     cmd = get_head_cmd.format(filename)
     header = interface.get_db_data(cmd)
-    samples = [each[0] for each in header]
-    samples = samples[5:]
-    # only show 30 samples
-    if len(samples) > 30:
-        samples = samples[:30]
-    return jsonify({'msg': samples})
-
-
-@app.route('/search_sampe', methods=['GET'])
-def search_sampe():
-    table = request.args.get('table', '')
-    sample = request.args.get('sample', '')
-    # check whether sample in table
-    cmd = get_head_cmd.format(table)
-    header = interface.get_db_data(cmd)
-    samples = [each[0] for each in header]
-    if sample in samples:
-        msg = sample
+    if header[0]:
+        samples = [each[0] for each in header]
+        # return all samples
+        samples = samples[5:]
+        return jsonify({'msg': samples})
     else:
-        msg = 'error'
-    return jsonify({'msg': msg})
+        return jsonify({'msg': 'error'})
 
 
 @app.route('/get_info', methods=['POST'])
@@ -55,13 +41,14 @@ def get_info():
         chrom = info['chr']
         start_pos = info['start_pos']
         end_pos = info['end_pos']
-        samples = info['selected_sample']
-        query_header, query_data = interface.query_table(table,
-                                                         chrom,
-                                                         start_pos,
-                                                         end_pos,
-                                                         samples)
-
+        groupA = info['groupA']
+        groupB = info['groupB']
+        query_header, query_data = interface.calculate_table(table,
+                                                             chrom,
+                                                             start_pos,
+                                                             end_pos,
+                                                             groupA,
+                                                             groupB)
         return jsonify({'msg': 'ok',
                         'headData': query_header,
                         'bodyData': query_data})
