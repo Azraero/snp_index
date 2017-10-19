@@ -27,55 +27,48 @@ def query_table(table, chrom, start_pos, end_pos, samples):
     return (select_columns, results)
 
 
-def get_merge_group_data(group_info):
-    new_results = []
-    for each in group_info:
+def get_group_data(groupList):
+    results = []
+    for each in groupList:
         filter_cell = [cell for cell in each if cell != '0' and cell != '0,0' and cell != '0,0,0' and cell != '.']
         if len(filter_cell) == 0:
-            new_results.append(['0,0', 'NA', 'NA'])
+            results.append(['0,0', 'NA', 'NA'])
         else:
             first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell])
             second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell])
             first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
             second_ratio = round(float(second_pos) / (first_pos + second_pos), 2)
             new_cell = ','.join([str(first_pos), str(second_pos)])
-            new_results.append([new_cell, str(first_ratio), str(second_ratio)])
+            results.append([new_cell, str(first_ratio), str(second_ratio)])
+    return results
 
-    return new_results
+
+def get_merge_group_data(group_info, groupALen, groupBLen):
+    results = []
+    header_line = [list(each[:4]) for each in group_info]
+    groupAList = [each[4:(groupALen+4)] for each in group_info]
+    groupBList = [each[(groupALen+4):] for each in group_info]
+    mergeGroupA = get_group_data(groupAList)
+    mergeGroupB = get_group_data(groupBList)
+    for head, eachA, eachB in zip(header_line, mergeGroupA, mergeGroupB):
+        results.append(head + eachA + eachB)
+    return results
 
 
 def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
-    extra_columns = ['CHR', 'POS', 'REF', 'ALT']
+    groupA_len = len(groupA)
+    groupB_len = len(groupA)
+    select_columns = ['CHR', 'POS', 'REF', 'ALT'] + groupA + groupB
     header = ['CHR', 'POS', 'REF', 'ALT',
               'GroupA', 'GroupA Frequency Primary Allele', 'GroupA Frequency Second Allele',
               'GroupB', 'GroupB Frequency Primary Allele', 'GroupB Frequency Second Allele']
     get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and POS <= {end_pos} and CHR='{chrom}';"
-    groupA_columns_str = ','.join(groupA)
-    groupB_columns_str = ','.join(groupB)
-    extra_columns_str = ','.join(extra_columns)
+    select_columns_str = ','.join(select_columns)
     cmd = get_group_cmd.format(
-        columns=groupA_columns_str,
+        columns=select_columns_str,
         table=table,
         start_pos=int(start_pos),
         end_pos=int(end_pos),
         chrom=chrom)
-    resultA = get_merge_group_data(get_db_data(cmd))
-    cmd = get_group_cmd.format(
-        columns=groupB_columns_str,
-        table=table,
-        start_pos=int(start_pos),
-        end_pos=int(end_pos),
-        chrom=chrom)
-    resultB = get_merge_group_data(get_db_data(cmd))
-    cmd = get_group_cmd.format(
-        columns=extra_columns_str,
-        table=table,
-        start_pos=int(start_pos),
-        end_pos=int(end_pos),
-        chrom=chrom)
-    extra_results = get_db_data(cmd)
-    extra_results = [list(k) for k in extra_results]
-    results = []
-    for each, eachA, eachB in zip(extra_results, resultA, resultB):
-        results.append(each + eachA + eachB)
+    results = get_merge_group_data(get_db_data(cmd), groupA_len, groupB_len)
     return (header, results)
