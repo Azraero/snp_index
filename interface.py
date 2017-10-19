@@ -34,6 +34,14 @@ def get_group_data(groupList):
         if len(filter_cell) == 0:
             results.append(['0,0', 'NA', 'NA'])
         else:
+            # deal three comma numbers
+            for i in range(len(filter_cell)):
+                tmpList = filter_cell[i].split(',')
+                if len(tmpList) == 3:
+                    maxOne = max([int(cell) for cell in tmpList])
+                    minOne = min([int(cell) for cell in tmpList])
+                    filter_cell[i] = ','.join([str(maxOne), str(minOne)])
+
             first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell])
             second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell])
             first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
@@ -46,8 +54,8 @@ def get_group_data(groupList):
 def get_merge_group_data(group_info, groupALen, groupBLen):
     results = []
     header_line = [list(each[:4]) for each in group_info]
-    groupAList = [each[4:(groupALen+4)] for each in group_info]
-    groupBList = [each[(groupALen+4):] for each in group_info]
+    groupAList = [list(each[4:(groupALen+4)]) for each in group_info]
+    groupBList = [list(each[(groupALen+4):]) for each in group_info]
     mergeGroupA = get_group_data(groupAList)
     mergeGroupB = get_group_data(groupBList)
     for head, eachA, eachB in zip(header_line, mergeGroupA, mergeGroupB):
