@@ -32,9 +32,10 @@ def deal_cell(cell):
 
 @click.command()
 @click.option('--filename', help='a file for snp index table or group info')
-def table2db(filename, split='\t'):
+def table2db(filename, split='\t', add_key=True):
     '''
     invert snp index file to mysql table
+    default add index to POS and CHR
     '''
     try:
         with open(filename, 'r') as info:
@@ -46,16 +47,20 @@ def table2db(filename, split='\t'):
                 sys.exit(1)
             else:
                 header_list[:4] = ('CHR', 'POS', 'REF', 'ALT')
+            if add_key:
+                add_key_str = ',key chrindex (CHR), key posindex (POS)'
+            else:
+                add_key_str = ''
             con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
             tableName = filename.rsplit('/')[1]
-            tableName = '_'.join(['table', tableName])
+            # tableName = '_'.join(['table', tableName
             with con as cur:
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
                 samples = []
                 for i in header_list[4:]:
                     samples.append('{} VARCHAR(20)'.format(i))
-                cmd = create_table_cmd.format(tableName) + ','.join(samples) + ')'
+                cmd = create_table_cmd.format(tableName) + ','.join(samples) + add_key_str +');'
                 cur.execute(cmd)
                 row = info.readline().strip()
                 header = ','.join(header_list)
