@@ -15,7 +15,7 @@ def get_db_data(cmd, fetchall=True):
             return row
 
 
-def query_table(table, chrom, start_pos, end_pos, groupA, groupB):
+def query_table(table, chrom, start_pos, end_pos, samples):
     select_columns = ['CHR', 'POS', 'REF', 'ALT']
     select_columns.extend(samples)
     select_columns_str = ','.join(select_columns)
@@ -47,8 +47,8 @@ def get_merge_group_data(group_info):
 def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
     extra_columns = ['CHR', 'POS', 'REF', 'ALT']
     header = ['CHR', 'POS', 'REF', 'ALT',
-              'GroupA', 'GroupA Frequency Primary Allele', 'GroupB Frequency Second Allele',
-              'GroupB', 'GroupA Frequency Primary Allele', 'GroupB Frequency Second Allele']
+              'GroupA', 'GroupA Frequency Primary Allele', 'GroupA Frequency Second Allele',
+              'GroupB', 'GroupB Frequency Primary Allele', 'GroupB Frequency Second Allele']
     get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and POS <= {end_pos} and CHR='{chrom}';"
     groupA_columns_str = ','.join(groupA)
     groupB_columns_str = ','.join(groupB)
