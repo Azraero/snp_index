@@ -55,7 +55,7 @@ function check_input_data(info){
   }else if(! info['end_pos']){
     return '请输入结束位置!';
   }else if(info['end_pos'] - info['start_pos'] > pos_max){
-    return '查看长度应该小于100kb!';
+    return '查看长度应该小于1mb!';
   }else if(info['groupA'].length == 0){
     return '请选取 groupA 比对的样品!';
   }else if(info['groupB'].length == 0){
