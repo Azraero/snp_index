@@ -58,8 +58,15 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     groupBList = [list(each[(groupALen+4):]) for each in group_info]
     mergeGroupA = get_group_data(groupAList)
     mergeGroupB = get_group_data(groupBList)
-    for head, eachA, eachB in zip(header_line, mergeGroupA, mergeGroupB):
-        results.append(head + eachA + eachB)
+    mergeGroup = []
+    for ListA, ListB in zip(mergeGroupA, mergeGroupB):
+        tmpList = []
+        for cellA, cellB in zip(ListA, ListB):
+            tmpList.append(cellA)
+            tmpList.append(cellB)
+        mergeGroup.append(tmpList)
+    for head, each in zip(header_line, mergeGroup):
+        results.append(head + each)
     return results
 
 
@@ -68,8 +75,11 @@ def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
     groupB_len = len(groupA)
     select_columns = ['CHR', 'POS', 'REF', 'ALT'] + groupA + groupB
     header = ['CHR', 'POS', 'REF', 'ALT',
-              'GroupA', 'GroupA Frequency Primary Allele', 'GroupA Frequency Second Allele',
-              'GroupB', 'GroupB Frequency Primary Allele', 'GroupB Frequency Second Allele']
+              'GroupA', 'GroupB',
+              'GroupA Frequency Primary Allele',
+              'GroupB Frequency Primary Allele',
+              'GroupA Frequency Second Allele',
+              'GroupB Frequency Second Allele']
     get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and POS <= {end_pos} and CHR='{chrom}';"
     select_columns_str = ','.join(select_columns)
     cmd = get_group_cmd.format(
