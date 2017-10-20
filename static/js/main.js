@@ -46,7 +46,7 @@ function get_input_data(){
 }
 
 function check_input_data(info){
-  var pos_max = 100000;
+  var pos_max = 1000000;
   var error_msg = '';
   if(! info['chr']){
     return '请选择染色体!';
