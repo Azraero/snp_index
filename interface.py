@@ -45,7 +45,7 @@ def get_group_data(groupList):
             first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell])
             second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell])
             # other condition
-            if sum(first_pos, second_pos) == 0:
+            if first_pos + second_pos == 0:
                 results.append(['0,0', 'NA', 'NA'])
             else:
                 first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
