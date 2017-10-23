@@ -10,6 +10,8 @@ create_table_cmd = """
                                    POS VARCHAR(50),
                                    REF VARCHAR(10),
                                    ALT VARCHAR(10),
+                                   FEATURE VARCHAR(50),
+                                   GENE VARCHAR(100),
                    """
 
 create_group_cmd = """
@@ -42,13 +44,13 @@ def table2db(filename, split='\t', add_key=True):
             header = info.readline().strip()
             header_list = header.split(split)
             header_list = [each.replace('-', '_') for each in header_list]
-            if len(header_list) <= 4:
-                print 'file header not allowed < 4!'
+            if len(header_list) <= 6:
+                print 'file header not allowed < 6!'
                 sys.exit(1)
             else:
-                header_list[:4] = ('CHR', 'POS', 'REF', 'ALT')
+                header_list[:6] = ('CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE')
             if add_key:
-                add_key_str = ',key chrindex (CHR), key posindex (POS)'
+                add_key_str = ',key chrindex (CHR), key posindex (POS), key geneindex (GENE)'
             else:
                 add_key_str = ''
             con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
@@ -58,9 +60,10 @@ def table2db(filename, split='\t', add_key=True):
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
                 samples = []
-                for i in header_list[4:]:
+                for i in header_list[6:]:
                     samples.append('{} VARCHAR(20)'.format(i))
                 cmd = create_table_cmd.format(tableName) + ','.join(samples) + add_key_str +');'
+                # print cmd
                 cur.execute(cmd)
                 row = info.readline().strip()
                 header = ','.join(header_list)

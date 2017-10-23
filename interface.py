@@ -53,9 +53,9 @@ def get_group_data(groupList):
 
 def get_merge_group_data(group_info, groupALen, groupBLen):
     results = []
-    header_line = [list(each[:4]) for each in group_info]
-    groupAList = [list(each[4:(groupALen+4)]) for each in group_info]
-    groupBList = [list(each[(groupALen+4):]) for each in group_info]
+    header_line = [list(each[:6]) for each in group_info]
+    groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
+    groupBList = [list(each[(groupALen+6):]) for each in group_info]
     mergeGroupA = get_group_data(groupAList)
     mergeGroupB = get_group_data(groupBList)
     mergeGroup = []
@@ -73,8 +73,9 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
 def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
     groupA_len = len(groupA)
     groupB_len = len(groupA)
-    select_columns = ['CHR', 'POS', 'REF', 'ALT'] + groupA + groupB
+    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
     header = ['CHR', 'POS', 'REF', 'ALT',
+              'FEATURE', 'GENE',
               'GroupA', 'GroupB',
               'GroupA Frequency Primary Allele',
               'GroupB Frequency Primary Allele',

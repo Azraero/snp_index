@@ -27,7 +27,7 @@ def select_file():
     if header[0]:
         samples = [each[0] for each in header]
         # return all samples
-        samples = samples[5:]
+        samples = samples[7:]
         return jsonify({'msg': samples})
     else:
         return jsonify({'msg': 'error'})
