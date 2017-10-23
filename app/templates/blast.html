@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>BLASTN search:</h2>
+<form ACTION="#" METHOD = POST NAME="MainBlastForm" ENCTYPE= "multipart/form-data">
+
+<p>
+<a>Program:</a>
+    <select name = "PROGRAM" class="selectpicker">
+        <option>blastn
+        <option>tblastn
+    </select>
+<a>Database:</a>
+<select name = "DATALIB" class="selectpicker">
+                    <option VALUE = "rice_v6">MSU/TIGR Rice Psedomolecule Release 6.0/6.1 (Chromosome Sequence, 2009)
+                    <option VALUE = "rice_v6_gene">MSU/TIGR Rice Psedomolecule Release 6.0/6.1 (Gene Sequence, 2009)
+                    <option VALUE = "rice_v7">MSU/TIGR Rice Psedomolecule Release 7.0 (Chromosome Sequence, 2011)
+                </select>
+</p>
+<P>
+Enter sequence below in <a>FASTA</a>  format:</p>
+<textarea name="SEQUENCE" rows=6 cols=60>
+</textarea>
+<br/>Or load it from disk
+<INPUT TYPE="file" NAME="SEQFILE">
+<br/>
+<P>
+<INPUT class="design1" TYPE="button" VALUE="Clear sequence" onClick="MainBlastForm.SEQUENCE.value='';MainBlastForm.QUERY_FROM.value='';MainBlastForm.
+QUERY_TO.value='';MainBlastForm.SEQUENCE.focus();">
+<INPUT class="design1" TYPE="submit" VALUE="Search">
+<p>
+<HR>
+<INPUT TYPE="checkbox" NAME="OVERVIEW"  CHECKED>
+<a href="docs/newoptions.html#graphical-overview">Graphical Overview</a>
+&nbsp;&nbsp;
+<a href="docs/options.html#alignmentviews">Alignment view</a>
+<select name = "ALIGNMENT_VIEW">
+    <option value=0> Pairwise
+    <option value=1> master-slave with identities
+    <option value=2> master-slave without identities
+    <option value=3> flat master-slave with identities
+    <option value=4> flat master-slave without identities
+    <option value=7> BLAST XML
+    <option value=9> Hit Table
+</select>
+<P>
+<a href="docs/newoptions.html#expect">Expect value</a>
+<select name = "EXPECT">
+    <option> 1e-10
+    <option> 1e-5
+    <option> 0.0001
+    <option selected>0.001
+    <option> 0.01
+    <option> 0.1
+    <option> 1
+    <option> 10
+</select>&nbsp;&nbsp;
+<a href="docs/newoptions.html#descriptions">Descriptions</a>
+<select name = "DESCRIPTIONS">
+    <option> 0
+    <option> 10
+    <option> 50
+    <option selected> 100
+    <option> 250
+    <option> 500
+</select>
+&nbsp;&nbsp;
+<a href="docs/newoptions.html#alignments">Alignments</a>
+<select name = "ALIGNMENTS">
+    <option> 0
+    <option> 10
+    <option selected> 50
+    <option> 100
+    <option> 250
+    <option> 500
+</select>
+<a href="docs/color_schema.html">Color schema</a>
+<select name = "COLOR_SCHEMA">
+    <option selected value = 0> No color schema
+    <option value = 1> Color schema 1
+    <option value = 2> Color schema 2
+    <option value = 3> Color schema 3
+    <option value = 4> Color schema 4
+    <option value = 5> Color schema 5
+    <option value = 6> Color schema 6
+</select>
+<P>
+<INPUT class="design1" TYPE="button" VALUE="Clear sequence" onClick="MainBlastForm.SEQUENCE.value='';MainBlastForm.SEQFILE.value='';MainBlastForm.SEQ
+UENCE.focus();">
+<INPUT class="design1" TYPE="submit" VALUE="Search">
+</p>
+</FORM>
+{% endblock %}

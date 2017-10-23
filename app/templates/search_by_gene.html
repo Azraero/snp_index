@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Search for Variation by Gene:</h2>
+<form role="search" method="post" action="#">
+    <div class="input-group">
+        <table class="table">
+        <tr>
+        <td colspan="2">
+         Gene ID/Symbol/Name<input type="text" name='gene' class="form-control" value="" placeholder="Input one Gene Symbol/Name">
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Upstream (kb, optional, must &lt;&#61; 10kb) <input type="text" name='up' class="form-control" value=2 placeholder="Upstream Region(kb)">
+        </td>
+        <td>
+        Downstream (kb, optional, must  &lt;&#61; 10kb) <input type="text" name='down' class="form-control" value=1 placeholder="Downstream Region(Kb)">
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-success btn-sm">
+                Submit
+            </button>
+        </div>
+        </td>
+        </tr>
+        </table>
+    </div>
+</form>
+{% endblock %}

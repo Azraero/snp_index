@@ -7,11 +7,21 @@ from flask import render_template, jsonify, request
 
 
 @main.route('/')
-def index():
+def search_by_regin():
     cmd = 'show tables'
     tables = get_db_data(cmd)
     tables = [table[0] for table in tables]
-    return render_template('index.html', files=tables)
+    return render_template('search_by_regin.html', files=tables)
+
+
+@main.route('/search_by_gene')
+def search_by_gene():
+    return render_template('search_by_gene.html')
+
+
+@main.route('/blast')
+def blast():
+    return render_template('blast.html')
 
 
 @main.route('/select_file', methods=['GET'])
