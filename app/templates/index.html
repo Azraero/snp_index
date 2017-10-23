@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% block css %}
+<link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="panel-body">
+<div class="panel">
+  <h2>Search for Variations in Region:</h2>
+    <div class="panel-heading">
+        <h3 class="panel-title">Select a file, chromosome and input a range. (<span class="text-danger">required</span>, &lt;100kb)</h3>
+    </div>
+<div class="panel-body">
+  <div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">File name:</span>
+            <select class="selectpicker" data-width="25%" name="file" id="select_file">
+                        <option value= selected="selected"></option>
+                        {% for file in files %}
+                        <option value={{file}}>{{file}}</option>
+                        {% endfor %}
+            </select>
+        </div>
+        <br>
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Chromsome:</span>
+            <select class="selectpicker" data-width="25%" name="chr" id="select-chr">
+                        <option value= selected="selected"></option>
+                        <option value=chr1A>chr1A</option>
+                        <option value=chr1B>chr1B</option>
+                        <option value=chr1D>chr1D</option>
+                        <option value=chr2A>chr2A</option>
+                        <option value=chr2B>chr2B</option>
+                        <option value=chr2D>chr2D</option>
+                        <option value=chr3A>chr3A</option>
+                        <option value=chr3B>chr3B</option>
+                        <option value=chr3D>chr3D</option>
+                        <option value=chr4A>chr4A</option>
+                        <option value=chr4B>chr4B</option>
+                        <option value=chr4D>chr4D</option>
+                        <option value=chr5A>chr5A</option>
+                        <option value=chr5B>chr5B</option>
+                        <option value=chr5D>chr5D</option>
+                        <option value=chr6A>chr6A</option>
+                        <option value=chr6B>chr6B</option>
+                        <option value=chr6D>chr6D</option>
+                        <option value=chr7A>chr7A</option>
+                        <option value=chr7B>chr7B</option>
+                        <option value=chr7D>chr7D</option>
+                        <option value=chrUn>chrUn</option>
+            </select>
+        </div>
+        </div>
+      </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Start position:</span>
+            <input type="text" id="pos-start" class="form-control input-group-sm"  name="pos_start" >
+        </div>
+        </div>
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">End position:</span>
+            <input type="text" id="pos-end" class="form-control input-group-sm"  name="pos_end" >
+        </div>
+        </div>
+      </div>
+    </div>
+    </div>
+<!-- right -->
+<!--
+<div class="col-xs-8">
+<div class="panel">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-xs-4">
+          <h3 class="panel-title">select samples displayed in the result (<span class='text-danger'>optional</span>):</h3>
+        </div>
+        <div class="col-xs-8">
+          <div class="input-group search">
+            <input type="text" class="form-control" id="search-sample" placeholder="Search for...">
+            <span class="input-group-btn">
+              <button class="btn btn-search" id="search-button" type="button"><i class="fa fa-search fa-fw"></i> Search</button>
+            </span>
+          </div>
+        </div>
+    </div>
+    <div class="panel-body show-samples">
+    </div>
+</div>
+</div>
+</div>
+-->
+</div>
+<div>
+  <h2>Divide groups:</h2>
+  <div class="panel-heading">
+  <h3 class="panel-title">Divide samples which showed below to two groups.</h3>
+  </div>
+  <div class="row">
+    <div class="col-xs-5">
+        <select name="from[]" id="multi_d" class="form-control" size="26" multiple="multiple">
+        </select>
+    </div>
+
+    <div class="col-xs-2">
+        <button type="button" id="multi_d_rightAll" class="btn btn-default btn-block" style="margin-top: 20px;"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+
+        <hr style="margin: 40px 0 60px;" />
+
+        <button type="button" id="multi_d_rightAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+    </div>
+
+    <div class="col-xs-5">
+        <b>group A</b>
+        <select name="to[]" id="multi_d_to" class="form-control" size="8" multiple="multiple"></select>
+
+        <br/><hr/><br/>
+
+        <b>group B</b>
+        <select name="to_2[]" id="multi_d_to_2" class="form-control" size="8" multiple="multiple"></select>
+    </div>
+</div>
+</div>
+  <div class="panel-body">
+    <input class="btn btn-success btn-sm"  id="submit" type="submit"  value="Submit">
+  </div>
+  <hr/>
+  <h2>Search Results:</h2>
+  <div id="results-table"></div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/main.js"></script>
+<script>
+$(document).ready(function(){
+  $("#select_file").change(function(){
+    var fileSelect = $(this).find("option:selected").text();
+    ajaxSend('/select_file', {'file': fileSelect}, function(data){
+      var msg = data.msg;
+      if(msg == 'error'){
+        alert('没有找到相应的文件!');
+        $("#multi_d").empty();
+      }else{
+        $("#multi_d").empty();
+        samples = data.msg;
+        for(var i=0;i<samples.length;i++){
+          var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
+          tmp.appendTo('#multi_d');
+        }
+      }
+    });
+  });
+  // multiselect plugin
+  $('#multi_d').multiselect({
+    right: '#multi_d_to, #multi_d_to_2',
+    rightSelected: '#multi_d_rightSelected, #multi_d_rightSelected_2',
+    leftSelected: '#multi_d_leftSelected, #multi_d_leftSelected_2',
+    rightAll: '#multi_d_rightAll, #multi_d_rightAll_2',
+    leftAll: '#multi_d_leftAll, #multi_d_leftAll_2',
+
+    search: {
+        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />'
+    },
+
+    moveToRight: function(Multiselect, $options, event, silent, skipStack) {
+        var button = $(event.currentTarget).attr('id');
+
+        if (button == 'multi_d_rightSelected') {
+            var $left_options = Multiselect.$left.find('> option:selected');
+            Multiselect.$right.eq(0).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
+            }
+        } else if (button == 'multi_d_rightAll') {
+            var $left_options = Multiselect.$left.children(':visible');
+            Multiselect.$right.eq(0).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
+            }
+        } else if (button == 'multi_d_rightSelected_2') {
+            var $left_options = Multiselect.$left.find('> option:selected');
+            Multiselect.$right.eq(1).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
+            }
+        } else if (button == 'multi_d_rightAll_2') {
+            var $left_options = Multiselect.$left.children(':visible');
+            Multiselect.$right.eq(1).append($left_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$right.eq(1).eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
+            }
+        }
+    },
+
+    moveToLeft: function(Multiselect, $options, event, silent, skipStack) {
+        var button = $(event.currentTarget).attr('id');
+
+        if (button == 'multi_d_leftSelected') {
+            var $right_options = Multiselect.$right.eq(0).find('> option:selected');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftAll') {
+            var $right_options = Multiselect.$right.eq(0).children(':visible');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftSelected_2') {
+            var $right_options = Multiselect.$right.eq(1).find('> option:selected');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        } else if (button == 'multi_d_leftAll_2') {
+            var $right_options = Multiselect.$right.eq(1).children(':visible');
+            Multiselect.$left.append($right_options);
+
+            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
+                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
+            }
+        }
+    }
+  });
+  /*
+  $("#search-button").bind('click', function(){
+    var searchSample = $("#search-sample").val();
+    var table = $("#select_file").find("option:selected").text();
+    ajaxSend('/search_sampe', {'table': table, 'sample': searchSample}, function(data){
+      var msg = data.msg;
+      if(msg == 'error'){
+        alert('没有找到相应的样品名称!');
+      }else{
+        sample = data.msg;
+        var tmp = $('<div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" name="dispop" value="' + sample +'">' + sample + '</label></div></div>');
+        tmp.appendTo('.show-samples');
+      }
+    });
+  });
+  */
+  $("#submit").bind('click',function(){
+    var all_info = get_input_data();
+    var error_msg = check_input_data(all_info);
+    if(error_msg.length > 0){
+      alert(error_msg);
+      return;
+    }
+    all_info = JSON.stringify(all_info);
+    //console.log(all_info);
+    ajaxSend('/get_info',{'all_info': all_info}, function(data){
+      if(data.msg == 'error'){
+        alert(data.msg);
+        return;
+      }else{
+          //console.log(data.headData);
+          //console.log(data.bodyData);
+        tableStr = createTable(data.headData, data.bodyData);
+        $("#results-table").html(tableStr);
+        $("#region_table").DataTable({
+          dom: 'lBfrtip',
+          "scrollX": true,
+          buttons: [
+            'csv'
+          ]
+        });
+      }
+    }, 'POST');
+    });
+
+});
+</script>
+{% endblock %}
