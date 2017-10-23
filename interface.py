@@ -44,10 +44,14 @@ def get_group_data(groupList):
 
             first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell])
             second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell])
-            first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
-            second_ratio = round(float(second_pos) / (first_pos + second_pos), 2)
-            new_cell = ','.join([str(first_pos), str(second_pos)])
-            results.append([new_cell, str(first_ratio), str(second_ratio)])
+            # other condition
+            if sum(first_pos, second_pos) == 0:
+                results.append(['0,0', 'NA', 'NA'])
+            else:
+                first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
+                second_ratio = round(float(second_pos) / (first_pos + second_pos), 2)
+                new_cell = ','.join([str(first_pos), str(second_pos)])
+                results.append([new_cell, str(first_ratio), str(second_ratio)])
     return results
 
 
