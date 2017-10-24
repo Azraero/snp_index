@@ -11,17 +11,12 @@ def search_by_regin():
     cmd = 'show tables'
     tables = get_db_data(cmd)
     tables = [table[0] for table in tables]
-    return render_template('search_by_regin.html', files=tables)
+    return render_template('gene_variation/search_by_regin.html', files=tables)
 
 
 @main.route('/search_by_gene')
 def search_by_gene():
-    return render_template('search_by_gene.html')
-
-
-@main.route('/blast')
-def blast():
-    return render_template('blast.html')
+    return render_template('gene_variation/search_by_gene.html')
 
 
 @main.route('/select_file', methods=['GET'])
