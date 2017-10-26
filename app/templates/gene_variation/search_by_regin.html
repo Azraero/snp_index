@@ -141,6 +141,50 @@
 {% block js %}
 <script src="/static/js/main.js"></script>
 <script>
+function get_input_data(){
+  var table = $("#select_file").find("option:selected").text();
+  var chr = $("#select-chr").find("option:selected").text();
+  var startPos = $("#pos-start").val();
+  var endPos = $("#pos-end").val();
+  var groupA = [];
+  var groupB = [];
+  $("#multi_d_to option").each(function(){
+    groupA.push($(this).text());
+  });
+  $("#multi_d_to_2 option").each(function(){
+    groupB.push($(this).text());
+  });
+  var all_info = {
+    'table': table,
+    'chr': chr,
+    'start_pos': startPos,
+    'end_pos': endPos,
+    'groupA': groupA,
+    'groupB': groupB,
+    'search': 'regin'
+  };
+  return all_info;
+}
+
+function check_input_data(info){
+  var pos_max = 1000000;
+  var error_msg = '';
+  if(! info['chr']){
+    return '请选择染色体!';
+  }else if(! info['start_pos']){
+    return '请输入起始位置!';
+  }else if(! info['end_pos']){
+    return '请输入结束位置!';
+  }else if(info['end_pos'] - info['start_pos'] > pos_max){
+    return '查看长度应该小于100kb!';
+  }else if(info['groupA'].length == 0){
+    return '请选取 groupA 比对的样品!';
+  }else if(info['groupB'].length == 0){
+    return '请选取 groupB 比对的样品!';
+  }else{
+    return error_msg;
+  }
+}
 $(document).ready(function(){
   $("#select_file").change(function(){
     var fileSelect = $(this).find("option:selected").text();
@@ -256,15 +300,15 @@ $(document).ready(function(){
   });
   */
   $("#submit").bind('click',function(){
-    var all_info = get_input_data();
-    var error_msg = check_input_data(all_info);
+    var info = get_input_data();
+    var error_msg = check_input_data(info);
     if(error_msg.length > 0){
       alert(error_msg);
       return;
     }
-    all_info = JSON.stringify(all_info);
+    info = JSON.stringify(info);
     //console.log(all_info);
-    ajaxSend('/get_snp_info',{'all_info': all_info}, function(data){
+    ajaxSend('/get_snp_info',{'info': info}, function(data){
       if(data.msg == 'error'){
         alert(data.msg);
         return;

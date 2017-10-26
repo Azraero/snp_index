@@ -5,8 +5,16 @@
     <div class="input-group">
         <table class="table">
         <tr>
-        <td colspan="2">
+        <td>
          Gene ID/Symbol/Name<input id="gene_name" type="text" name='gene' class="form-control" value="" placeholder="Input one Gene Symbol/Name">
+        </td>
+        <td>
+          Select a file<select class="form-control" data-width="25%" name="file" id="select_file">
+                          <option value= selected="selected"></option>
+                          {% for file in files %}
+                          <option value={{file}}>{{file}}</option>
+                          {% endfor %}
+                        </select>
         </td>
         </tr>
         <tr>
@@ -97,6 +105,23 @@ function check_gene(info){
   }
 }
 $(document).ready(function(){
+  $("#select_file").change(function(){
+    var fileSelect = $(this).find("option:selected").text();
+    ajaxSend('/select_file', {'file': fileSelect}, function(data){
+      var msg = data.msg;
+      if(msg == 'error'){
+        alert('没有找到相应的文件!');
+        $("#multi_d").empty();
+      }else{
+        $("#multi_d").empty();
+        samples = data.msg;
+        for(var i=0;i<samples.length;i++){
+          var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
+          tmp.appendTo('#multi_d');
+        }
+      }
+    });
+  });
   // multiselect plugin
   $('#multi_d').multiselect({
     right: '#multi_d_to, #multi_d_to_2',
@@ -181,6 +206,7 @@ $(document).ready(function(){
     var gene_name = $("#gene_name").val();
     var gene_upstream = $("#up").val();
     var gene_downstream = $("#down").val();
+    var table = $("#select_file").find("option:selected").text();
     var groupA = [];
     var groupB = [];
     $("#multi_d_to option").each(function(){
@@ -190,13 +216,15 @@ $(document).ready(function(){
       groupB.push($(this).text());
     });
     var info = {'gene_name': gene_name,
+                'table': table,
                 'gene_upstream': gene_upstream,
                 'gene_downstream': gene_downstream,
                 'groupA': groupA,
-                'groupB': groupB}
+                'groupB': groupB,
+                'search': 'gene'}
     if(check_gene(info)){
       info = JSON.stringify(info);
-      ajaxSend('/get_gene_info',{'info': info}, function(data){
+      ajaxSend('/get_snp_info',{'info': info}, function(data){
         if(data.msg != 'ok'){
           alert(data.msg);
           return;
