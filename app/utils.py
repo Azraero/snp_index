@@ -83,3 +83,22 @@ def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
         chrom=chrom)
     results = get_merge_group_data(get_db_data(cmd), groupA_len, groupB_len)
     return (header, results)
+
+
+'''
+add search by gene on 2017-10-26
+'''
+
+
+def get_region_by_gene(table, gene_id):
+    select_columns = ['GENE_ID', 'CHR', 'POS_START', 'POS_END']
+    select_columns_str = ','.join(select_columns)
+    cmd = "select {columns} from {table} where GENE_ID='{gene_id}'".format(table=table,
+                                                                           columns=select_columns_str,
+                                                                           gene_id=gene_id)
+    result = get_db_data(cmd, fetchall=False)
+    if result:
+        chrom, pos_start, pos_end = result[1:]
+        return (chrom, pos_start, pos_end)
+    else:
+        return ('', '', '')
