@@ -62,10 +62,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     return results
 
 
-def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
-    groupA_len = len(groupA)
-    groupB_len = len(groupA)
-    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
+def calculate_table(table, cmd, groupA_len, groupB_len):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB',
@@ -73,7 +70,19 @@ def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
               'GroupB Frequency Primary Allele',
               'GroupA Frequency Second Allele',
               'GroupB Frequency Second Allele']
-    get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and POS <= {end_pos} and CHR='{chrom}';"
+    results = get_merge_group_data(get_db_data(cmd), groupA_len, groupB_len)
+    return (header, results)
+
+
+'''
+add on 2017-10-26
+'''
+
+
+def get_cmd_by_regin(table, chrom, start_pos, end_pos, groupA, groupB):
+    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
+    get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and \
+    POS <= {end_pos} and CHR='{chrom}';"
     select_columns_str = ','.join(select_columns)
     cmd = get_group_cmd.format(
         columns=select_columns_str,
@@ -81,13 +90,29 @@ def calculate_table(table, chrom, start_pos, end_pos, groupA, groupB):
         start_pos=int(start_pos),
         end_pos=int(end_pos),
         chrom=chrom)
-    results = get_merge_group_data(get_db_data(cmd), groupA_len, groupB_len)
-    return (header, results)
+    return (cmd, len(groupA), len(groupB))
 
 
-'''
-add search by gene on 2017-10-26
-'''
+def get_cmd_by_gene(table, gene_id, up, down, groupA, groupB):
+    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
+    get_group_cmd = "select POS from {table} where GENE='{gene_id}';"
+    select_columns_str = ','.join(select_columns)
+    cmd = get_group_cmd.format(
+        table=table,
+        gene_id=gene_id)
+    results = get_db_data(cmd)
+    pos_list = [int(result[0]) for result in results]
+    min_pos = min(pos_list)
+    max_pos = max(pos_list)
+    start_pos = min_pos - up
+    end_pos = max_pos + down
+    cmd = "select {columns} from {table} where POS>={start_pos} and POS<={end_pos};".format(
+        columns=select_columns_str,
+        table=table,
+        start_pos=start_pos,
+        end_pos=end_pos
+    )
+    return (cmd, len(groupA), len(groupB))
 
 
 def get_region_by_gene(table, gene_id):

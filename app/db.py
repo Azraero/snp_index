@@ -47,7 +47,6 @@ expr_table_info = {'cmd': create_expr_cmd,
                    'fixed_column_num': 4,
                    'fixed_column_name': ('GENE_ID', 'CHR', 'POS_START', 'POS_END'),
                    'add_key_str': ',key geneindex (GENE_ID)'}
-                   
-relative_table = {'snp_mRNA_table': 'expr_gene_pos'}
+
 table_info = {'snp': snp_table_info,
               'expr': expr_table_info}
