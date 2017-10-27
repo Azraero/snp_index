@@ -168,22 +168,19 @@ function get_input_data(){
 
 function check_input_data(info){
   var pos_max = 1000000;
-  var error_msg = '';
-  if(! info['chr']){
-    return '请选择染色体!';
-  }else if(! info['start_pos']){
-    return '请输入起始位置!';
-  }else if(! info['end_pos']){
-    return '请输入结束位置!';
-  }else if(info['end_pos'] - info['start_pos'] > pos_max){
-    return '查看长度应该小于100kb!';
-  }else if(info['groupA'].length == 0){
-    return '请选取 groupA 比对的样品!';
-  }else if(info['groupB'].length == 0){
-    return '请选取 groupB 比对的样品!';
-  }else{
-    return error_msg;
+  keys = Object.keys(info);
+  var msg = '';
+  for(var i=0; i<keys.length; i++){
+    if(info[keys[i]].length == 0){
+      msg = keys[i] + ' is empty!';
+      return msg;
+    }
   }
+  if(info['end_pos'] - info['start_pos'] > pos_max){
+    msg = 'range length not allowed > 1000kb!';
+    return msg;
+  }
+  return msg;
 }
 $(document).ready(function(){
   $("#select_file").change(function(){
@@ -204,85 +201,7 @@ $(document).ready(function(){
     });
   });
   // multiselect plugin
-  $('#multi_d').multiselect({
-    right: '#multi_d_to, #multi_d_to_2',
-    rightSelected: '#multi_d_rightSelected, #multi_d_rightSelected_2',
-    leftSelected: '#multi_d_leftSelected, #multi_d_leftSelected_2',
-    rightAll: '#multi_d_rightAll, #multi_d_rightAll_2',
-    leftAll: '#multi_d_leftAll, #multi_d_leftAll_2',
-
-    search: {
-        left: '<input type="text" name="q" class="form-control" placeholder="Search..." />'
-    },
-
-    moveToRight: function(Multiselect, $options, event, silent, skipStack) {
-        var button = $(event.currentTarget).attr('id');
-
-        if (button == 'multi_d_rightSelected') {
-            var $left_options = Multiselect.$left.find('> option:selected');
-            Multiselect.$right.eq(0).append($left_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
-            }
-        } else if (button == 'multi_d_rightAll') {
-            var $left_options = Multiselect.$left.children(':visible');
-            Multiselect.$right.eq(0).append($left_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$right.eq(0).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(0));
-            }
-        } else if (button == 'multi_d_rightSelected_2') {
-            var $left_options = Multiselect.$left.find('> option:selected');
-            Multiselect.$right.eq(1).append($left_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$right.eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
-            }
-        } else if (button == 'multi_d_rightAll_2') {
-            var $left_options = Multiselect.$left.children(':visible');
-            Multiselect.$right.eq(1).append($left_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$right.eq(1).eq(1).find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$right.eq(1));
-            }
-        }
-    },
-
-    moveToLeft: function(Multiselect, $options, event, silent, skipStack) {
-        var button = $(event.currentTarget).attr('id');
-
-        if (button == 'multi_d_leftSelected') {
-            var $right_options = Multiselect.$right.eq(0).find('> option:selected');
-            Multiselect.$left.append($right_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
-            }
-        } else if (button == 'multi_d_leftAll') {
-            var $right_options = Multiselect.$right.eq(0).children(':visible');
-            Multiselect.$left.append($right_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
-            }
-        } else if (button == 'multi_d_leftSelected_2') {
-            var $right_options = Multiselect.$right.eq(1).find('> option:selected');
-            Multiselect.$left.append($right_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
-            }
-        } else if (button == 'multi_d_leftAll_2') {
-            var $right_options = Multiselect.$right.eq(1).children(':visible');
-            Multiselect.$left.append($right_options);
-
-            if ( typeof Multiselect.callbacks.sort == 'function' && !silent ) {
-                Multiselect.$left.find('> option').sort(Multiselect.callbacks.sort).appendTo(Multiselect.$left);
-            }
-        }
-    }
-  });
+  select_plugin()
   /*
   $("#search-button").bind('click', function(){
     var searchSample = $("#search-sample").val();
