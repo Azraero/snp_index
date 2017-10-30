@@ -21,7 +21,7 @@ def get_expr_info():
         table = info['table']
         groupA = info['groupA']
         groupB = info['groupB']
-        gene_str = info['gene_namde']
+        gene_str = info['gene_name']
         gene_ids = re.split(r'[\s,]', gene_str.strip())
         query_header, query_data = get_expr_table(
             table,
