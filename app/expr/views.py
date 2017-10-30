@@ -23,6 +23,8 @@ def get_expr_info():
         groupB = info['groupB']
         gene_str = info['gene_name']
         gene_ids = re.split(r'[\s,]', gene_str.strip())
+        if len(gene_ids) > 10:
+            return jsonify({'msg': 'query gene number not allowed > 10'})
         query_header, query_data = get_expr_table(
             table,
             gene_ids,
