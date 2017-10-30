@@ -66,10 +66,12 @@
 </div>
 <hr/>
 <h2>Search Results:</h2>
+<div id="results-plot"></div>
 <div id="results-table"></div>
 {% endblock %}
 {% block js %}
 <script src="/static/js/main.js"></script>
+<script src="../static/js/echart.min.js"></script>
 <script>
 function check_gene(info){
   var keys = Object.keys(info);
@@ -123,6 +125,10 @@ $(document).ready(function(){
           alert(data.msg);
           return;
         }else{
+          $("#results-plot").empty();
+          var tmp = $('<div id="main" style="width: 1200px;height:400px;"></div>');
+          tmp.appendTo("#results-plot");
+          generate_plot(createPlotData(groupA, groupB, data.bodyData));
           tableStr = createTable(data.headData, data.bodyData);
           $("#results-table").html(tableStr);
           $("#region_table").DataTable({

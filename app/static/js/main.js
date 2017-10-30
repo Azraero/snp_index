@@ -127,3 +127,61 @@ function select_plugin(){
     }
   });
 }
+
+function generate_plot(info){
+  var myChart = echarts.init(document.getElementById('main'));
+  var option = {
+         title: {
+             text: 'Gene Expression',
+             subtext: 'log2'
+         },
+         tooltip: {},
+         legend: {
+             data: info['gene_name']
+         },
+         xAxis: {
+             data: info['xlabel']
+         },
+         yAxis: {},
+         series: info['series']
+     };
+     // 使用刚指定的配置项和数据显示图表。
+     myChart.setOption(option);
+}
+function add_line(lineA, lineB){
+  if(lineA.length !== lineB.length){
+    alert('array length must be eq!');
+    return;
+  }else{
+    for(var i=0;i<lineA.length;i++){
+      lineA[i] = lineA[i] + lineB[i];
+    }
+    return lineA;
+  }
+}
+function createPlotData(groupA, groupB, data){
+  var xlabel = groupA.concat(groupB);
+  var gene_ids = [];
+  var series = [];
+  var line = [];
+  var avg_line = [];
+  for(var i=0;i<data.length;i++){
+    var tmpObj = {};
+    line = data[i].slice(4,data[i].length).map(function(item, index, arr){
+      // log2
+      return Math.log(Number(item) + 1) / Math.log(2);
+    });
+    gene_ids.push(data[i][0]);
+    tmpObj['name'] = data[i][0];
+    tmpObj['type'] = 'line',
+    tmpObj['data'] = line;
+    series.push(tmpObj);
+  }
+  var plotInfo = {
+    'gene_name': gene_ids,
+    'xlabel': xlabel,
+    'series': series
+  }
+  //console.log(plotInfo);
+  return plotInfo;
+}
