@@ -66,9 +66,7 @@
 </div>
 <hr/>
 <!-- add loading hint -->
-<div id="query_hint" class="query_hint" style="display: none">
-<img src="../static/images/hint.gif" />正在努力查询，请稍等...
-</div>
+<div id="query_hint"></div>
 <h2>Search Results:</h2>
 <div id="results-plot"></div>
 <div id="results-table"></div>
@@ -124,14 +122,15 @@ $(document).ready(function(){
                 'groupB': groupB}
     if(check_gene(info)){
       info = JSON.stringify(info);
-      var query_hint = document.getElementById('query_hint');
-      query_hint.style.display="block";
+      var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
+      hint.appendTo('#query_hint');
       ajaxSend('/get_expr_info',{'info': info}, function(data){
         if(data.msg != 'ok'){
           alert(data.msg);
           return;
         }else{
           $("#results-plot").empty();
+          $("#query_hint").empty();
           var tmp = $('<div id="main" style="width: 1250px;height:400px;"></div>');
           tmp.appendTo("#results-plot");
           generate_plot(createPlotData(groupA, groupB, data.bodyData));
@@ -146,7 +145,6 @@ $(document).ready(function(){
           });
         }
       }, 'POST');
-      query_hint.style.display="none";
     }else{
       return;
     }
