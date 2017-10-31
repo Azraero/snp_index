@@ -145,6 +145,9 @@ function generate_plot(info){
          },
          toolbox: {
            show: true,
+           orient: 'vertical',
+           x: 'right',
+           y: 'center',
            feature: {
              mark: {show: true},
              magicType: {show: true, type: ['line', 'bar']},
