@@ -131,18 +131,37 @@ function select_plugin(){
 function generate_plot(info){
   var myChart = echarts.init(document.getElementById('main'));
   var option = {
-         title: {
-             text: 'Gene Expression',
-             subtext: 'log2'
+         title: {},
+         tooltip: {
+           /*
+           trigger: 'axis',
+           axisPointer: {
+             type: 'shadow',
+             label: {
+               show: true
+             }
+           }
+           */
          },
-         tooltip: {},
+         toolbox: {
+           show: true,
+           feature: {
+             mark: {show: true},
+             magicType: {show: true, type: ['line', 'bar']},
+             restore: {show: true},
+             saveAsImage: {show: true}
+           }
+         },
          legend: {
              data: info['gene_name']
          },
          xAxis: {
              data: info['xlabel']
          },
-         yAxis: {},
+         yAxis: {
+           type: 'value',
+           name: 'expression quantity(log2)'
+         },
          series: info['series']
      };
      // 使用刚指定的配置项和数据显示图表。
