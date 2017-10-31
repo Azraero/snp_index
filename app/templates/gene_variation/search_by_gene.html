@@ -83,9 +83,7 @@
 </div>
 <hr/>
 <!-- add loading hint -->
-<div id="query_hint" class="query_hint" style="display:none">
-<img src="/static/images/hint.gif" />正在努力查询，请稍等...
-</div>
+<div id="query_hint"></div>
 <h2>Search Results:</h2>
 <div id="results-table"></div>
 {% endblock %}
@@ -150,7 +148,10 @@ $(document).ready(function(){
                 'search': 'gene'}
     if(check_gene(info)){
       info = JSON.stringify(info);
+      var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
+      hint.appendTo('#query_hint');
       ajaxSend('/get_snp_info',{'info': info}, function(data){
+        $('#query_hint').empty();
         if(data.msg != 'ok'){
           alert(data.msg);
           return;
