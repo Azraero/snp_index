@@ -65,13 +65,17 @@
   <input class="btn btn-success btn-sm"  id="submit" type="submit"  value="Submit">
 </div>
 <hr/>
+<!-- add loading hint -->
+<div id="query_hint" class="query_hint" style="display: none">
+<img src="../static/images/hint.gif" />正在努力查询，请稍等...
+</div>
 <h2>Search Results:</h2>
 <div id="results-plot"></div>
 <div id="results-table"></div>
 {% endblock %}
 {% block js %}
 <script src="/static/js/main.js"></script>
-<script src="../static/js/echart.min.js"></script>
+<script src="https://unpkg.com/echarts@3.5.3/dist/echarts.js"></script>
 <script>
 function check_gene(info){
   var keys = Object.keys(info);
@@ -120,13 +124,15 @@ $(document).ready(function(){
                 'groupB': groupB}
     if(check_gene(info)){
       info = JSON.stringify(info);
+      var query_hint = document.getElementById('query_hint');
+      query_hint.style.display="block";
       ajaxSend('/get_expr_info',{'info': info}, function(data){
         if(data.msg != 'ok'){
           alert(data.msg);
           return;
         }else{
           $("#results-plot").empty();
-          var tmp = $('<div id="main" style="width: 1200px;height:400px;"></div>');
+          var tmp = $('<div id="main" style="width: 1250px;height:400px;"></div>');
           tmp.appendTo("#results-plot");
           generate_plot(createPlotData(groupA, groupB, data.bodyData));
           tableStr = createTable(data.headData, data.bodyData);
@@ -140,6 +146,7 @@ $(document).ready(function(){
           });
         }
       }, 'POST');
+      query_hint.style.display="none";
     }else{
       return;
     }
