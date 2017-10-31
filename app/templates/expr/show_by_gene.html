@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Search for Variation by Gene:</h2>
+<h2>Search for Expression by Gene:</h2>
 <form role="search" method="" action="#">
     <div class="input-group">
         <table class="table">
         <tr>
         <td>
-         Gene ID/Symbol/Name<input id="gene_name" type="text" name='gene' class="form-control" value="" placeholder="Input one Gene Symbol/Name">
+         Gene ID/Symbol/Name<textarea id="gene_name" row="5" class="form-control" value="" placeholder="Input one Gene Symbol/Name"></textarea>
         </td>
+        </tr>
+        <tr>
         <td>
           Select a file<select class="form-control" data-width="25%" name="file" id="select_file">
                           <option value= selected="selected"></option>
@@ -17,25 +19,6 @@
                         </select>
         </td>
         </tr>
-        <tr>
-        <td>
-        Upstream (kb, optional, must &lt;&#61; 10kb) <input id="up" type="text" name='up' class="form-control" value=2 placeholder="Upstream Region(kb)">
-        </td>
-        <td>
-        Downstream (kb, optional, must  &lt;&#61; 10kb) <input id="down" type="text" name='down' class="form-control" value=1 placeholder="Downstream Region(Kb)">
-        </td>
-        </tr>
-        <!--
-        <tr>
-        <td>
-        <div class="input-group-btn">
-            <button id="submit" type="submit" class="btn btn-success btn-sm">
-                Submit
-            </button>
-        </div>
-        </td>
-        </tr>
-        -->
         </table>
     </div>
 </form>
@@ -83,11 +66,12 @@
 </div>
 <hr/>
 <h2>Search Results:</h2>
+<div id="results-plot"></div>
 <div id="results-table"></div>
 {% endblock %}
-
 {% block js %}
 <script src="/static/js/main.js"></script>
+<script src="../static/js/echart.min.js"></script>
 <script>
 function check_gene(info){
   var keys = Object.keys(info);
@@ -96,11 +80,6 @@ function check_gene(info){
       alert(keys[i] + ' is empty!');
       return false;
     }
-  }
-  if(Number(info['gene_upstream']) > 2 || Number(info['gene_downstream'] > 2)){
-    alert('upstream & downstream not allowed > 2');
-    return false;
-  }else{
     return true;
   }
 }
@@ -126,8 +105,6 @@ $(document).ready(function(){
   });
   $('#submit').click(function(){
     var gene_name = $("#gene_name").val();
-    var gene_upstream = $("#up").val();
-    var gene_downstream = $("#down").val();
     var table = $("#select_file").find("option:selected").text();
     var groupA = [];
     var groupB = [];
@@ -139,18 +116,19 @@ $(document).ready(function(){
     });
     var info = {'gene_name': gene_name,
                 'table': table,
-                'gene_upstream': gene_upstream,
-                'gene_downstream': gene_downstream,
                 'groupA': groupA,
-                'groupB': groupB,
-                'search': 'gene'}
+                'groupB': groupB}
     if(check_gene(info)){
       info = JSON.stringify(info);
-      ajaxSend('/get_snp_info',{'info': info}, function(data){
+      ajaxSend('/get_expr_info',{'info': info}, function(data){
         if(data.msg != 'ok'){
           alert(data.msg);
           return;
         }else{
+          $("#results-plot").empty();
+          var tmp = $('<div id="main" style="width: 1200px;height:400px;"></div>');
+          tmp.appendTo("#results-plot");
+          generate_plot(createPlotData(groupA, groupB, data.bodyData));
           tableStr = createTable(data.headData, data.bodyData);
           $("#results-table").html(tableStr);
           $("#region_table").DataTable({

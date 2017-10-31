@@ -102,6 +102,8 @@ def get_cmd_by_gene(table, gene_id, up, down, groupA, groupB):
         gene_id=gene_id)
     results = get_db_data(cmd)
     pos_list = [int(result[0]) for result in results]
+    if len(pos_list) == 0:
+        return ('', gene_id, '')
     min_pos = min(pos_list)
     max_pos = max(pos_list)
     start_pos = min_pos - up
@@ -127,3 +129,25 @@ def get_region_by_gene(table, gene_id):
         return (chrom, pos_start, pos_end)
     else:
         return ('', '', '')
+
+
+'''
+add on 2017-10-27
+'''
+
+
+def get_expr_table(table, gene_ids, groupA, groupB):
+    select_columns = ['GENE_ID', 'CHR', 'POS_START', 'POS_END'] + groupA + groupB
+    select_columns_str = ','.join(select_columns)
+    results = []
+    for gene in gene_ids:
+        cmd = "select {columns} from {table} where GENE_ID='{gene_id}';".format(
+            columns=select_columns_str,
+            table=table,
+            gene_id=gene
+        )
+        result = get_db_data(cmd, fetchall=False)
+        if not result:
+            return (gene, '')
+        results.append(list(result))
+    return (select_columns, results)
