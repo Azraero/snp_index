@@ -134,6 +134,8 @@
     <input class="btn btn-success btn-sm"  id="submit" type="submit"  value="Submit">
   </div>
   <hr/>
+  <!-- add loading hint -->
+  <div id="query_hint"></div>
   <h2>Search Results:</h2>
   <div id="results-table"></div>
 {% endblock %}
@@ -227,6 +229,8 @@ $(document).ready(function(){
     }
     info = JSON.stringify(info);
     //console.log(all_info);
+    var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
+    hint.appendTo('#query_hint');
     ajaxSend('/get_snp_info',{'info': info}, function(data){
       if(data.msg == 'error'){
         alert(data.msg);
@@ -234,6 +238,7 @@ $(document).ready(function(){
       }else{
           //console.log(data.headData);
           //console.log(data.bodyData);
+        $('#query_hint').empty();
         tableStr = createTable(data.headData, data.bodyData);
         $("#results-table").html(tableStr);
         $("#region_table").DataTable({
