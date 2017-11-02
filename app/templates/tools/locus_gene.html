@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-body">
+<div class="panel">
+  <h2>Locus Identidier Gene Search:</h2>
+    <div class="panel-heading">
+        <h3 class="panel-title">Obtain a table of a coding regin by locus identifier(e.g.TraesCS1A01G000100)</h3>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <form action="#" class="form-inline" method="get">
+                <span>
+                    <label>Locus Identifier:</label>
+                    <input class="form-control" type="text" name="gene" value="" style="width: 25%">
+                </span>
+                    <button type="submit" class="btn btn-sm btn-success">Search</button>
+                    <button type="reset" class="btn btn-sm btn-warning">Reset</button>
+            </form>
+        </div>
+    </div>
+    <div id="query_hint"></div>
+    <h2>Search Results:</h2>
+    <div id="results-table"></div>
+{% endblock %}
