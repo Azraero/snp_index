@@ -1,5 +1,7 @@
 # coding=utf-8
+import os
 import MySQLdb
+import subprocess
 from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD
 
 
@@ -151,3 +153,25 @@ def get_expr_table(table, gene_ids, groupA, groupB):
             return (gene, '')
         results.append(list(result))
     return (select_columns, results)
+
+
+'''
+add on 2017-11-1
+'''
+
+
+def check_dir(path):
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return path
+
+
+def run_blast(seqStr, program, database):
+    cmd = 'blastn -db {db_file} -query {seq_file} -out {output} -html'.format(
+        db_file='test_dbFile',
+        seq_file='test_seqFile',
+        output='test_output'
+    )
+    subprocess.call(cmd)
+    while True:
+        try:
