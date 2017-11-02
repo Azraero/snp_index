@@ -105,3 +105,6 @@ data/*
 
 # static
 datatables/extensions/
+
+# .idea
+.idea/*
