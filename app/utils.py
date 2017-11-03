@@ -47,7 +47,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     results = []
     header_line = [list(each[:6]) for each in group_info]
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
-    groupBList = [list(each[(groupALen+6):]) for each in group_info]
+    groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     mergeGroupA = get_group_data(groupAList)
     mergeGroupB = get_group_data(groupBList)
     mergeGroup = []
@@ -62,7 +62,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     return results
 
 
-def calculate_table(table, cmd, groupA_len, groupB_len):
+def calculate_table(cmd, groupA_len, groupB_len):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB',
@@ -151,3 +151,27 @@ def get_expr_table(table, gene_ids, groupA, groupB):
             return (gene, '')
         results.append(list(result))
     return (select_columns, results)
+
+
+'''
+add on 2017-11-3
+'''
+
+
+def get_locus_result(genename, ann=[]):
+    locus_result = {}
+    cmd = "select * from locus_gene_mlocus where GENE_ID='{0}';".format(genename)
+    result = get_db_data(cmd, fetchall=False)
+    if result:
+        gene_id, chr, pos_start, pos_end = result[1:5]
+        description = result[-1]
+        locus_result['gene_identification'] = {'Gene Product Name': description,
+                                               'Locus Name': genename}
+        locus_result['gene_attributes'] = {'Chromosome': chr,
+                                           "CDS Coordinates (5'-3')":'{0} - {1}'.format(pos_start,
+                                                                                        pos_end)}
+        header = ['Accession', '%Sim', 'Length', 'Description', 'P-value']
+        locus_result['gene_annotation'] = {}
+        locus_result['gene_annotation']['header'] = header
+        locus_result['gene_annotation']['body'] = ann
+    return locus_result

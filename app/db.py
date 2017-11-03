@@ -2,7 +2,7 @@ import os
 
 HOSTBNAME = 'localhost'
 DATABASE = 'snp_index'
-USERNAME = os.environ.get('USERNAME', 'root')
+USERNAME = os.environ.get('USERNAME', 'jamebluntcc')
 PASSWORD = os.environ.get('PASSWORD', '050400')
 DB_URI = 'mysql://{}:{}@{}/{}'.format(
     USERNAME, PASSWORD, HOSTBNAME, DATABASE)
@@ -32,6 +32,17 @@ create_snp_cmd = """
                                    GENE VARCHAR(100),
                    """
 
+create_locus_cmd = """
+                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
+                                    GENE_ID VARCHAR(20),
+                                    CHR VARCHAR(5),
+                                    POS_START VARCHAR(50),
+                                    POS_END VARCHAR(50),
+                                    DIRECT VARCHAR(1),
+                                    BLAST_Hit VARCHAR(200),
+                                    Description VARCHAR(200)                                  
+"""
+
 create_group_cmd = """
                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
                                    SAMPLE VARCHAR(20),
@@ -48,5 +59,11 @@ expr_table_info = {'cmd': create_expr_cmd,
                    'fixed_column_name': ('GENE_ID', 'CHR', 'POS_START', 'POS_END'),
                    'add_key_str': ',key geneindex (GENE_ID)'}
 
+locus_table_info = {'cmd': create_locus_cmd,
+                    'fixed_column_num': 7,
+                    'fixed_column_name': ('GENE_ID', 'CHR', 'POS_START', 'POS_END', 'DIRECT', 'BLAST_Hit', 'Description'),
+                    'add_key_str': ',key geneindex (GENE_ID)'}
+
 table_info = {'snp': snp_table_info,
-              'expr': expr_table_info}
+              'expr': expr_table_info,
+              'locus': locus_table_info}
