@@ -5,25 +5,25 @@
 
 <p>
 <a>Program:</a>
-    <select name = "PROGRAM" class="selectpicker">
-        <option>blastn
+    <select id="program" name = "PROGRAM" class="selectpicker">
+        <option>blastn</option>
     </select>
 <a>Database:</a>
-<select name = "DATALIB" class="selectpicker">
-                    <option VALUE = "nucleotide_db">nucleotide database
+<select id="data-base" name = "DATALIB" class="selectpicker">
+                    <option VALUE = "nucleotide_db">nucleotide database</option>
 </select>
 </p>
 <P>
 Enter sequence below in <a>FASTA</a>  format:</p>
-<textarea name="SEQUENCE" rows=6 cols=60>
+<textarea id="seq-str" name="SEQUENCE" rows=6 cols=60>
 </textarea>
 <br/>Or load it from disk
-<INPUT TYPE="file" NAME="SEQFILE">
+<INPUT TYPE="file" NAME="seqfile">
 <br/>
 <P>
 <INPUT class="design1" TYPE="button" VALUE="Clear sequence" onClick="MainBlastForm.SEQUENCE.value='';MainBlastForm.QUERY_FROM.value='';MainBlastForm.
 QUERY_TO.value='';MainBlastForm.SEQUENCE.focus();">
-<INPUT class="design1" TYPE="submit" VALUE="Search">
+<INPUT id="submit" class="design1" TYPE="submit" VALUE="Search">
 <p>
 <HR>
 <!--
@@ -88,4 +88,31 @@ UENCE.focus();">
 </p>
 -->
 </FORM>
+{% endblock %}
+
+{% block js %}
+<script src="../static/js/main.js"></script>
+<script>
+$(document).ready(function(){
+  $('#submit').bind('click', function(){
+    var seqStr = $('#seq-str').val();
+    var program = $('#program option:selected').text();
+    var database = $('#data-base option:selected').text();
+    var info = {
+      'seqstr': seqStr,
+      'program': program,
+      'database': database
+    }
+    info = JSON.stringify(info);
+    ajaxSend('/get_blast_info', {'info': info}, function(data){
+      if(data.msg != 'ok'){
+        alert data.msg;
+        return;
+      }else{
+
+      }
+    }, 'POST')
+  })
+});
+</script>
 {% endblock %}

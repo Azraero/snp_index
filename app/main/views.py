@@ -84,8 +84,7 @@ def get_snp_info():
                 return jsonify({'msg': 'not search {0} in database'.format(
                     groupA_len
                 )})
-        query_header, query_data = calculate_table(table,
-                                                   cmd,
+        query_header, query_data = calculate_table(cmd,
                                                    groupA_len,
                                                    groupB_len)
         return jsonify({'msg': 'ok',

@@ -47,7 +47,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     results = []
     header_line = [list(each[:6]) for each in group_info]
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
-    groupBList = [list(each[(groupALen+6):]) for each in group_info]
+    groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     mergeGroupA = get_group_data(groupAList)
     mergeGroupB = get_group_data(groupBList)
     mergeGroup = []
@@ -62,7 +62,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen):
     return results
 
 
-def calculate_table(table, cmd, groupA_len, groupB_len):
+def calculate_table(cmd, groupA_len, groupB_len):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB',
@@ -175,7 +175,3 @@ def get_locus_result(genename, ann=[]):
         locus_result['gene_annotation']['header'] = header
         locus_result['gene_annotation']['body'] = ann
     return locus_result
-
-
-
-
