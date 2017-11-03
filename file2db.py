@@ -62,14 +62,14 @@ def table2db(filename, split='\t', add_key=True):
                 samples = []
                 for i in header_list[6:]:
                     samples.append('{} VARCHAR(20)'.format(i))
-                cmd = create_table_cmd.format(tableName) + ','.join(samples) + add_key_str +');'
+                cmd = create_table_cmd.format(tableName) + ','.join(samples) + add_key_str + ');'
                 # print cmd
                 cur.execute(cmd)
                 row = info.readline().strip()
                 header = ','.join(header_list)
-                while(row):
+                while (row):
                     tmp_list = row.split(split)
-                    tmp_list = ['"'+str(k)+'"' for k in tmp_list]
+                    tmp_list = ['"' + str(k) + '"' for k in tmp_list]
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)
@@ -108,9 +108,9 @@ def group2db(filename, split='\t'):
                 cur.execute(cmd)
                 row = info.readline().strip()
                 header = ','.join(header_list)
-                while(row):
+                while (row):
                     tmp_list = row.split(split)
-                    tmp_list = ['"'+str(k)+'"' for k in tmp_list]
+                    tmp_list = ['"' + str(k) + '"' for k in tmp_list]
                     each_line = ','.join(tmp_list)
                     cmd = "insert into {0}({1}) values({2})".format(tableName, header, each_line)
                     cur.execute(cmd)

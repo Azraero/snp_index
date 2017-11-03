@@ -1,11 +1,11 @@
 # coding=utf-8
 import json
 from ..utils import get_db_data, calculate_table, \
-                    get_cmd_by_gene, get_cmd_by_regin
+    get_cmd_by_gene, get_cmd_by_regin
 from . import main
 from ..db import get_head_cmd
 from flask import render_template, jsonify, \
-                  request, redirect, url_for
+    request, redirect, url_for
 
 
 @main.route('/search_by_regin')
