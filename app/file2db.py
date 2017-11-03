@@ -18,12 +18,13 @@ def deal_cell(cell):
 
 @click.command()
 @click.option('--filename', help='a file for snp index table or expr table')
-@click.option('--typename', help="a type value is 'snp' or 'expr'")
-def table2db(filename, typename, split='\t', add_key=True):
+@click.option('--typename', help="a type value is 'snp' or 'expr' or 'locus'")
+@click.option('--split', help="file field split", default='\t')
+def table2db(filename, typename, split, add_key=True):
     '''
     invert file to mysql table
     '''
-    tableName = filename.rsplit('/')[1]
+    tableName = filename.rsplit('/', 1)[1]
     tableName = '_'.join([typename, tableName])
     fixed_column_num = table_info[typename]['fixed_column_num']
 
@@ -33,7 +34,8 @@ def table2db(filename, typename, split='\t', add_key=True):
             header_list = header.split(split)
             # invert all '-' to '_'
             header_list = [each.replace('-', '_') for each in header_list]
-            if len(header_list) <= fixed_column_num:
+            # print header_list
+            if len(header_list) < fixed_column_num:
                 print '{0} header not allowed < {1}!'.format(filename,
                                                              fixed_column_num)
                 sys.exit(1)
@@ -48,9 +50,12 @@ def table2db(filename, typename, split='\t', add_key=True):
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)
                 samples = []
-                for i in header_list[fixed_column_num:]:
-                    samples.append('{} VARCHAR(20)'.format(i))
-                cmd = table_info[typename]['cmd'].format(tableName) + ','.join(samples) + add_key_str +');'
+                if header_list[fixed_column_num:]:
+                    for i in header_list[fixed_column_num:]:
+                        samples.append('{} VARCHAR(20)'.format(i))
+                    cmd = table_info[typename]['cmd'].format(tableName) + ','.join(samples) + add_key_str +');'
+                else:
+                    cmd = table_info[typename]['cmd'].format(tableName) + add_key_str + ');'
                 # print cmd
                 cur.execute(cmd)
                 row = info.readline().strip()
