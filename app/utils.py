@@ -151,3 +151,31 @@ def get_expr_table(table, gene_ids, groupA, groupB):
             return (gene, '')
         results.append(list(result))
     return (select_columns, results)
+
+
+'''
+add on 2017-11-3
+'''
+
+
+def get_locus_result(genename, ann=[]):
+    locus_result = {}
+    cmd = "select * from locus_gene_mlocus where GENE_ID='{0}';".format(genename)
+    result = get_db_data(cmd, fetchall=False)
+    if result:
+        gene_id, chr, pos_start, pos_end = result[1:5]
+        description = result[-1]
+        locus_result['gene_identification'] = {'Gene Product Name': description,
+                                               'Locus Name': genename}
+        locus_result['gene_attributes'] = {'Chromosome': chr,
+                                           "CDS Coordinates (5'-3')":'{0} - {1}'.format(pos_start,
+                                                                                        pos_end)}
+        header = ['Accession', '%Sim', 'Length', 'Description', 'P-value']
+        locus_result['gene_annotation'] = {}
+        locus_result['gene_annotation']['header'] = header
+        locus_result['gene_annotation']['body'] = ann
+    return locus_result
+
+
+
+
