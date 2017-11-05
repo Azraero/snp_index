@@ -21,7 +21,7 @@ function ajaxSend(reqUest_url, post_data, callback, request_method, return_type,
     $.ajax(params);
 }
 
-function createTable(headData, bodyData) {
+function createTable(headData, bodyData, tableType) {
   var htmlBuffer = [];
   htmlBuffer.push("<table id='region_table' class='table table-strip table-bordered'>");
   // for header
@@ -35,7 +35,7 @@ function createTable(headData, bodyData) {
   for(var i = 0; i < bodyData.length; i++){
     htmlBuffer.push("<tr>");
     for(var j = 0; j < bodyData[i].length; j++){
-        if(j == 0){
+        if(j == 0 && tableType == 'expr'){
             href_str = "<a target='_blank' href='/locus_identifier_search?gene=" + bodyData[i][j] + "'>" +
                 bodyData[i][j] + "</a>";
             htmlBuffer.push("<td>" + href_str + "</td>");
@@ -43,7 +43,7 @@ function createTable(headData, bodyData) {
             htmlBuffer.push("<td>" + bodyData[i][j] + "</td>");
         }
     }
-    htmlBuffer.push("</tr>");
+    htmlBuffer.push("</tr>")
   }
   htmlBuffer.push("</tbody>");
   htmlBuffer.push("</table>");
