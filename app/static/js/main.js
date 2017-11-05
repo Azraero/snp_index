@@ -35,7 +35,13 @@ function createTable(headData, bodyData) {
   for(var i = 0; i < bodyData.length; i++){
     htmlBuffer.push("<tr>");
     for(var j = 0; j < bodyData[i].length; j++){
-      htmlBuffer.push("<td>" + bodyData[i][j] + "</td>");
+        if(j == 0){
+            href_str = "<a target='_blank' href='/locus_identifier_search?gene=" + bodyData[i][j] + "'>" +
+                bodyData[i][j] + "</a>";
+            htmlBuffer.push("<td>" + href_str + "</td>");
+        }else{
+            htmlBuffer.push("<td>" + bodyData[i][j] + "</td>");
+        }
     }
     htmlBuffer.push("</tr>");
   }
