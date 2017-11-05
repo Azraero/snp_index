@@ -18,7 +18,7 @@ def search_by_regin():
 
 @main.route('/')
 def index():
-    return redirect(url_for('main.search_by_regin'))
+    return render_template('snp_index_cover.html')
 
 
 @main.route('/search_by_gene')

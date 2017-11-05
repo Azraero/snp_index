@@ -52,13 +52,11 @@
                         {% endfor %}
                          </tr>
                         {% if locus_result['gene_annotation']['body'] %}
+                            <tr>
                             {% for row in locus_result['gene_annotation']['body'] %}
-                                <tr>
-                                {% for cell in row %}
-                                    <td class="centersmall">{{ cell }}</td>
-                                {% endfor %}
-                                </tr>
+                                    <td class="centersmall">{{ row }}</td>
                              {% endfor %}
+                            </tr>
                         {% endif %}
                         </tbody>
                     </table>
