@@ -37,12 +37,18 @@ create_locus_cmd = """
                                     GENE_ID VARCHAR(20),
                                     CHR VARCHAR(5),
                                     POS_START VARCHAR(50),
-                                    POS_END VARCHAR(50),
-                                    DIRECT VARCHAR(1),
-                                    BLAST_Hit VARCHAR(200),
-                                    Description VARCHAR(200)                                  
+                                    POS_END VARCHAR(50)                               
 """
 
+create_func_cmd = """
+                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
+                                    GENE_ID VARCHAR(20),
+                                    BLAST_Hit_Accession VARCHAR(200),
+                                    Description VARCHAR(200),
+                                    Pfam_ID LONGTEXT,
+                                    Interpro_ID LONGTEXT,
+                                    GO_ID LONGTEXT
+"""
 create_group_cmd = """
                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
                                    SAMPLE VARCHAR(20),
@@ -60,10 +66,15 @@ expr_table_info = {'cmd': create_expr_cmd,
                    'add_key_str': ',key geneindex (GENE_ID)'}
 
 locus_table_info = {'cmd': create_locus_cmd,
-                    'fixed_column_num': 7,
-                    'fixed_column_name': ('GENE_ID', 'CHR', 'POS_START', 'POS_END', 'DIRECT', 'BLAST_Hit', 'Description'),
+                    'header': ('GENE_ID', 'CHR', 'POS_START', 'POS_END'),
                     'add_key_str': ',key geneindex (GENE_ID)'}
+
+func_table_info = {'cmd': create_func_cmd,
+                   'header': ('GENE_ID', 'BLAST_Hit_Accession', 'Description',
+                              'Pfam_ID', 'Interpro_ID', 'GO_ID'),
+                   'add_key_str': ',key geneindex (GENE_ID)'}
 
 table_info = {'snp': snp_table_info,
               'expr': expr_table_info,
+              'func': func_table_info,
               'locus': locus_table_info}
