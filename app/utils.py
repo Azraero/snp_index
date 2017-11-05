@@ -158,20 +158,23 @@ add on 2017-11-3
 '''
 
 
-def get_locus_result(genename, ann=[]):
+def get_locus_result(genename):
     locus_result = {}
-    cmd = "select * from locus_gene_mlocus where GENE_ID='{0}';".format(genename)
+    cmd = """select l.*, f.BLAST_Hit_Accession, f.Description, f.Pfam_ID,
+             f.Interpro_ID, f.GO_ID from locus l left join func f
+             on l.GENE_ID=f.GENE_ID where l.GENE_ID='{0}';
+          """.format(genename)
     result = get_db_data(cmd, fetchall=False)
     if result:
         gene_id, chr, pos_start, pos_end = result[1:5]
-        description = result[-1]
+        blast_hit, description, pfam_id, interpro_id, go_id = result[5:]
         locus_result['gene_identification'] = {'Gene Product Name': description,
                                                'Locus Name': genename}
         locus_result['gene_attributes'] = {'Chromosome': chr,
                                            "CDS Coordinates (5'-3')":'{0} - {1}'.format(pos_start,
                                                                                         pos_end)}
-        header = ['Accession', '%Sim', 'Length', 'Description', 'P-value']
+        header = ['Accession', 'Description', 'Pfam_ID', 'Interpro_ID', 'GO_ID']
         locus_result['gene_annotation'] = {}
         locus_result['gene_annotation']['header'] = header
-        locus_result['gene_annotation']['body'] = ann
+        locus_result['gene_annotation']['body'] = [blast_hit, description, pfam_id, interpro_id, go_id]
     return locus_result

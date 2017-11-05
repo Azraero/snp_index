@@ -3,7 +3,7 @@ import sys
 import click
 import MySQLdb
 from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD, table_info
-
+from utils import get_db_data
 
 def deal_cell(cell):
     cell_list = cell.split(',')
@@ -16,11 +16,50 @@ def deal_cell(cell):
             return round(float(cell_list[1]) / (int(cell_list[0]) + int(cell_list[1])), 2)
 
 
-@click.command()
-@click.option('--filename', help='a file for snp index table or expr table')
-@click.option('--typename', help="a type value is 'snp' or 'expr' or 'locus'")
-@click.option('--split', help="file field split", default='\t')
-def table2db(filename, typename, split, add_key=True):
+def generateDB(db, filename, action, split, add_key=True):
+    '''
+    create or add data to snp index db
+    '''
+    try:
+        with open(filename, 'r') as info:
+            old_header = info.readline().strip()
+            header_list = table_info[db]['header']
+            if add_key:
+                add_key_str = table_info[db]['add_key_str']
+            else:
+                add_key_str = ''
+            con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+            with con as cur:
+                if action == 'create':
+                    cmd = 'drop table if exists {}'.format(db)
+                    cur.execute(cmd)
+                    cmd = table_info[db]['cmd'].format(db) + add_key_str + ');'
+                    # print cmd
+                    cur.execute(cmd)
+
+                results = get_db_data('show tables')
+                results = [result[0] for result in results]
+                if db not in results:
+                    print '{0} is not create, please create table first!'.format(db)
+                    sys.exit(1)
+
+                row = info.readline().strip()
+                header = ','.join(header_list)
+                while(row):
+                    tmp_list = row.split(split)
+                    tmp_list = ['"'+str(k)+'"' for k in tmp_list]
+                    each_line = ','.join(tmp_list)
+                    cmd = "insert into {0}({1}) values({2})".format(db, header, each_line)
+                    cur.execute(cmd)
+                    row = info.readline().strip()
+                print '{} had been wrote into mysql!'.format(db)
+    except IOError:
+        print 'file not find!'
+    except MySQLdb.Error as e:
+        print 'mysql error {}:{}'.format(e.args[0], e.args[1])
+
+
+def file2db(filename, typename, split, add_key=True):
     '''
     invert file to mysql table
     '''
@@ -72,6 +111,19 @@ def table2db(filename, typename, split, add_key=True):
         print 'file not find!'
     except MySQLdb.Error as e:
         print 'mysql error {}:{}'.format(e.args[0], e.args[1])
+
+
+@click.command()
+@click.option('--filename', help='a file which want to into your mysql!')
+@click.option('--typename', help="a string for 'file' or 'db'")
+@click.option('--action', help="a string for 'create' or 'add'", default='add')
+@click.option('--db', help="a database name which you want to connection include 'locus' and 'func'")
+@click.option('--split', help="a string to field your file default '\t'", default='\t')
+def table2db(filename, typename, split, action, db):
+    if typename == 'db':
+        generateDB(db, filename, action, split)
+    else:
+        file2db(filename, typename, split)
 
 
 if __name__ == '__main__':
