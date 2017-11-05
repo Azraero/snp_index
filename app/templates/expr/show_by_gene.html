@@ -122,6 +122,7 @@ $(document).ready(function(){
                 'groupB': groupB}
     if(check_gene(info)){
       info = JSON.stringify(info);
+      $("#query_hint").empty();
       var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
       hint.appendTo('#query_hint');
       ajaxSend('/get_expr_info',{'info': info}, function(data){

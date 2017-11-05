@@ -114,7 +114,7 @@ $(document).ready(function(){
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
-        alert('没有找到相应的文件!');
+        alert('not find samples!');
         $("#multi_d").empty();
       }else{
         $("#multi_d").empty();
