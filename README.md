@@ -10,3 +10,12 @@ snp index 是一个使用 [ jquery](http://www.juery.com) + [bootstrap](http://w
 	- blast: 使用开源的 [ViroBLAST](https://els.comotion.uw.edu/licenses/1) 进行在线的 blast 分析;
 	- search locus identidier gene: 获得查询 gene 的基本信息表格;
 
+## 关于安装与运行
+首先保证已经正确安装 `python2.7.12` 或在其它 `python2.7` 的运行环境和 `pip` 安装工具,然后执行以下代码:
+```sh
+git clone https://www.github.com/jamebluntcc/snp_index.git
+pip install -r requirements.txt
+python manager.py runserver
+```
+
+
