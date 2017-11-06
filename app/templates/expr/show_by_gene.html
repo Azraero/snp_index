@@ -79,7 +79,7 @@ function check_gene(info){
   var keys = Object.keys(info);
   for(var i = 0; i < keys.length; i++){
     if(info[keys[i]].length == 0){
-      alert(keys[i] + ' is empty!');
+      createAlert(keys[i] + ' is empty!');
       return false;
     }
     return true;
@@ -93,7 +93,7 @@ $(document).ready(function(){
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
-        alert('not find samples!');
+        createAlert('not find samples!');
         $("#multi_d").empty();
       }else{
         $("#multi_d").empty();
@@ -127,7 +127,8 @@ $(document).ready(function(){
       hint.appendTo('#query_hint');
       ajaxSend('/get_expr_info',{'info': info}, function(data){
         if(data.msg != 'ok'){
-          alert(data.msg);
+          createAlert(data.msg);
+          $("#query_hint").empty();
           return;
         }else{
           $("#results-plot").empty();

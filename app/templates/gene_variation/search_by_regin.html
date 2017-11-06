@@ -190,7 +190,8 @@ $(document).ready(function(){
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
-        alert('not find samples!');
+        // alert('not find samples!');
+          createAlert('not find samples!');
         $("#multi_d").empty();
       }else{
         $("#multi_d").empty();
@@ -224,22 +225,24 @@ $(document).ready(function(){
     var info = get_input_data();
     var error_msg = check_input_data(info);
     if(error_msg.length > 0){
-      alert(error_msg);
+      // alert(error_msg);
+        createAlert(error_msg);
       return;
     }
     info = JSON.stringify(info);
-    //console.log(all_info);
+    $("#query_hint").empty();
     var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
     hint.appendTo('#query_hint');
     ajaxSend('/get_snp_info',{'info': info}, function(data){
       if(data.msg == 'error'){
-        alert(data.msg);
+        createAlert(data.msg);
+        $("#query_hint").empty();
         return;
       }else{
           //console.log(data.headData);
           //console.log(data.bodyData);
         $('#query_hint').empty();
-        tableStr = createTable(data.headData, data.bodyData);
+        tableStr = createTable(data.headData, data.bodyData, tableType='snp');
         $("#results-table").html(tableStr);
         $("#region_table").DataTable({
           dom: 'lBfrtip',

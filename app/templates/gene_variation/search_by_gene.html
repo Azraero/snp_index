@@ -95,15 +95,15 @@ function check_gene(info){
   var keys = Object.keys(info);
   for(var i = 0; i < keys.length; i++){
     if(info[keys[i]].length == 0){
-      alert(keys[i] + ' is empty!');
-      return false;
+        createAlert(keys[i] + ' is empty!');
+        return false;
     }
   }
   if(Number(info['gene_upstream']) > 2 || Number(info['gene_downstream'] > 2)){
-    alert('upstream & downstream not allowed > 2');
-    return false;
+      createAlert('upstream & downstream not allowed > 2');
+      return false;
   }else{
-    return true;
+      return true;
   }
 }
 $(document).ready(function(){
@@ -114,11 +114,11 @@ $(document).ready(function(){
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
-        alert('not find samples!');
-        $("#multi_d").empty();
+          createAlert('not find samples!');
+          $("#multi_d").empty();
       }else{
-        $("#multi_d").empty();
-        samples = data.msg;
+          $("#multi_d").empty();
+          samples = data.msg;
         for(var i=0;i<samples.length;i++){
           var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
           tmp.appendTo('#multi_d');
@@ -148,15 +148,18 @@ $(document).ready(function(){
                 'search': 'gene'}
     if(check_gene(info)){
       info = JSON.stringify(info);
+      $("#query_hint").empty();
       var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
       hint.appendTo('#query_hint');
       ajaxSend('/get_snp_info',{'info': info}, function(data){
         $('#query_hint').empty();
         if(data.msg != 'ok'){
-          alert(data.msg);
+          // alert(data.msg);
+            createAlert(data.msg);
+          $("#query_hint").empty();
           return;
         }else{
-          tableStr = createTable(data.headData, data.bodyData);
+          tableStr = createTable(data.headData, data.bodyData, tableType='snp');
           $("#results-table").html(tableStr);
           $("#region_table").DataTable({
             dom: 'lBfrtip',
