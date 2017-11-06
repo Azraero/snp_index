@@ -1,3 +1,10 @@
+.container-fluid{
+            background-color: #1c699d;
+}
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus{
+            background-color: #1c699d;
+            color: #ffffff;
+}
 #results_table>tbody>tr>td{
   text-align: center;
 }

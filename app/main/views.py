@@ -32,17 +32,20 @@ def search_by_gene():
 @main.route('/select_file', methods=['GET'])
 def select_file():
     filename = request.args.get('file', '')
-    if filename.split('_')[0] == 'snp':
-        fixed_column_num = 7
-    elif filename.split('_')[0] == 'expr':
-        fixed_column_num = 5
+    if filename:
+        if filename.split('_')[0] == 'snp':
+            fixed_column_num = 7
+        elif filename.split('_')[0] == 'expr':
+            fixed_column_num = 5
 
-    cmd = get_head_cmd.format(filename)
-    header = get_db_data(cmd)
-    if header[0]:
-        samples = [each[0] for each in header]
-        samples = samples[fixed_column_num:]
-        return jsonify({'msg': samples})
+        cmd = get_head_cmd.format(filename)
+        header = get_db_data(cmd)
+        if header[0]:
+            samples = [each[0] for each in header]
+            samples = samples[fixed_column_num:]
+            return jsonify({'msg': samples})
+        else:
+            return jsonify({'msg': 'error'})
     else:
         return jsonify({'msg': 'error'})
 

@@ -20,8 +20,18 @@ function ajaxSend(reqUest_url, post_data, callback, request_method, return_type,
     }
     $.ajax(params);
 }
-
-function createTable(headData, bodyData) {
+function createHref(gene) {
+     if(gene.split('-').length == 2){
+         gene_array = gene.split('-');
+         href_str1 = "<a target='_blank' href='/locus_identifier_search?gene=" + gene_array[0] + "'>" + gene_array[0] + "</a>";
+         href_str2 = "<a target='_blank' href='/locus_identifier_search?gene=" + gene_array[1] + "'>" + gene_array[1] + "</a>";
+         href_str = href_str1 + '\n' + href_str2;
+     }else{
+         href_str = "<a target='_blank' href='/locus_identifier_search?gene=" + gene + "'>" + gene + "</a>";
+     }
+     return href_str;
+}
+function createTable(headData, bodyData, tableType) {
   var htmlBuffer = [];
   htmlBuffer.push("<table id='region_table' class='table table-strip table-bordered'>");
   // for header
@@ -35,9 +45,17 @@ function createTable(headData, bodyData) {
   for(var i = 0; i < bodyData.length; i++){
     htmlBuffer.push("<tr>");
     for(var j = 0; j < bodyData[i].length; j++){
-      htmlBuffer.push("<td>" + bodyData[i][j] + "</td>");
+        if(j == 0 && tableType == 'expr'){
+            href_str = createHref(bodyData[i][j]);
+            htmlBuffer.push("<td>" + href_str + "</td>");
+        }else if(j == 5 && tableType == 'snp'){
+            href_str = createHref(bodyData[i][j]);
+            htmlBuffer.push("<td>" + href_str + "</td>");
+        }else{
+            htmlBuffer.push("<td>" + bodyData[i][j] + "</td>");
+        }
     }
-    htmlBuffer.push("</tr>");
+    htmlBuffer.push("</tr>")
   }
   htmlBuffer.push("</tbody>");
   htmlBuffer.push("</table>");
@@ -206,4 +224,12 @@ function createPlotData(groupA, groupB, data){
   }
   //console.log(plotInfo);
   return plotInfo;
+}
+
+function createAlert(msg) {
+    var alertStr = "<div class='alert alert-danger alert-dismissable'>" +
+        "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>" +
+        "&times;</button>" +
+        msg + "</div>";
+    $(alertStr).appendTo($('.myalert'));
 }
