@@ -11,10 +11,10 @@
     <title>show SNP Index1.12</title>
     <link href={{ url_for('static', filename='datatables/jquery.dataTables.min.css') }} rel="stylesheet">
     <link href={{ url_for('static', filename='css/jquery.dataTables.min.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet">
     <link href={{ url_for('static', filename='datatables/extensions/Buttons/css/buttons.dataTables.min.css') }} rel="stylesheet">
     <link href={{ url_for('static', filename='css/bootstrap.css') }} rel="stylesheet">
     <link href={{ url_for('static', filename='css/bootstrap-select.css') }} rel="stylesheet">
+    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet">
     <script type="text/javascript" src='/static/js/jquery.min.js'></script>
     <script type="text/javascript" src='/static/js/bootstrap.min.js'></script>
     <script type="text/javascript" src='/static/datatables/jquery.dataTables.min.js'></script>
@@ -69,8 +69,14 @@
 </nav>
 </div>
 <div class="container">
+    <div class="myalert"></div>
   {% block content %}
   {% endblock %}
+    <hr/>
+    <footer>
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2017 <a href="http://www.onmath.com">OnMath, Inc.</a> &middot; Privacy &middot; <a href="#">Terms</a></p>
+    </footer>
 </div>
 </body>
 {% block js %}
