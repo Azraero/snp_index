@@ -233,3 +233,22 @@ function createAlert(msg) {
         msg + "</div>";
     $(alertStr).appendTo($('.myalert'));
 }
+
+function createPlot(files) {
+    var textStr = "<div class='col-md-4'><h3>Snp Index Plot</h3>" +
+        "<p>snp index plot by divide groupA and groupB.</p></div>";
+    var plotStr = "<div class='col-md-8 albumSlider'>" +
+        "<div class='fullview'><img src='" + files[0] + "'></div>" +
+        "<div class='slider'><div class='button movebackward' title=''></div><div class='imglistwrap'>";
+
+    var liBuffer = [];
+    for(var i=1; i<files.length; i++){
+        liBuffer.push("<li><a href='" + files[i] +
+            "' class='snp-index' title='' rel='example_group3'><img src='" + files[i] +
+            "'></a></li>");
+    }
+    var liStr = liBuffer.join('\n');
+    plotStr = plotStr + "<ul class='imglist'>" + liStr + "</ul></div></div></div>";
+    var allStr = "<div class='row'>" + textStr + plotStr + "</div>";
+    return allStr;
+}
