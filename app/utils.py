@@ -1,10 +1,15 @@
 # coding=utf-8
 import os
+import glob
 import MySQLdb
 import subprocess
 from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD, \
     get_head_cmd
-from settings import SNP_INDEX_PATH, basedir
+from settings import basedir
+
+
+SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
+RENDER_PATH = '/static/snp_results'
 
 def get_db_data(cmd, fetchall=True):
     con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
@@ -94,10 +99,11 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
                 tmpList.append(cellB)
             mergeGroup.append(tmpList)
     if output:
-        if not os.path.exists(SNP_INDEX_PATH):
-            os.mkdir(SNP_INDEX_PATH)
+        group_dir = os.path.join(SNP_INDEX_PATH, '_'.join(filename.split('vs')))
+        if not os.path.exists(group_dir):
+            os.mkdir(group_dir)
 
-        with open(os.path.join(SNP_INDEX_PATH, filename), 'w+') as f:
+        with open(os.path.join(group_dir, filename), 'w+') as f:
             for head, each in zip(header_line, mergeGroup):
                 # print head
                 f.write('\t'.join(head + each) + '\n')
@@ -109,8 +115,8 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
 
 
 def calculate_table(cmd, groupA_len, groupB_len,
+                    filename,
                     output=False,
-                    filename='GroupAvsGroupB',
                     only_group=False):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
@@ -245,6 +251,7 @@ def get_locus_result(genename):
 add on 2017-11-08
 '''
 
+'''
 def run_snpplot_script(filepath):
     # run bash&R script for snp index
     # bash generate bed.out file
@@ -270,3 +277,30 @@ def run_snpplot_script(filepath):
                          close_fds=True)
     p.communicate()
     return 'done'
+'''
+
+'''
+add on 2017-11-10
+'''
+
+
+def get_select_group_info(select_group):
+    select_group_path = os.path.join(SNP_INDEX_PATH, select_group)
+    plot_files = glob.glob(select_group_path + '/*.png')
+    plot_files = [os.path.join(RENDER_PATH, select_group, each.rsplit('/', 1)[1]) for each in plot_files]
+    return plot_files
+
+
+def get_snp_info(rm_len=3):
+    cmd = 'show tables'
+    tables = get_db_data(cmd)
+    tables = [table[0] for table in tables if table[0].split('_')[0] == 'snp']
+    groups = os.listdir(SNP_INDEX_PATH)
+    # rm group dir when > 3
+    if len(groups) > rm_len:
+        rm_groups = groups[rm_len:]
+        for dir in rm_groups:
+            subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
+                                                             dir)))
+    return tables, groups
+
