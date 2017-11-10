@@ -12,21 +12,46 @@
         <h3 class="panel-title">Select a file. </h3>
     </div>
 <div class="panel-body">
-  <div class="row">
-    <div class="col-xs-6">
+<div class="row">
+<div class="col-xs-6">
         <div class="form-group">
         <div class="input-group input-group-sm">
             <span class="input-group-addon">File name:</span>
-            <select class="selectpicker" data-width="25%" name="file" id="select_file">
+            <select class="selectpicker" data-width="25%" name="file" id="select-file">
                         <option value= selected="selected"></option>
                         {% for file in files %}
                         <option value={{file}}>{{file}}</option>
                         {% endfor %}
             </select>
         </div>
+        <br>
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Compared groups:</span>
+            <select class="selectpicker" data-width="25%" name="chr" id="select-group">
+                        <option value= selected="selected"></option>
+                        {% for group in groups %}
+                        <option value={{ group }}>{{group }}</option>
+                        {% endfor %}
+            </select>
         </div>
+        </div>
+      </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupA Name:</span>
+            <input type="text" id="groupA-name" class="form-control input-group-sm"  name="groupA name" value="GroupA">
+        </div>
+        </div>
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupB Name:</span>
+            <input type="text" id="groupB-name" class="form-control input-group-sm"  name="groupB name" value="GroupB">
+        </div>
+        </div>
+      </div>
     </div>
-  </div>
+    </div>
 <!-- right -->
 <!--
 <div class="col-xs-8">
@@ -106,9 +131,11 @@
 <script src="/static/js/main.js"></script>
 <script>
 function get_input_data(){
-  var table = $("#select_file").find("option:selected").text();
+  var table = $("#select-file").find("option:selected").text();
   var groupA = [];
   var groupB = [];
+  var CustomGroupA = $("#groupA-name").val();
+  var CustomGroupB = $("#groupB-name").val();
   $("#multi_d_to option").each(function(){
     groupA.push($(this).text());
   });
@@ -119,7 +146,8 @@ function get_input_data(){
       'table': table,
       'groupA': groupA,
       'groupB': groupB,
-      'search': 'regin'
+      'customGroupA': CustomGroupA,
+      'customGroupB': CustomGroupB
   };
   return all_info;
 }
@@ -142,7 +170,7 @@ function check_input_data(info){
   return msg;
 }
 $(document).ready(function(){
-  $("#select_file").change(function(){
+  $("#select-file").change(function(){
     var fileSelect = $(this).find("option:selected").text();
     ajaxSend('/select_file', {'file': fileSelect}, function(data){
       var msg = data.msg;
@@ -157,6 +185,34 @@ $(document).ready(function(){
           var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
           tmp.appendTo('#multi_d');
         }
+      }
+    });
+  });
+    $("#select-group").change(function(){
+    var groupSelect = $(this).find("option:selected").text();
+    ajaxSend('/select_group', {'group': groupSelect}, function(data){
+      var msg = data.msg;
+      if(msg == 'error'){
+        // alert('not find samples!');
+          createAlert('you have not generated a divide group!');
+      }else{
+        $("#results-plot").empty();
+        var plotStr = createPlot(data.files, data.name);
+        $("#results-plot").html(plotStr);
+        $("a.snp-index").fancybox({
+        'overlayShow'	: true,
+        'transitionIn'	: 'elastic',
+        'transitionOut'	: 'elastic'
+        });
+        $("a[rel=example_group]").fancybox({
+        'transitionIn'		: 'none',
+        'transitionOut'		: 'none',
+        'titlePosition' 	: 'over',
+        'titleFormat'		: function(title, currentArray, currentIndex, currentOpts) {
+            return '<span id="fancybox-title-over">Image ' + (currentIndex + 1) + ' / ' + currentArray.length + (title.length ? ' &nbsp; ' + title : '') + '</span>';
+        }});
+        $("div.albumSlider").albumSlider();
+
       }
     });
   });
@@ -199,7 +255,7 @@ $(document).ready(function(){
           //console.log(data.headData);
           //console.log(data.bodyData);
         $('#query_hint').empty();
-        plotStr = createPlot(data.files);
+        plotStr = createPlot(data.files, data.name);
         $("#results-plot").html(plotStr);
         $("a.snp-index").fancybox({
         'overlayShow'	: true,
