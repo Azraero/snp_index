@@ -242,7 +242,7 @@ function createPlot(files, name) {
         "<div class='slider'><div class='button movebackward' title=''></div><div class='imglistwrap'>";
 
     var liBuffer = [];
-    for(var i=1; i<files.length; i++){
+    for(var i=0; i<files.length; i++){
         liBuffer.push("<li><a href='" + files[i] +
             "' class='snp-index' title='' rel='example_group3'><img src='" + files[i] +
             "'></a></li>");
