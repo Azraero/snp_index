@@ -18,4 +18,10 @@ pip install -r requirements.txt
 python manager.py runserver
 ```
 
+## Changelog
+1.23 (13/11/2017)
+- add snp index plot.
+
+
+
 
