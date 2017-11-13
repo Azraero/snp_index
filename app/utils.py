@@ -251,33 +251,22 @@ def get_locus_result(genename):
 add on 2017-11-08
 '''
 
-'''
-def run_snpplot_script(filepath):
+def run_snpplot_script(filepath, outdir):
     # run bash&R script for snp index
     # bash generate bed.out file
-    bedCmd = '. slider_windows.sh chr.size {0} &'.format(filepath)
-    p = subprocess.Popen(args=bedCmd,
-                         shell=True,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT,
-                         close_fds=True)
-    p.communicate()
-    # add if bed path exists
-    bed_path = os.path.join(SNP_INDEX_PATH, 'bed.out')
-    if not os.path.exists(bed_path):
-        return 'bedError'
-    Rcmd = 'Rscript {path} {bed_path}'.format(path=os.path.join(basedir,
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+    bedCmd = 'sh cmd.sh snp_w2m_s10k_.bed {0}'.format(filepath)
+    subprocess.call(args=bedCmd, shell=True)
+    Rcmd = 'Rscript {path} {bed_path} {outpath}'.format(path=os.path.join(basedir,
                                                                 'app',
                                                                 'snp_index_by_bed.R'),
-                                              bed_path=bed_path)
-    p = subprocess.Popen(args=Rcmd,
-                         shell=True,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT,
-                         close_fds=True)
-    p.communicate()
+                                                        bed_path=filepath + '.bed.out',
+                                                        outpath=outdir
+                                                        )
+    subprocess.call(args=Rcmd, shell=True)
+
     return 'done'
-'''
 
 '''
 add on 2017-11-10
@@ -285,9 +274,11 @@ add on 2017-11-10
 
 
 def get_select_group_info(select_group):
-    select_group_path = os.path.join(SNP_INDEX_PATH, select_group)
+    plot_path = 'vs'.join(select_group.split('_')) + '_plot'
+    select_group_path = os.path.join(SNP_INDEX_PATH, select_group, plot_path)
+    print select_group_path
     plot_files = glob.glob(select_group_path + '/*.png')
-    plot_files = [os.path.join(RENDER_PATH, select_group, each.rsplit('/', 1)[1]) for each in plot_files]
+    plot_files = [os.path.join(RENDER_PATH, select_group, plot_path, each.rsplit('/', 1)[1]) for each in plot_files]
     return plot_files
 
 
@@ -300,7 +291,11 @@ def get_snp_info(rm_len=3):
     if len(groups) > rm_len:
         rm_groups = groups[rm_len:]
         for dir in rm_groups:
-            subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
-                                                             dir)))
+            try:
+                subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
+                                                                dir)))
+            except:
+                pass
+
     return tables, groups
 

@@ -2,11 +2,14 @@
 import os
 import json
 from flask import render_template, request, jsonify
-from ..utils import get_db_data, get_cmd_by_regin, \
+from ..utils import run_snpplot_script, get_cmd_by_regin, \
     calculate_table, get_select_group_info, \
     get_snp_info
 from . import snp
+from settings import basedir
 
+SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
+RENDER_PATH = '/static/snp_results'
 
 @snp.route('/get_snp_plot')
 def get_snp_plot():
@@ -44,13 +47,26 @@ def generate_snp_plot():
                                                    output=True,
                                                    only_group=True
                                                    )
-
-        # msg = run_snpplot_script(filepath=os.path.join(SNP_INDEX_PATH, query_data))
+        msg = run_snpplot_script(filepath=os.path.join(SNP_INDEX_PATH,
+                                                       '_'.join([groupA_name, groupB_name]),
+                                                       query_data),
+                                 outdir=os.path.join(SNP_INDEX_PATH,
+                                                     '_'.join([groupA_name, groupB_name]),
+                                                     query_data + '_plot'))
+        files = os.listdir(os.path.join(SNP_INDEX_PATH,
+                                        '_'.join([groupA_name, groupB_name]),
+                                        query_data + '_plot'))
         # test frontend code:
         # snp_results = basedir
         # files = glob.glob( + '/*.png')
-        path = '/static/snp_results/GroupA_GroupB'
-        files = ['mhd_vs_whd_chr1A.png', 'mhd_vs_whd_chr1B.png', 'mhd_vs_whd_chr2A.png']
+        '''
+        files = ['mhd_vs_whd_chr3D.png', 'mhd_vs_whd_chr4A.png',
+                 'mhd_vs_whd_chr4B.png', 'mhd_vs_whd_chr4D.png']
+        '''
+        path = os.path.join(RENDER_PATH,
+                            '_'.join([groupA_name, groupB_name]),
+                            query_data + '_plot')
+
         return jsonify({'msg': query_data,
                         'name': 'vs'.join([groupA_name, groupB_name]),
                         'files': [os.path.join(path, each) for each in files]})
