@@ -4,8 +4,7 @@ from ..utils import get_db_data, calculate_table, \
                     get_cmd_by_gene, get_cmd_by_regin
 from . import main
 from ..db import get_head_cmd
-from flask import render_template, jsonify, \
-                  request, redirect, url_for
+from flask import render_template, jsonify, request
 
 
 @main.route('/search_by_regin')
@@ -68,11 +67,11 @@ def get_snp_info():
             start_pos = info['start_pos']
             end_pos = info['end_pos']
             cmd, groupA_len, groupB_len = get_cmd_by_regin(table,
-                                                           chrom,
-                                                           start_pos,
-                                                           end_pos,
                                                            groupA,
-                                                           groupB)
+                                                           groupB,
+                                                           chrom=chrom,
+                                                           start_pos=start_pos,
+                                                           end_pos=end_pos)
         else:
             gene_id = info['gene_name']
             gene_upstream = int(info['gene_upstream'])
