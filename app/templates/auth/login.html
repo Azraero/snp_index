@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'auth_base.html' %}
+
+{% block css %}
+<link href={{url_for('static', filename='css/login.css')}} rel="stylesheet">
+{% endblock %}
+
+{% block auth %}
+    <li><a href="{{url_for('auth.register')}}">register</a></li>
+{% endblock %}
+
+{% block content %}
+<form class="form-signin" action="">
+        <h2 class="form-signin-heading">sign in</h2>
+        <label class="sr-only">UserName</label>
+        <input id="username" class="form-control" placeholder="Username/Email" required>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="Password" required>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me
+          </label>
+        </div>
+        <button id="submit" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+</form>
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/main.js"></script>
+<script>
+  $(document).ready(function(){
+    $("#submit").click(function(event){
+      event.preventDefault();
+      var user = $("#username").val();
+      var password = $("#password").val();
+      if(user == '' || password == ''){
+        createAlert('user and password field required!')
+      }else{
+          var data = JSON.stringify({'user': user, 'password': password})
+          ajaxSend("{{ url_for('auth.login') }}",{'data': data},function(data){
+              var msg = data.msg;
+              if(msg == 'ok'){
+                   window.location.href = "{{ url_for('main.index') }}";
+              }else{
+                  createAlert(msg);
+              }
+          },'post');
+      }
+    });
+  });
+</script>
+{% endblock %}
