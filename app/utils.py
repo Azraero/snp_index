@@ -299,3 +299,23 @@ def get_snp_info(rm_len=3):
 
     return tables, groups
 
+'''
+add on 2017-11-28
+'''
+
+from flask import session, redirect, url_for
+from functools import wraps
+def login_require(views):
+    @wraps(views)
+    def wrapper(*args, **kwargs):
+        user = session.get('login_id', '')
+        if user:
+            return views(*args, **kwargs)
+        return redirect(url_for('auth.login'))
+    return wrapper
+
+
+
+
+
+
