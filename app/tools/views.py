@@ -3,10 +3,11 @@ import os
 import json
 from . import tools
 from flask import render_template, request
-from ..utils import get_locus_result
+from ..utils import get_locus_result, login_require
 
 
 @tools.route('/locus_identifier_search')
+@login_require
 def locus_identifier_search():
     if request.args.get('gene', ''):
         genename = request.args['gene']
