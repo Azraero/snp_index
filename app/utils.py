@@ -3,7 +3,7 @@ import os
 import glob
 import MySQLdb
 import subprocess
-from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD, \
+from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, \
     get_head_cmd
 from settings import basedir
 
@@ -12,7 +12,7 @@ SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
 
 def get_db_data(cmd, fetchall=True):
-    con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+    con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
     with con as cur:
         cur.execute(cmd)
         if fetchall:
