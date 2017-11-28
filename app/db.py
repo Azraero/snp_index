@@ -73,9 +73,13 @@ class DB(object):
 
 
 if __name__ == '__main__':
+    # test
     db = DB()
-    db.insert_all('haha', [{'NAME': 'chencheng'},
-                           {'NAME': 'lxgui'},
-                           {'NAME': 'liuhao'}])
+    db.insert_all('users', [{'username': 'chencheng',
+                             'password': '123',
+                             'email': '291552579@qq.com',
+                             'create_at': '2017-11-28 16:02',
+                             'is_active': 'Y',
+                             'is_admin': 'Y'}])
 
 
