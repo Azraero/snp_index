@@ -1,6 +1,6 @@
 # coding=utf-8
 from flask_script import Manager, Server
-from app import create_app
+from app.app import create_app
 
 app = create_app('default')
 manager = Manager(app)
