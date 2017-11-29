@@ -3,13 +3,13 @@ import os
 import glob
 import MySQLdb
 import subprocess
-from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, \
-    get_head_cmd
+from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD
 from settings import basedir
 
 
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
+
 
 def get_db_data(cmd, fetchall=True):
     con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
@@ -50,6 +50,7 @@ def get_group_data(groupList):
                 results.append([new_cell, str(first_ratio), str(second_ratio)])
     return results
 
+
 def get_only_group_data(groupList, groupLen):
     results = []
     for each in groupList:
@@ -74,6 +75,7 @@ def get_only_group_data(groupList, groupLen):
                 new_cell = ','.join([str(first_pos), str(second_pos)])
                 results.append(new_cell)
     return results
+
 
 def get_merge_group_data(group_info, groupALen, groupBLen,
                          output, filename, only_group):
@@ -314,7 +316,10 @@ def login_require(views):
         return redirect(url_for('auth.login'))
     return wrapper
 
-
+def get_db_tables(user, type):
+    cmd = 'show tables'
+    tables = get_db_data(cmd)
+    tables = [table[0] for table in tables if table[0].split('_')[0] == 'snp']
 
 
 

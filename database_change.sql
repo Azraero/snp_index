@@ -7,9 +7,14 @@ CREATE TABLE `users` (
   `create_at` DATETIME NOT NULL,
   `is_active` VARCHAR(1) DEFAULT 'N',
   `is_admin` VARCHAR(1) DEFAULT 'N',
+  `snp_table` VARCHAR(200) DEFAULT NULL,
+  `expr_table` VARCHAR(200) DEFAULT NULL,
+  `locus_table` VARCHAR(200) DEFAULT NULL,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+/*
 DROP TABLE IF EXISTS `link_table`;
 CREATE TABLE `link_table`(
   `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -19,3 +24,4 @@ CREATE TABLE `link_table`(
   `locus_table` VARCHAR(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+*/

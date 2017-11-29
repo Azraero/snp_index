@@ -73,11 +73,18 @@ class DB(object):
 if __name__ == '__main__':
     # test
     db = DB()
+    '''
     db.insert_all('users', [{'username': 'chencheng',
                              'password': '123',
                              'email': '291552579@qq.com',
                              'create_at': '2017-11-28 16:02',
                              'is_active': 'Y',
                              'is_admin': 'Y'}])
+    '''
+    db.insert_all('link_table',[{'user': 'chencheng',
+                                 'snp_table': 'mRNA_snp_table',
+                                 'expr_table': 'expr_gene_pos',
+                                 'locus_table': 'locus'}])
+
 
 
