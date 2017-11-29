@@ -115,7 +115,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
 
 
 def calculate_table(cmd, groupA_len, groupB_len,
-                    filename,
+                    filename='GroupAvsGroupB',
                     output=False,
                     only_group=False):
     header = ['CHR', 'POS', 'REF', 'ALT',
