@@ -108,3 +108,11 @@ datatables/extensions/
 
 # .idea
 .idea/*
+
+app/static/snp_results/
+
+# conf and uwsgi
+windows_x64
+uwsgi.ini
+snpIndex_nginx.conf
+viroblast

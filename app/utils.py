@@ -1,10 +1,18 @@
 # coding=utf-8
+import os
+import glob
 import MySQLdb
-from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD
+import subprocess
+from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, \
+    get_head_cmd
+from settings import basedir
 
+
+SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
+RENDER_PATH = '/static/snp_results'
 
 def get_db_data(cmd, fetchall=True):
-    con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+    con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
     with con as cur:
         cur.execute(cmd)
         if fetchall:
@@ -42,27 +50,74 @@ def get_group_data(groupList):
                 results.append([new_cell, str(first_ratio), str(second_ratio)])
     return results
 
-
-def get_merge_group_data(group_info, groupALen, groupBLen):
+def get_only_group_data(groupList, groupLen):
     results = []
-    header_line = [list(each[:6]) for each in group_info]
-    groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
-    groupBList = [list(each[(groupBLen+6):]) for each in group_info]
-    mergeGroupA = get_group_data(groupAList)
-    mergeGroupB = get_group_data(groupBList)
-    mergeGroup = []
-    for ListA, ListB in zip(mergeGroupA, mergeGroupB):
-        tmpList = []
-        for cellA, cellB in zip(ListA, ListB):
-            tmpList.append(cellA)
-            tmpList.append(cellB)
-        mergeGroup.append(tmpList)
-    for head, each in zip(header_line, mergeGroup):
-        results.append(head + each)
+    for each in groupList:
+        filter_cell = [cell for cell in each if cell != '0' and cell != '0,0' and cell != '0,0,0' and cell != '.']
+        if len(filter_cell) == 0:
+            results.append('0,0')
+        else:
+            # deal three comma numbers
+            for i in range(len(filter_cell)):
+                tmpList = filter_cell[i].split(',')
+                if len(tmpList) == 3:
+                    maxOne = max([int(cell) for cell in tmpList])
+                    minOne = min([int(cell) for cell in tmpList])
+                    filter_cell[i] = ','.join([str(maxOne), str(minOne)])
+
+            first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell]) / groupLen
+            second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell]) / groupLen
+            # other condition
+            if first_pos + second_pos == 0:
+                results.append('0,0')
+            else:
+                new_cell = ','.join([str(first_pos), str(second_pos)])
+                results.append(new_cell)
     return results
 
+def get_merge_group_data(group_info, groupALen, groupBLen,
+                         output, filename, only_group):
+    results = []
+    groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
+    groupBList = [list(each[(groupBLen+6):]) for each in group_info]
+    if only_group:
+        header_line = [list(each[:2]) + ['1'] for each in group_info]
+        mergeGroupA = get_only_group_data(groupAList, groupALen)
+        mergeGroupB = get_only_group_data(groupBList, groupBLen)
+        mergeGroup = []
+        for eachA, eachB in zip(mergeGroupA, mergeGroupB):
+            mergeGroup.append(eachA.split(',') + eachB.split(','))
+    else:
+        header_line = [list(each[:6]) for each in group_info]
+        mergeGroupA = get_group_data(groupAList)
+        mergeGroupB = get_group_data(groupBList)
+        mergeGroup = []
+        for ListA, ListB in zip(mergeGroupA, mergeGroupB):
+            tmpList = []
+            for cellA, cellB in zip(ListA, ListB):
+                tmpList.append(cellA)
+                tmpList.append(cellB)
+            mergeGroup.append(tmpList)
+    if output:
+        group_dir = os.path.join(SNP_INDEX_PATH, '_'.join(filename.split('vs')))
+        if not os.path.exists(group_dir):
+            os.mkdir(group_dir)
 
-def calculate_table(cmd, groupA_len, groupB_len):
+        with open(os.path.join(group_dir, filename), 'w+') as f:
+            for head, each in zip(header_line, mergeGroup):
+                # print head
+                f.write('\t'.join(head + each) + '\n')
+        return filename
+    else:
+        for head, each in zip(header_line, mergeGroup):
+            results.append(head + each)
+        return results
+
+
+def calculate_table(cmd, groupA_len, groupB_len,
+                    filename,
+                    output=False,
+                    only_group=False):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB',
@@ -70,8 +125,13 @@ def calculate_table(cmd, groupA_len, groupB_len):
               'GroupB Frequency Primary Allele',
               'GroupA Frequency Second Allele',
               'GroupB Frequency Second Allele']
-    results = get_merge_group_data(get_db_data(cmd), groupA_len, groupB_len)
-    return (header, results)
+    results = get_merge_group_data(get_db_data(cmd),
+                                   groupA_len,
+                                   groupB_len,
+                                   output,
+                                   filename,
+                                   only_group)
+    return header, results
 
 
 '''
@@ -79,18 +139,25 @@ add on 2017-10-26
 '''
 
 
-def get_cmd_by_regin(table, chrom, start_pos, end_pos, groupA, groupB):
+def get_cmd_by_regin(table, groupA, groupB, get_all=False, chrom='', start_pos='', end_pos=''):
     select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
-    get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and \
-    POS <= {end_pos} and CHR='{chrom}';"
     select_columns_str = ','.join(select_columns)
-    cmd = get_group_cmd.format(
-        columns=select_columns_str,
-        table=table,
-        start_pos=int(start_pos),
-        end_pos=int(end_pos),
-        chrom=chrom)
-    return (cmd, len(groupA), len(groupB))
+    if get_all:
+        get_group_cmd = "select {columns} from {table};"
+        cmd = get_group_cmd.format(
+            columns=select_columns_str,
+            table=table
+        )
+    else:
+        get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and \
+                         POS <= {end_pos} and CHR='{chrom}';"
+        cmd = get_group_cmd.format(
+            columns=select_columns_str,
+            table=table,
+            start_pos=int(start_pos),
+            end_pos=int(end_pos),
+            chrom=chrom)
+    return cmd, len(groupA), len(groupB)
 
 
 def get_cmd_by_gene(table, gene_id, up, down, groupA, groupB):
@@ -178,3 +245,77 @@ def get_locus_result(genename):
         locus_result['gene_annotation']['header'] = header
         locus_result['gene_annotation']['body'] = [blast_hit, description, pfam_id, interpro_id, go_id]
     return locus_result
+
+
+'''
+add on 2017-11-08
+'''
+
+def run_snpplot_script(filepath, outdir):
+    # run bash&R script for snp index
+    # bash generate bed.out file
+    if not os.path.exists(outdir):
+        os.mkdir(outdir)
+    bedCmd = 'sh cmd.sh snp_w2m_s10k_.bed {0}'.format(filepath)
+    subprocess.call(args=bedCmd, shell=True)
+    Rcmd = 'Rscript {path} {bed_path} {outpath}'.format(path=os.path.join(basedir,
+                                                                'app',
+                                                                'snp_index_by_bed.R'),
+                                                        bed_path=filepath + '.bed.out',
+                                                        outpath=outdir
+                                                        )
+    subprocess.call(args=Rcmd, shell=True)
+
+    return 'done'
+
+'''
+add on 2017-11-10
+'''
+
+
+def get_select_group_info(select_group):
+    plot_path = 'vs'.join(select_group.split('_')) + '_plot'
+    select_group_path = os.path.join(SNP_INDEX_PATH, select_group, plot_path)
+    print select_group_path
+    plot_files = glob.glob(select_group_path + '/*.png')
+    plot_files = [os.path.join(RENDER_PATH, select_group, plot_path, each.rsplit('/', 1)[1]) for each in plot_files]
+    return plot_files
+
+
+def get_snp_info(rm_len=3):
+    cmd = 'show tables'
+    tables = get_db_data(cmd)
+    tables = [table[0] for table in tables if table[0].split('_')[0] == 'snp']
+    groups = os.listdir(SNP_INDEX_PATH)
+    # rm group dir when > 3
+    if len(groups) > rm_len:
+        rm_groups = groups[rm_len:]
+        for dir in rm_groups:
+            try:
+                subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
+                                                                dir)))
+            except:
+                pass
+
+    return tables, groups
+
+'''
+add on 2017-11-28
+'''
+
+from flask import session, redirect, url_for
+from functools import wraps
+def login_require(views):
+    @wraps(views)
+    def wrapper(*args, **kwargs):
+        user = session.get('login_id', '')
+        if user:
+            return views(*args, **kwargs)
+        return redirect(url_for('auth.login'))
+    return wrapper
+
+
+
+
+
+

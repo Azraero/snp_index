@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>snp index</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href={{ url_for('static', filename='css/bootstrap.css') }} rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href={{ url_for('static', filename='css/auth_base.css') }} rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    {% block css %}
+    {% endblock %}
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">snp index</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+               <li class="active"><a href="{{url_for('main.index')}}">Home</a></li>
+              {% block auth %}
+              {% endblock %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href='http://www.onmath.com'>Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </nav>
+
+    <div class="container">
+     <div class="myalert"></div>
+      {% block content %}
+      {% endblock %}
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src={{ url_for('static', filename='js/jquery.min.js') }}></script>
+    <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
+    {% block script %}
+    {% endblock %}
+  </body>
+</html>
