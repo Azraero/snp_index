@@ -1,6 +1,6 @@
 from app.db import DB
 from datetime import datetime
-get_user_cmd = "select username from users where username='{0}'"
+get_user_cmd = "select username from users where username='{0}' or email='{0}'"
 get_passwd_cmd = "select password from users where username='{0}' or email='{0}'"
 
 
@@ -13,8 +13,7 @@ def check_login(form_data):
         result = db.execute(get_passwd_cmd.format(user), get_all=False)
         if result[0] == passwd:
             return True, 'ok'
-        else:
-            return False, 'password error'
+        return False, 'password error'
     return False, 'user not found!'
 
 def save_register(form_data):
