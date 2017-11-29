@@ -1,13 +1,14 @@
 # coding=utf-8
 import json
 from ..utils import get_db_data, calculate_table, \
-                    get_cmd_by_gene, get_cmd_by_regin
+                    get_cmd_by_gene, get_cmd_by_regin, login_require
 from . import main
-from ..db import get_head_cmd
-from flask import render_template, jsonify, request
+from ..db_const import get_head_cmd
+from flask import render_template, jsonify, request, session
 
 
 @main.route('/search_by_regin')
+@login_require
 def search_by_regin():
     cmd = 'show tables'
     tables = get_db_data(cmd)
@@ -17,10 +18,12 @@ def search_by_regin():
 
 @main.route('/')
 def index():
-    return render_template('snp_index_cover.html')
+    user = session.get('login_id', '')
+    return render_template('snp_index_cover.html', user=user)
 
 
 @main.route('/search_by_gene')
+@login_require
 def search_by_gene():
     cmd = 'show tables'
     tables = get_db_data(cmd)

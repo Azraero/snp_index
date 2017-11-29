@@ -108,3 +108,5 @@ datatables/extensions/
 
 # .idea
 .idea/*
+
+app/static/snp_results/

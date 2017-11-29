@@ -2,7 +2,7 @@
 import sys
 import click
 import MySQLdb
-from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD, table_info
+from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, table_info
 from utils import get_db_data
 
 def deal_cell(cell):
@@ -28,7 +28,7 @@ def generateDB(db, filename, action, split, add_key=True):
                 add_key_str = table_info[db]['add_key_str']
             else:
                 add_key_str = ''
-            con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+            con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
             with con as cur:
                 if action == 'create':
                     cmd = 'drop table if exists {}'.format(db)
@@ -84,7 +84,7 @@ def file2db(filename, typename, split, add_key=True):
                 add_key_str = table_info[typename]['add_key_str']
             else:
                 add_key_str = ''
-            con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+            con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
             with con as cur:
                 cmd = 'drop table if exists {}'.format(tableName)
                 cur.execute(cmd)

@@ -3,9 +3,10 @@ from ..utils import get_expr_table, get_db_data
 import re
 import json
 from . import expr
-
+from ..utils import login_require
 
 @expr.route('/show_by_gene')
+@login_require
 def show_by_gene():
     cmd = 'show tables'
     tables = get_db_data(cmd)

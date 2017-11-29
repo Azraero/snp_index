@@ -3,7 +3,7 @@ import os
 import glob
 import MySQLdb
 import subprocess
-from db import DATABASE, HOSTBNAME, USERNAME, PASSWORD, \
+from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, \
     get_head_cmd
 from settings import basedir
 
@@ -12,7 +12,7 @@ SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
 
 def get_db_data(cmd, fetchall=True):
-    con = MySQLdb.connect(HOSTBNAME, USERNAME, PASSWORD, DATABASE)
+    con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
     with con as cur:
         cur.execute(cmd)
         if fetchall:
@@ -298,4 +298,24 @@ def get_snp_info(rm_len=3):
                 pass
 
     return tables, groups
+
+'''
+add on 2017-11-28
+'''
+
+from flask import session, redirect, url_for
+from functools import wraps
+def login_require(views):
+    @wraps(views)
+    def wrapper(*args, **kwargs):
+        user = session.get('login_id', '')
+        if user:
+            return views(*args, **kwargs)
+        return redirect(url_for('auth.login'))
+    return wrapper
+
+
+
+
+
 

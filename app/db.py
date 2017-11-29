@@ -1,80 +1,85 @@
-import os
 
-HOSTBNAME = 'localhost'
-DATABASE = 'snp_index'
-USERNAME = os.environ.get('USERNAME', 'jamebluntcc')
-PASSWORD = os.environ.get('PASSWORD', '050400')
-DB_URI = 'mysql://{}:{}@{}/{}'.format(
-    USERNAME, PASSWORD, HOSTBNAME, DATABASE)
-
-get_head_cmd = """
-    select column_name from information_schema.columns
-    where table_schema='snp_index' and table_name='{}';
-    """
-get_unique_cmd = "select distinct() from {};"
-
-create_expr_cmd = """
-                  create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
-                                  GENE_ID VARCHAR(20),
-                                  CHR VARCHAR(5),
-                                  POS_START VARCHAR(50),
-                                  POS_END VARCHAR(50),
-                  """
+# coding:utf-8
+from MySQLdb import connect
+from db_const import HOSTNAME, USERNAME, PASSWORD, DATABASE
 
 
-create_snp_cmd = """
-                   create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
-                                   CHR VARCHAR(5),
-                                   POS VARCHAR(50),
-                                   REF VARCHAR(10),
-                                   ALT VARCHAR(10),
-                                   FEATURE VARCHAR(50),
-                                   GENE VARCHAR(100),
-                   """
+class DB(object):
+    def __init__(self,
+                 username=USERNAME,
+                 passwd=PASSWORD,
+                 hostname=HOSTNAME,
+                 db=DATABASE):
+        self._con = connect(hostname, username, passwd, db)
 
-create_locus_cmd = """
-                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
-                                    GENE_ID VARCHAR(20),
-                                    CHR VARCHAR(5),
-                                    POS_START VARCHAR(50),
-                                    POS_END VARCHAR(50)                               
-"""
+    @staticmethod
+    def Dict2Str(Dict):
+        header = Dict.keys()
+        # insert data must be include ''
+        body = ['"' + str(Dict[key]) + '"' for key in header]
+        return header, body
 
-create_func_cmd = """
-                    create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
-                                    GENE_ID VARCHAR(20),
-                                    BLAST_Hit_Accession VARCHAR(200),
-                                    Description VARCHAR(200),
-                                    Pfam_ID LONGTEXT,
-                                    Interpro_ID LONGTEXT,
-                                    GO_ID LONGTEXT
-"""
-create_group_cmd = """
-                   create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
-                                   SAMPLE VARCHAR(20),
-                                   DESCRIPTION VARCHAR(100),
-                   """
+    def execute(self, cmd, get_all=True):
+        with self._con as cur:
+            cur.execute(cmd)
+            if get_all:
+                return cur.fetchall()
+            else:
+                return cur.fetchone()
 
-snp_table_info = {'cmd': create_snp_cmd,
-                  'fixed_column_num': 6,
-                  'fixed_column_name': ('CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'),
-                  'add_key_str': ',key chrindex (CHR), key posindex (POS)'}
+    def insert(self, table, Dict):
+        header, body = self.Dict2Str(Dict)
+        with self._con as cur:
+            cmd = "insert into {table} ({head}) VALUES ({val});".format(
+                table=table,
+                head=','.join(header),
+                val=','.join(body)
+            )
+            cur.execute(cmd)
 
-expr_table_info = {'cmd': create_expr_cmd,
-                   'fixed_column_num': 4,
-                   'fixed_column_name': ('GENE_ID', 'CHR', 'POS_START', 'POS_END'),
-                   'add_key_str': ',key geneindex (GENE_ID)'}
+    def insert_all(self, table, Dict_list):
+        cmd = "insert into {table} ({head}) VALUES ({val});"
+        with self._con as cur:
+            for each in Dict_list:
+                header, body = self.Dict2Str(each)
+                cur.execute(cmd.format(
+                    table=table,
+                    head=','.join(header),
+                    val=','.join(body)
+                ))
 
-locus_table_info = {'cmd': create_locus_cmd,
-                    'header': ('GENE_ID', 'CHR', 'POS_START', 'POS_END'),
-                    'add_key_str': ',key geneindex (GENE_ID)'}
+    def update(self, table, Dict, condDict):
+        header, body = self.Dict2Str(Dict)
+        updateList = []
+        for head, val in zip(header, body):
+            updateList.append('='.join([head, val]))
+        with self._con as cur:
+            cmd = "update {table} set {update} WHERE {key}='{value}';".format(
+                table=table,
+                update=','.join(updateList),
+                key=condDict.keys()[0],
+                value=condDict.values()[0]
+            )
+            cur.execute(cmd)
 
-func_table_info = {'cmd': create_func_cmd,
-                   'header': ('GENE_ID', 'BLAST_Hit_Accession', 'Description',
-                              'Pfam_ID', 'Interpro_ID', 'GO_ID'),
-                   'add_key_str': ',key geneindex (GENE_ID)'}
+    def delete(self, table, condDict):
+        with self._con as cur:
+            cmd = "delete from {table} WHERE {key}='{value}';".format(
+                table=table,
+                key=condDict.keys()[0],
+                value=condDict.values()[0]
+            )
+            cur.execute(cmd)
 
-table_info = {'snp': snp_table_info,
-              'expr': expr_table_info,
-              'func': func_table_info,
-              'locus': locus_table_info}
+
+if __name__ == '__main__':
+    # test
+    db = DB()
+    db.insert_all('users', [{'username': 'chencheng',
+                             'password': '123',
+                             'email': '291552579@qq.com',
+                             'create_at': '2017-11-28 16:02',
+                             'is_active': 'Y',
+                             'is_admin': 'Y'}])
+
+
