@@ -2,13 +2,14 @@
 from MySQLdb import connect
 from db_const import HOSTNAME, USERNAME, PASSWORD, DATABASE
 
+
 class DB(object):
     def __init__(self,
                  username=USERNAME,
                  passwd=PASSWORD,
                  hostname=HOSTNAME,
                  db=DATABASE):
-        self._con = connect(hostname, username, passwd, db)
+        self._con = connect(hostname, username, passwd, db, charset='utf8')
 
     @staticmethod
     def Dict2Str(Dict):
@@ -40,11 +41,6 @@ class DB(object):
         with self._con as cur:
             for each in Dict_list:
                 header, body = self.Dict2Str(each)
-                insert_cmd = cmd.format(
-                    table=table,
-                    head=u','.join(header).encode('utf-8'),
-                    val=u','.join(body).encode('utf-8'))
-                print insert_cmd
                 cur.execute(cmd.format(
                     table=table,
                     head=u','.join(header).encode('utf-8'),
@@ -60,8 +56,8 @@ class DB(object):
             cmd = "update {table} set {update} WHERE {key}='{value}';".format(
                 table=table,
                 update=u','.join(updateList).encode('utf-8'),
-                key=condDict.keys()[0],
-                value=condDict.values()[0]
+                key=condDict.keys()[0].encode('utf-8'),
+                value=condDict.values()[0].encode('utf-8')
             )
             cur.execute(cmd)
 
@@ -69,15 +65,16 @@ class DB(object):
         with self._con as cur:
             cmd = "delete from {table} WHERE {key}='{value}';".format(
                 table=table,
-                key=condDict.keys()[0],
-                value=condDict.values()[0]
+                key=condDict.keys()[0].encode('utf-8'),
+                value=condDict.values()[0].encode('utf-8')
             )
             cur.execute(cmd)
 
 
 if __name__ == '__main__':
-    # test
+    # test code
     db = DB()
+    db.execute('delete from users where id is not null')
     db.insert_all('users', [{'username': 'chencheng',
                              'password': '123',
                              'email': '291552579@qq.com',
@@ -92,6 +89,15 @@ if __name__ == '__main__':
                              'snp_table': 'snp_mRNA_table',
                              'expr_table': 'expr_gene_pos',
                              'desc_table': 'locus_gene_mlocus'}])
+
+    # db.delete('users', {'username': u'佳绩正'})
+
+    # db.update('users', {'snp_table': 'snp_mRNA_table:mRNA_table'}, {'username': u'佳绩正'})
+
+    # results = db.execute('select * from users')
+    # print results
+
+
 
 
 
