@@ -1,7 +1,7 @@
 # coding:utf-8
 import json
 from . import auth
-from .action import check_login, save_register
+from .actions import check_login, save_register
 from flask import session, render_template, \
     request, redirect, url_for, jsonify
 
