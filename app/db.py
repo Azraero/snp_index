@@ -40,6 +40,11 @@ class DB(object):
         with self._con as cur:
             for each in Dict_list:
                 header, body = self.Dict2Str(each)
+                insert_cmd = cmd.format(
+                    table=table,
+                    head=u','.join(header).encode('utf-8'),
+                    val=u','.join(body).encode('utf-8'))
+                print insert_cmd
                 cur.execute(cmd.format(
                     table=table,
                     head=u','.join(header).encode('utf-8'),
