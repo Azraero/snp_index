@@ -14,7 +14,7 @@ class DB(object):
     def Dict2Str(Dict):
         header = Dict.keys()
         # insert data must be include ''
-        body = ['"' + str(Dict[key]) + '"' for key in header]
+        body = ['"' + Dict[key] + '"' for key in header]
         return header, body
 
     def execute(self, cmd, get_all=True):
@@ -30,8 +30,8 @@ class DB(object):
         with self._con as cur:
             cmd = "insert into {table} ({head}) VALUES ({val});".format(
                 table=table,
-                head=','.join(header),
-                val=','.join(body)
+                head=u','.join(header).encode('utf-8'),
+                val=u','.join(body).encode('utf-8')
             )
             cur.execute(cmd)
 
@@ -42,19 +42,19 @@ class DB(object):
                 header, body = self.Dict2Str(each)
                 cur.execute(cmd.format(
                     table=table,
-                    head=','.join(header),
-                    val=','.join(body)
+                    head=u','.join(header).encode('utf-8'),
+                    val=u','.join(body).encode('utf-8')
                 ))
 
     def update(self, table, Dict, condDict):
         header, body = self.Dict2Str(Dict)
         updateList = []
         for head, val in zip(header, body):
-            updateList.append('='.join([head, val]))
+            updateList.append(u'='.join([head, val]).encode('utf-8'))
         with self._con as cur:
             cmd = "update {table} set {update} WHERE {key}='{value}';".format(
                 table=table,
-                update=','.join(updateList),
+                update=u','.join(updateList).encode('utf-8'),
                 key=condDict.keys()[0],
                 value=condDict.values()[0]
             )
@@ -73,18 +73,21 @@ class DB(object):
 if __name__ == '__main__':
     # test
     db = DB()
-    '''
     db.insert_all('users', [{'username': 'chencheng',
                              'password': '123',
                              'email': '291552579@qq.com',
                              'create_at': '2017-11-28 16:02',
                              'is_active': 'Y',
-                             'is_admin': 'Y'}])
-    '''
-    db.insert_all('link_table',[{'user': 'chencheng',
-                                 'snp_table': 'mRNA_snp_table',
-                                 'expr_table': 'expr_gene_pos',
-                                 'locus_table': 'locus'}])
+                             'is_admin': 'Y'},
+                            {'username': u'佳绩正',
+                             'password': '123',
+                             'email': 'jiajizhen@test.com',
+                             'create_at': '2017-11-30 11:38',
+                             'is_active': 'Y',
+                             'snp_table': 'snp_mRNA_table',
+                             'expr_table': 'expr_gene_pos',
+                             'desc_table': 'locus_gene_mlocus'}])
+
 
 
 
