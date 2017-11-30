@@ -30,9 +30,6 @@
   <div class="row">
     <div class="col-xs-5">
         <select name="from[]" id="multi_d" class="form-control" size="26" multiple="multiple">
-          {% for sample in samples %}
-          <option value="{{ sample }}">{{ sample }}</option>
-          {% endfor %}
         </select>
     </div>
 
@@ -90,7 +87,7 @@ $(document).ready(function(){
   select_plugin()
   $("#select_file").change(function(){
     var fileSelect = $(this).find("option:selected").text();
-    ajaxSend('/select_file', {'file': fileSelect}, function(data){
+    ajaxSend('{{ url_for('expr.select_file_by_expr') }}', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
         createAlert('not find samples!');
@@ -125,7 +122,7 @@ $(document).ready(function(){
       $("#query_hint").empty();
       var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力查询，请稍等...</span>');
       hint.appendTo('#query_hint');
-      ajaxSend('/get_expr_info',{'info': info}, function(data){
+      ajaxSend('{{ url_for('expr.get_expr_info') }}',{'info': info}, function(data){
         if(data.msg != 'ok'){
           createAlert(data.msg);
           $("#query_hint").empty();
