@@ -12,7 +12,9 @@ def create_app(config_name):
     from .expr import expr as expr_blueprint
     from .snp import snp as snp_blueprint
     from .auth import auth as auth_blueprint
+    from .variation import variation as variation_blueprint
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(variation_blueprint)
     app.register_blueprint(tools_blueprint)
     app.register_blueprint(expr_blueprint)
     app.register_blueprint(snp_blueprint)
