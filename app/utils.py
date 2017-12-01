@@ -1,11 +1,10 @@
 # coding=utf-8
 import os
-import glob
 import MySQLdb
 import subprocess
-from db_const import get_head_cmd, HOSTNAME, USERNAME, PASSWORD, DATABASE
-from settings import basedir
 from .db import DB
+from .db_const import get_head_cmd, HOSTNAME, USERNAME, PASSWORD, DATABASE
+from settings import basedir
 
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
@@ -83,7 +82,7 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
     groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     if only_group:
-        header_line = [list(each[:2]) + ['1'] for each in group_info]
+        header_line = [list(each[:2]) for each in group_info]
         mergeGroupA = get_only_group_data(groupAList, groupALen)
         mergeGroupB = get_only_group_data(groupBList, groupBLen)
         mergeGroup = []
@@ -107,7 +106,6 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
 
         with open(os.path.join(group_dir, filename), 'w+') as f:
             for head, each in zip(header_line, mergeGroup):
-                # print head
                 f.write('\t'.join(head + each) + '\n')
         return filename
     else:
@@ -219,64 +217,10 @@ def get_region_by_gene(table, gene_id):
     else:
         return ('', '', '')
 
-'''
-add on 2017-11-08
-'''
-
-def run_snpplot_script(filepath, outdir):
-    # run bash&R script for snp index
-    # bash generate bed.out file
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-    bedCmd = 'sh cmd.sh snp_w2m_s10k_.bed {0}'.format(filepath)
-    subprocess.call(args=bedCmd, shell=True)
-    Rcmd = 'Rscript {path} {bed_path} {outpath}'.format(path=os.path.join(basedir,
-                                                                'app',
-                                                                'snp_index_by_bed.R'),
-                                                        bed_path=filepath + '.bed.out',
-                                                        outpath=outdir
-                                                        )
-    subprocess.call(args=Rcmd, shell=True)
-
-    return 'done'
-
-'''
-add on 2017-11-10
-'''
-
-
-def get_select_group_info(select_group):
-    plot_path = 'vs'.join(select_group.split('_')) + '_plot'
-    select_group_path = os.path.join(SNP_INDEX_PATH, select_group, plot_path)
-    print select_group_path
-    plot_files = glob.glob(select_group_path + '/*.png')
-    plot_files = [os.path.join(RENDER_PATH, select_group, plot_path, each.rsplit('/', 1)[1]) for each in plot_files]
-    return plot_files
-
-
-def get_snp_info(rm_len=3):
-    cmd = 'show tables'
-    tables = get_db_data(cmd)
-    tables = [table[0] for table in tables if table[0].split('_')[0] == 'snp']
-    groups = os.listdir(SNP_INDEX_PATH)
-    # rm group dir when > 3
-    if len(groups) > rm_len:
-        rm_groups = groups[rm_len:]
-        for dir in rm_groups:
-            try:
-                subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
-                                                                dir)))
-            except:
-                pass
-
-    return tables, groups
-
-'''
-add on 2017-11-28
-'''
 
 from flask import session, redirect, url_for
 from functools import wraps
+
 def login_require(views):
     @wraps(views)
     def wrapper(*args, **kwargs):
@@ -291,10 +235,9 @@ def get_db_tables(user, type):
     db = DB()
     get_table_cmd = "select {table} from users where username='{user}'"
     result = db.execute(get_table_cmd.format(table=type + '_table', user=user.encode('utf-8')))
-    if not result:
+    if not result[0][0]:
         return []
     else:
-        print result
         tables = result[0][0].split(':')
         return tables
 
@@ -312,7 +255,3 @@ def get_samples_by_table(table, type):
     header = db.execute(cmd)
     samples = [each[0] for each in header][fixed_column_num:]
     return samples
-
-
-
-
