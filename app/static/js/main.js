@@ -23,11 +23,11 @@ function ajaxSend(reqUest_url, post_data, callback, request_method, return_type,
 function createHref(gene) {
      if(gene.split('-').length == 2){
          gene_array = gene.split('-');
-         href_str1 = "<a target='_blank' href='/locus_identifier_search?gene=" + gene_array[0] + "'>" + gene_array[0] + "</a>";
-         href_str2 = "<a target='_blank' href='/locus_identifier_search?gene=" + gene_array[1] + "'>" + gene_array[1] + "</a>";
+         href_str1 = "<a target='_blank' href='/tools/locus_identifier_search?gene=" + gene_array[0] + "'>" + gene_array[0] + "</a>";
+         href_str2 = "<a target='_blank' href='/tools/locus_identifier_search?gene=" + gene_array[1] + "'>" + gene_array[1] + "</a>";
          href_str = href_str1 + '\n' + href_str2;
      }else{
-         href_str = "<a target='_blank' href='/locus_identifier_search?gene=" + gene + "'>" + gene + "</a>";
+         href_str = "<a target='_blank' href='/tools/locus_identifier_search?gene=" + gene + "'>" + gene + "</a>";
      }
      return href_str;
 }
