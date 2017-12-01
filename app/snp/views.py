@@ -6,7 +6,7 @@ from app.utils import get_cmd_by_regin, calculate_table, get_samples_by_table
 from .actions import get_select_group_info, get_snp_info, run_snpplot_script
 from . import snp
 from settings import basedir
-
+import glob
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
 
@@ -68,11 +68,8 @@ def generate_snp_plot():
                                  outdir=os.path.join(SNP_INDEX_PATH,
                                                      '_'.join([groupA_name, groupB_name]),
                                                      query_data + '_plot'))
-        
-        files = os.listdir(os.path.join(SNP_INDEX_PATH,
-                                        '_'.join([groupA_name, groupB_name]),
-                                        query_data + '_plot'))
-
+        files = glob.glob(os.path.join(SNP_INDEX_PATH, '_'.join([groupA_name, groupB_name]), query_data + '_plot') + '/*png')
+        files_short = [each.rsplit('/', 1)[1] for each in files]
         '''
         # test frontend code:
         # snp_results = basedir
@@ -87,4 +84,4 @@ def generate_snp_plot():
 
         return jsonify({'msg': query_data,
                         'name': 'vs'.join([groupA_name, groupB_name]),
-                        'files': [os.path.join(path, each) for each in files]})
+                        'files': [os.path.join(path, each) for each in files_short]})
