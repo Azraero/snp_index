@@ -32,9 +32,9 @@ def run_snpplot_script(filepath, outdir):
     # run bash&R script for snp index
     if not os.path.exists(outdir):
         os.mkdir(outdir)
-    runCmd = 'python {run_snp_index_file} --bedfile {bedfile} --filepath {filepath} --outdir {outdir}'.format(
+    runCmd = 'python {run_snp_index_file} --bedfile {bedfile} --filepath {filepath} --outdir {outdir} > plot.log'.format(
         run_snp_index_file=os.path.join(PLOT_SCRIPT_DIR, 'run_snp_index.py'),
-        bedfile=os.path.join(PLOT_SCRIPT_DIR, 'w2k'),
+        bedfile=os.path.join(PLOT_SCRIPT_DIR, 'snp_w2m_s10k.bed'),
         filepath=filepath,
         outdir=outdir
     )
