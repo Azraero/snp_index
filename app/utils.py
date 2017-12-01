@@ -1,15 +1,14 @@
 # coding=utf-8
 import os
-import glob
 import MySQLdb
 import subprocess
-from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, \
-    get_head_cmd
+from .db import DB
+from .db_const import get_head_cmd, HOSTNAME, USERNAME, PASSWORD, DATABASE
 from settings import basedir
-
 
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
+
 
 def get_db_data(cmd, fetchall=True):
     con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
@@ -50,6 +49,7 @@ def get_group_data(groupList):
                 results.append([new_cell, str(first_ratio), str(second_ratio)])
     return results
 
+
 def get_only_group_data(groupList, groupLen):
     results = []
     for each in groupList:
@@ -75,13 +75,14 @@ def get_only_group_data(groupList, groupLen):
                 results.append(new_cell)
     return results
 
+
 def get_merge_group_data(group_info, groupALen, groupBLen,
                          output, filename, only_group):
     results = []
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
     groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     if only_group:
-        header_line = [list(each[:2]) + ['1'] for each in group_info]
+        header_line = [list(each[:2]) for each in group_info]
         mergeGroupA = get_only_group_data(groupAList, groupALen)
         mergeGroupB = get_only_group_data(groupBList, groupBLen)
         mergeGroup = []
@@ -105,7 +106,6 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
 
         with open(os.path.join(group_dir, filename), 'w+') as f:
             for head, each in zip(header_line, mergeGroup):
-                # print head
                 f.write('\t'.join(head + each) + '\n')
         return filename
     else:
@@ -140,13 +140,24 @@ add on 2017-10-26
 
 
 def get_cmd_by_regin(table, groupA, groupB, get_all=False, chrom='', start_pos='', end_pos=''):
+    '''
+    :param table: snp_table
+    :param groupA: compare group
+    :param groupB: compare group
+    :param get_all: bool if get_all = True get whole chrom to plot snp index
+    :param chrom:
+    :param start_pos:
+    :param end_pos:
+    :return: mysql raw cmd and groups length
+    '''
     select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
     select_columns_str = ','.join(select_columns)
     if get_all:
-        get_group_cmd = "select {columns} from {table};"
+        get_group_cmd = "select {columns} from {table} where CHR='{chrom}';"
         cmd = get_group_cmd.format(
             columns=select_columns_str,
-            table=table
+            table=table,
+            chrom=chrom
         )
     else:
         get_group_cmd = "select {columns} from {table} where POS >= {start_pos} and \
@@ -161,6 +172,15 @@ def get_cmd_by_regin(table, groupA, groupB, get_all=False, chrom='', start_pos='
 
 
 def get_cmd_by_gene(table, gene_id, up, down, groupA, groupB):
+    '''
+    :param table: snp table
+    :param gene_id: search gene id
+    :param up:
+    :param down:
+    :param groupA:
+    :param groupB:
+    :return:
+    '''
     select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
     get_group_cmd = "select POS from {table} where GENE='{gene_id}';"
     select_columns_str = ','.join(select_columns)
@@ -198,113 +218,9 @@ def get_region_by_gene(table, gene_id):
         return ('', '', '')
 
 
-'''
-add on 2017-10-27
-'''
-
-
-def get_expr_table(table, gene_ids, groupA, groupB):
-    select_columns = ['GENE_ID', 'CHR', 'POS_START', 'POS_END'] + groupA + groupB
-    select_columns_str = ','.join(select_columns)
-    results = []
-    for gene in gene_ids:
-        cmd = "select {columns} from {table} where GENE_ID='{gene_id}';".format(
-            columns=select_columns_str,
-            table=table,
-            gene_id=gene
-        )
-        result = get_db_data(cmd, fetchall=False)
-        if not result:
-            return (gene, '')
-        results.append(list(result))
-    return (select_columns, results)
-
-
-'''
-add on 2017-11-3
-'''
-
-
-def get_locus_result(genename):
-    locus_result = {}
-    cmd = """select l.*, f.BLAST_Hit_Accession, f.Description, f.Pfam_ID,
-             f.Interpro_ID, f.GO_ID from locus l left join func f
-             on l.GENE_ID=f.GENE_ID where l.GENE_ID='{0}';
-          """.format(genename)
-    result = get_db_data(cmd, fetchall=False)
-    if result:
-        gene_id, chr, pos_start, pos_end = result[1:5]
-        blast_hit, description, pfam_id, interpro_id, go_id = result[5:]
-        locus_result['gene_identification'] = {'Gene Product Name': description,
-                                               'Locus Name': genename}
-        locus_result['gene_attributes'] = {'Chromosome': chr,
-                                           "CDS Coordinates (5'-3')":'{0} - {1}'.format(pos_start,
-                                                                                        pos_end)}
-        header = ['Accession', 'Description', 'Pfam_ID', 'Interpro_ID', 'GO_ID']
-        locus_result['gene_annotation'] = {}
-        locus_result['gene_annotation']['header'] = header
-        locus_result['gene_annotation']['body'] = [blast_hit, description, pfam_id, interpro_id, go_id]
-    return locus_result
-
-
-'''
-add on 2017-11-08
-'''
-
-def run_snpplot_script(filepath, outdir):
-    # run bash&R script for snp index
-    # bash generate bed.out file
-    if not os.path.exists(outdir):
-        os.mkdir(outdir)
-    bedCmd = 'sh cmd.sh snp_w2m_s10k_.bed {0}'.format(filepath)
-    subprocess.call(args=bedCmd, shell=True)
-    Rcmd = 'Rscript {path} {bed_path} {outpath}'.format(path=os.path.join(basedir,
-                                                                'app',
-                                                                'snp_index_by_bed.R'),
-                                                        bed_path=filepath + '.bed.out',
-                                                        outpath=outdir
-                                                        )
-    subprocess.call(args=Rcmd, shell=True)
-
-    return 'done'
-
-'''
-add on 2017-11-10
-'''
-
-
-def get_select_group_info(select_group):
-    plot_path = 'vs'.join(select_group.split('_')) + '_plot'
-    select_group_path = os.path.join(SNP_INDEX_PATH, select_group, plot_path)
-    print select_group_path
-    plot_files = glob.glob(select_group_path + '/*.png')
-    plot_files = [os.path.join(RENDER_PATH, select_group, plot_path, each.rsplit('/', 1)[1]) for each in plot_files]
-    return plot_files
-
-
-def get_snp_info(rm_len=3):
-    cmd = 'show tables'
-    tables = get_db_data(cmd)
-    tables = [table[0] for table in tables if table[0].split('_')[0] == 'snp']
-    groups = os.listdir(SNP_INDEX_PATH)
-    # rm group dir when > 3
-    if len(groups) > rm_len:
-        rm_groups = groups[rm_len:]
-        for dir in rm_groups:
-            try:
-                subprocess.call('rm -rf {0}'.format(os.path.join(SNP_INDEX_PATH,
-                                                                dir)))
-            except:
-                pass
-
-    return tables, groups
-
-'''
-add on 2017-11-28
-'''
-
 from flask import session, redirect, url_for
 from functools import wraps
+
 def login_require(views):
     @wraps(views)
     def wrapper(*args, **kwargs):
@@ -315,7 +231,27 @@ def login_require(views):
     return wrapper
 
 
+def get_db_tables(user, type):
+    db = DB()
+    get_table_cmd = "select {table} from users where username='{user}'"
+    result = db.execute(get_table_cmd.format(table=type + '_table', user=user.encode('utf-8')))
+    if not result[0][0]:
+        return []
+    else:
+        tables = result[0][0].split(':')
+        return tables
 
 
-
-
+def get_samples_by_table(table, type):
+    # expr 5
+    if type == 'snp':
+        fixed_column_num = 7
+    elif type == 'expr':
+        fixed_column_num = 5
+    else:
+        return []
+    cmd = get_head_cmd.format(table)
+    db = DB()
+    header = db.execute(cmd)
+    samples = [each[0] for each in header][fixed_column_num:]
+    return samples

@@ -1,20 +1,31 @@
-from flask import render_template, request, jsonify
-from ..utils import get_expr_table, get_db_data
+from flask import render_template, request, jsonify, session
+from app.utils import get_db_tables, get_samples_by_table, login_require
 import re
 import json
 from . import expr
-from ..utils import login_require
+from .actions import get_expr_table
 
-@expr.route('/show_by_gene')
+
+@expr.route('/expr/show_by_gene')
 @login_require
 def show_by_gene():
-    cmd = 'show tables'
-    tables = get_db_data(cmd)
-    tables = [table[0] for table in tables if table[0].split('_')[0] == 'expr']
+    user = session['login_id']
+    tables = get_db_tables(user, type='expr')
     return render_template('expr/show_by_gene.html', files=tables)
 
 
-@expr.route('/get_expr_info', methods=['POST'])
+@expr.route('/expr/select_file', methods=['GET'])
+def select_file_by_expr():
+    filename = request.args.get('file', '')
+    if filename:
+        samples = get_samples_by_table(filename, type='expr')
+        if not samples:
+            return jsonify({'msg': 'error'})
+        return jsonify({'msg': samples})
+    return jsonify({'msg': 'error'})
+
+
+@expr.route('/expr/get_expr_info', methods=['POST'])
 def get_expr_info():
     if request.method == 'POST':
         info = request.form['info']
