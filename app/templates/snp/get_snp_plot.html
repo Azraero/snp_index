@@ -34,6 +34,35 @@
                         {% endfor %}
             </select>
         </div>
+        <br>
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Chromsome:</span>
+            <select class="selectpicker" data-width="25%" name="chr" id="select-chr">
+                        <option value= selected="selected"></option>
+                        <option value=chr1A>chr1A</option>
+                        <option value=chr1B>chr1B</option>
+                        <option value=chr1D>chr1D</option>
+                        <option value=chr2A>chr2A</option>
+                        <option value=chr2B>chr2B</option>
+                        <option value=chr2D>chr2D</option>
+                        <option value=chr3A>chr3A</option>
+                        <option value=chr3B>chr3B</option>
+                        <option value=chr3D>chr3D</option>
+                        <option value=chr4A>chr4A</option>
+                        <option value=chr4B>chr4B</option>
+                        <option value=chr4D>chr4D</option>
+                        <option value=chr5A>chr5A</option>
+                        <option value=chr5B>chr5B</option>
+                        <option value=chr5D>chr5D</option>
+                        <option value=chr6A>chr6A</option>
+                        <option value=chr6B>chr6B</option>
+                        <option value=chr6D>chr6D</option>
+                        <option value=chr7A>chr7A</option>
+                        <option value=chr7B>chr7B</option>
+                        <option value=chr7D>chr7D</option>
+                        <option value=chrUn>chrUn</option>
+            </select>
+        </div>
         </div>
       </div>
     <div class="col-xs-6">
@@ -132,6 +161,7 @@
 <script>
 function get_input_data(){
   var table = $("#select-file").find("option:selected").text();
+  var chr = $("#select-chr").find("option:selected").text();
   var groupA = [];
   var groupB = [];
   var CustomGroupA = $("#groupA-name").val();
@@ -146,6 +176,7 @@ function get_input_data(){
       'table': table,
       'groupA': groupA,
       'groupB': groupB,
+      'chrom': chr,
       'customGroupA': CustomGroupA,
       'customGroupB': CustomGroupB
   };
@@ -172,7 +203,7 @@ function check_input_data(info){
 $(document).ready(function(){
   $("#select-file").change(function(){
     var fileSelect = $(this).find("option:selected").text();
-    ajaxSend('/select_file', {'file': fileSelect}, function(data){
+    ajaxSend('{{ url_for('snp.select_file_by_plot') }}', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
         // alert('not find samples!');
@@ -190,7 +221,7 @@ $(document).ready(function(){
   });
     $("#select-group").change(function(){
     var groupSelect = $(this).find("option:selected").text();
-    ajaxSend('/select_group', {'group': groupSelect}, function(data){
+    ajaxSend('{{ url_for('snp.select_group') }}', {'group': groupSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
         // alert('not find samples!');
@@ -252,7 +283,7 @@ $(document).ready(function(){
     $("#query_hint").empty();
     var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力生成结果，请稍等...</span>');
     hint.appendTo('#query_hint');
-    ajaxSend('/generate_snp_plot',{'info': info}, function(data){
+    ajaxSend('{{ url_for('snp.generate_snp_plot') }}',{'info': info}, function(data){
       if(data.msg == 'error'){
         createAlert(data.msg);
         $("#query_hint").empty();
