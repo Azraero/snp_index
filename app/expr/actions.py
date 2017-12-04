@@ -1,6 +1,6 @@
 from app.db import DB
 
-def get_expr_table(table, gene_ids, groupA, groupB):
+def get_expr_table(table, gene_ids, groupA, groupB, map_groupA, map_groupB):
     db = DB()
     select_columns = ['GENE_ID', 'CHR', 'POS_START', 'POS_END'] + groupA + groupB
     select_columns_str = ','.join(select_columns)
@@ -15,4 +15,5 @@ def get_expr_table(table, gene_ids, groupA, groupB):
         if not result:
             return (gene, '')
         results.append(list(result))
-    return (select_columns, results)
+    return_select_columns =  ['GENE_ID', 'CHR', 'POS_START', 'POS_END'] + map_groupA + map_groupB
+    return return_select_columns, results

@@ -1,12 +1,13 @@
 # coding=utf-8
 import os
+import sys
 import MySQLdb
-import subprocess
 from .db import DB
 from .db_const import get_head_cmd, HOSTNAME, USERNAME, PASSWORD, DATABASE
 from settings import basedir
 
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
+MAP_GROUP_PATH = os.path.join(basedir, 'data', 'mRNA_group_cut')
 RENDER_PATH = '/static/snp_results'
 
 
@@ -224,6 +225,7 @@ def get_region_by_gene(table, gene_id):
 from flask import session, redirect, url_for
 from functools import wraps
 
+
 def login_require(views):
     @wraps(views)
     def wrapper(*args, **kwargs):
@@ -233,6 +235,16 @@ def login_require(views):
         return redirect(url_for('auth.login'))
     return wrapper
 
+'''
+def mapSample(func):
+    def wrapper(*args, **kwargs):
+        samples = func(*args, **kwargs)
+        if samples:
+            map_dict = map_sample()
+            return [map_dict[sample] for sample in samples]
+        return samples
+    return wrapper
+'''
 
 def get_db_tables(user, type):
     db = DB()
@@ -260,3 +272,27 @@ def get_samples_by_table(table, type):
     header = db.execute(cmd)
     samples = [each[0] for each in header][fixed_column_num:]
     return samples
+
+
+def get_map(filename=MAP_GROUP_PATH, split='\t'):
+    db2web_dict = {}
+    web2db_dict = {}
+    try:
+        info = open(filename, 'r+')
+        map_list = info.readlines()
+        Id_list = [each.strip().split(split)[0].replace('-','_') for each in map_list]
+        key_list = [each.strip().split(split)[1].replace('-','_') for each in map_list]
+        for k, v in zip(Id_list, key_list):
+            db2web_dict[k] = v
+            web2db_dict[v] = k
+        info.close()
+    except IOError:
+        'not find map sample file'
+        sys.exit(1)
+    return db2web_dict, web2db_dict
+
+
+def map_sample(samples, map_dict):
+    if samples:
+        return [map_dict[sample] for sample in samples]
+    return []

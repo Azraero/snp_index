@@ -3,8 +3,12 @@ import json
 from . import variation
 from flask import render_template, jsonify, request, session
 from ..utils import login_require, get_db_tables, get_samples_by_table, \
-    get_cmd_by_regin, get_cmd_by_gene, calculate_table
+    get_cmd_by_regin, get_cmd_by_gene, calculate_table, map_sample, get_map
 
+db2web_dict, web2db_dict = get_map()
+# print db2web_dict
+# print '--------------------'
+# print web2db_dict
 
 @variation.route('/variation/search_by_regin')
 @login_require
@@ -27,6 +31,7 @@ def select_file_by_variation():
     filename = request.args.get('file', '')
     if filename:
         samples = get_samples_by_table(filename, type='snp')
+        samples = map_sample(samples, map_dict=db2web_dict)
         if not samples:
             return jsonify({'msg': 'error'})
         return jsonify({'msg': samples})
@@ -39,8 +44,8 @@ def get_snp_info():
         info = request.form['info']
         info = json.loads(info)
         table = info['table']
-        groupA = info['groupA']
-        groupB = info['groupB']
+        groupA = map_sample(info['groupA'], map_dict=web2db_dict)
+        groupB = map_sample(info['groupB'], map_dict=web2db_dict)
         if info['search'] == 'regin':
             chrom = info['chr']
             start_pos = info['start_pos']

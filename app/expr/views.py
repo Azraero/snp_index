@@ -1,9 +1,12 @@
 from flask import render_template, request, jsonify, session
-from app.utils import get_db_tables, get_samples_by_table, login_require
+from app.utils import get_db_tables, get_samples_by_table, login_require, get_map, map_sample
 import re
 import json
 from . import expr
 from .actions import get_expr_table
+
+
+db2web_dict, web2db_dict = get_map()
 
 
 @expr.route('/expr/show_by_gene')
@@ -19,6 +22,7 @@ def select_file_by_expr():
     filename = request.args.get('file', '')
     if filename:
         samples = get_samples_by_table(filename, type='expr')
+        samples = map_sample(samples, map_dict=db2web_dict)
         if not samples:
             return jsonify({'msg': 'error'})
         return jsonify({'msg': samples})
@@ -31,8 +35,10 @@ def get_expr_info():
         info = request.form['info']
         info = json.loads(info)
         table = info['table']
-        groupA = info['groupA']
-        groupB = info['groupB']
+        map_groupA = info['groupA']
+        map_groupB = info['groupB']
+        groupA = map_sample(map_groupA, map_dict=web2db_dict)
+        groupB = map_sample(map_groupB, map_dict=web2db_dict)
         gene_str = info['gene_name']
         gene_ids = re.split(r'[\s,]', gene_str.strip())
         if len(gene_ids) > 10:
@@ -41,7 +47,9 @@ def get_expr_info():
             table,
             gene_ids,
             groupA,
-            groupB
+            groupB,
+            map_groupA,
+            map_groupB
         )
         if not query_data:
             return jsonify({'msg': 'not search {0} in database!'.format(

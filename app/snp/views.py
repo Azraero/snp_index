@@ -2,13 +2,14 @@
 import os
 import json
 from flask import render_template, request, jsonify, session
-from app.utils import get_cmd_by_regin, calculate_table, get_samples_by_table
+from app.utils import get_cmd_by_regin, calculate_table, get_samples_by_table, get_map, map_sample
 from .actions import get_select_group_info, get_snp_info, run_snpplot_script
 from . import snp
 from settings import basedir
 import glob
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
+db2web_dict, web2db_dict = get_map()
 
 
 @snp.route('/plot/select_file')
@@ -16,6 +17,7 @@ def select_file_by_plot():
     filename = request.args.get('file', '')
     if filename:
         samples = get_samples_by_table(filename, type='snp')
+        map_sample(samples, db2web_dict)
         if not samples:
             return jsonify({'msg': 'error'})
         return jsonify({'msg': samples})
@@ -43,8 +45,8 @@ def generate_snp_plot():
     if request.method == 'POST':
         info = json.loads(request.form['info'])
         table = info['table']
-        groupA = info['groupA']
-        groupB = info['groupB']
+        groupA = map_sample(info['groupA'], map_dict=web2db_dict)
+        groupB = map_sample(info['groupB'], map_dict=db2web_dict)
         groupA_name = info['customGroupA']
         groupB_name = info['customGroupB']
         chrom = info['chrom']
