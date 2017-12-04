@@ -235,7 +235,8 @@ def get_db_tables(user, type):
     db = DB()
     get_table_cmd = "select {table} from users where username='{user}'"
     result = db.execute(get_table_cmd.format(table=type + '_table', user=user.encode('utf-8')))
-    if not result[0][0]:
+    #print result
+    if not result:
         return []
     else:
         tables = result[0][0].split(':')
@@ -251,6 +252,7 @@ def get_samples_by_table(table, type):
     else:
         return []
     cmd = get_head_cmd.format(table)
+    #print cmd
     db = DB()
     header = db.execute(cmd)
     samples = [each[0] for each in header][fixed_column_num:]
