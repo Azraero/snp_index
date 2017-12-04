@@ -235,8 +235,11 @@ function createAlert(msg) {
 }
 
 function createPlot(files, name) {
+    var group_dir = name.split('vs').join('_');
+    var zip_href = '/static/snp_results/' + group_dir + '/' + name + '.zip';
     var textStr = "<div class='col-md-4'><h3>Snp Index Plot</h3>" +
-        "<p>snp index plot by " + name +".</p></div>";
+        "<p>snp index plot by " + name +".</p>" +
+	"<p><a class='btn btn-primary' href='" + zip_href + "' role='button'>Download &raquo;</a></p>" + "</div>";
     var plotStr = "<div class='col-md-8 albumSlider'>" +
         "<div class='fullview'><img src='" + files[0] + "'></div>" +
         "<div class='slider'><div class='button movebackward' title=''></div><div class='imglistwrap'>";

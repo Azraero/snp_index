@@ -19,6 +19,8 @@ def get_select_group_info(select_group):
 def get_snp_info(user, rm_len=3):
     tables = get_db_tables(user, type='snp')
     groups = os.listdir(SNP_INDEX_PATH)
+    # check dir
+    groups = [each for each in groups if len(each.split('.'))==1]
     # rm group dir when > 3
     if len(groups) > rm_len:
         rm_groups = groups[rm_len:]
@@ -39,4 +41,10 @@ def run_snpplot_script(filepath, outdir):
         outdir=outdir
     )
     subprocess.call(runCmd, shell=True)
+    filedir = os.path.dirname(filepath)
+    filename = filepath.rsplit('/', 1)[1]
+    zipCmd = "zip {zipfile} {dir}"
+    os.chdir(filedir)
+    print zipCmd.format(zipfile=filename + '.zip', dir=filename + '_plot/*')
+    subprocess.call(zipCmd.format(zipfile=filename + '.zip', dir=filename + '_plot/*'),shell=True)
     return 'done'
