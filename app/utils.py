@@ -77,8 +77,9 @@ def get_only_group_data(groupList, groupLen):
 
 
 def get_merge_group_data(group_info, groupALen, groupBLen,
-                         output, filename, only_group):
+                         output, filename, only_group, chrom):
     results = []
+    filename = '_'.join([filename, chrom])
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
     groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     if only_group:
@@ -117,7 +118,8 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
 def calculate_table(cmd, groupA_len, groupB_len,
                     filename='GroupAvsGroupB',
                     output=False,
-                    only_group=False):
+                    only_group=False,
+                    chrom=''):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB',
@@ -130,7 +132,8 @@ def calculate_table(cmd, groupA_len, groupB_len,
                                    groupB_len,
                                    output,
                                    filename,
-                                   only_group)
+                                   only_group,
+                                   chrom=chrom)
     return header, results
 
 
