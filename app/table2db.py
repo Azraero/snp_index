@@ -3,7 +3,17 @@ import sys
 import click
 import MySQLdb
 from db_const import DATABASE, HOSTNAME, USERNAME, PASSWORD, table_info
-from utils import get_db_data
+
+def get_db_data(cmd, fetchall=True):
+    con = MySQLdb.connect(HOSTNAME, USERNAME, PASSWORD, DATABASE)
+    with con as cur:
+        cur.execute(cmd)
+        if fetchall:
+            rows = cur.fetchall()
+            return rows
+        else:
+            row = cur.fetchone()
+            return row
 
 def deal_cell(cell):
     cell_list = cell.split(',')
