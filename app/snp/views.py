@@ -59,7 +59,8 @@ def generate_snp_plot():
                                                    groupB_len,
                                                    filename,
                                                    output=True,
-                                                   only_group=True
+                                                   only_group=True,
+                                                   chrom=chrom
                                                    )
 
         msg = run_snpplot_script(filepath=os.path.join(SNP_INDEX_PATH,
@@ -67,8 +68,8 @@ def generate_snp_plot():
                                                        query_data),
                                  outdir=os.path.join(SNP_INDEX_PATH,
                                                      '_'.join([groupA_name, groupB_name]),
-                                                     query_data + '_plot'))
-        files = glob.glob(os.path.join(SNP_INDEX_PATH, '_'.join([groupA_name, groupB_name]), query_data + '_plot') + '/*png')
+                                                     'vs'.join([groupA_name, groupB_name]) + '_plot'))
+        files = glob.glob(os.path.join(SNP_INDEX_PATH, '_'.join([groupA_name, groupB_name]), 'vs'.join([groupA_name, groupB_name]) + '_plot') + '/*png')
         files_short = [each.rsplit('/', 1)[1] for each in files]
         '''
         # test frontend code:
@@ -80,7 +81,7 @@ def generate_snp_plot():
 
         path = os.path.join(RENDER_PATH,
                             '_'.join([groupA_name, groupB_name]),
-                            query_data + '_plot')
+                            'vs'.join([groupA_name, groupB_name]) + '_plot')
 
         return jsonify({'msg': query_data,
                         'name': 'vs'.join([groupA_name, groupB_name]),

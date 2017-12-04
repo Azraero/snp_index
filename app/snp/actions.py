@@ -42,9 +42,11 @@ def run_snpplot_script(filepath, outdir):
     )
     subprocess.call(runCmd, shell=True)
     filedir = os.path.dirname(filepath)
-    filename = filepath.rsplit('/', 1)[1]
+    filename = filepath.rsplit('/', 1)[1].split('_')[0]
     zipCmd = "zip {zipfile} {dir}"
     os.chdir(filedir)
-    print zipCmd.format(zipfile=filename + '.zip', dir=filename + '_plot/*')
-    subprocess.call(zipCmd.format(zipfile=filename + '.zip', dir=filename + '_plot/*'),shell=True)
+    filter_file = [each for each in os.listdir('.') if len(each.split('.'))==1 and each.split('_')[1]!='plot']
+    filter_file.append(filename + '_plot/*')
+    #print zipCmd.format(zipfile=filename + '.zip', dir=' '.join(filter_file))
+    subprocess.call(zipCmd.format(zipfile=filename + '.zip', dir=' '.join(filter_file)),shell=True)
     return 'done'
