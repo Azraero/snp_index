@@ -32,6 +32,7 @@ def get_snp_info(user, rm_len=3):
 
 def run_snpplot_script(filepath, outdir):
     # run bash&R script for snp index
+    print filepath
     if not os.path.exists(outdir):
         os.mkdir(outdir)
     runCmd = 'python {run_snp_index_file} --bedfile {bedfile} --filepath {filepath} --outdir {outdir} > plot.log'.format(

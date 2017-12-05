@@ -17,7 +17,7 @@ def select_file_by_plot():
     filename = request.args.get('file', '')
     if filename:
         samples = get_samples_by_table(filename, type='snp')
-        map_sample(samples, db2web_dict)
+        samples = map_sample(samples, db2web_dict)
         if not samples:
             return jsonify({'msg': 'error'})
         return jsonify({'msg': samples})
@@ -64,7 +64,7 @@ def generate_snp_plot():
                                                    only_group=True,
                                                    chrom=chrom
                                                    )
-
+        print query_data
         msg = run_snpplot_script(filepath=os.path.join(SNP_INDEX_PATH,
                                                        '_'.join([groupA_name, groupB_name]),
                                                        query_data),
