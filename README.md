@@ -21,8 +21,12 @@ python manager.py runserver
 ## Changelog
 1.23 (13/11/2017)
 - add snp index plot.
+
 1.24 (01/12/2017)
 - refactor app and add snp index plot.
+
+1.25 (05/12/2017)
+- app download snp index zip and map samples. 
 
 
 
