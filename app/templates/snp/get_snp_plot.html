@@ -281,7 +281,7 @@ $(document).ready(function(){
     }
     info = JSON.stringify(info);
     $("#query_hint").empty();
-    var hint = $('<span><img src="../static/images/hint.gif" />' + '正在努力生成结果，请稍等...</span>');
+    var hint = $('<span><img src="../static/images/hint.gif" />' + 'loading data, please wait...</span>');
     hint.appendTo('#query_hint');
     ajaxSend('{{ url_for('snp.generate_snp_plot') }}',{'info': info}, function(data){
       if(data.msg == 'error'){
