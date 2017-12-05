@@ -80,7 +80,7 @@ def get_only_group_data(groupList, groupLen):
 def get_merge_group_data(group_info, groupALen, groupBLen,
                          output, filename, only_group, chrom):
     results = []
-    filename = '_'.join([filename, chrom])
+    filename_chr = '_'.join([filename, chrom])
     groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
     groupBList = [list(each[(groupBLen+6):]) for each in group_info]
     if only_group:
@@ -106,10 +106,10 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
         if not os.path.exists(group_dir):
             os.mkdir(group_dir)
 
-        with open(os.path.join(group_dir, filename), 'w+') as f:
+        with open(os.path.join(group_dir, filename_chr), 'w+') as f:
             for head, each in zip(header_line, mergeGroup):
                 f.write('\t'.join(head + each) + '\n')
-        return filename
+        return filename_chr
     else:
         for head, each in zip(header_line, mergeGroup):
             results.append(head + each)
@@ -287,8 +287,8 @@ def get_map(filename=MAP_GROUP_PATH, split='\t'):
             web2db_dict[v] = k
         info.close()
     except IOError:
-        'not find map sample file'
-        sys.exit(1)
+        print 'not find map sample file'
+        return db2web_dict, web2db_dict
     return db2web_dict, web2db_dict
 
 
