@@ -9,6 +9,9 @@ from settings import basedir
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 MAP_GROUP_PATH = os.path.join(basedir, 'data', 'mRNA_group_cut')
 RENDER_PATH = '/static/snp_results'
+PLOT_HEADER = 2
+SPLIT_GROUP = 4
+SNP_TABLE_HEADER = 6
 
 
 def get_db_data(cmd, fetchall=True):
@@ -23,119 +26,154 @@ def get_db_data(cmd, fetchall=True):
             return row
 
 
+def get_row_count_by_group(row_list, cell_len, out_split='|'):
+    count_row = [0] * cell_len
+    for i in range(len(row_list)):
+        cell_list = [int(cell) for cell in row_list[i].split(',')]
+        for j in range(cell_len):
+            count_row[j] = count_row[j] + cell_list[j]
+    count_str = out_split.join([str(cell) for cell in count_row])
+    if cell_len > SPLIT_GROUP:
+        return [count_str]
+    count_sum = sum(count_row)
+    if count_sum == 0:
+        return [count_str] + ['NA'] * cell_len
+    count_row = [str(float(cell) / count_sum) for cell in count_row]
+    return [count_str] + count_row
+
+
 def get_group_data(groupList):
-    results = []
-    for each in groupList:
-        filter_cell = [cell for cell in each if cell != '0' and cell != '0,0' and cell != '0,0,0' and cell != '.']
+    # divide table into 4
+    # include header
+    results_split2 = []
+    results_split3 = []
+    results_split4 = []
+    results_splitn = []
+    for row in groupList:
+        # only check split not over 2
+        filter_cell = [cell for cell in row[SNP_TABLE_HEADER:] if cell != '0' and cell != '0,0' and cell != '.']
         if len(filter_cell) == 0:
-            results.append(['0,0', 'NA', 'NA'])
+            results_split2.append(row[:SNP_TABLE_HEADER] + ['0,0', 'NA', 'NA'])
         else:
-            # deal three comma numbers
-            for i in range(len(filter_cell)):
-                tmpList = filter_cell[i].split(',')
-                if len(tmpList) == 3:
-                    maxOne = max([int(cell) for cell in tmpList])
-                    minOne = min([int(cell) for cell in tmpList])
-                    filter_cell[i] = ','.join([str(maxOne), str(minOne)])
-
-            first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell])
-            second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell])
-            # other condition
-            if first_pos + second_pos == 0:
-                results.append(['0,0', 'NA', 'NA'])
+            # each row's cell len must be same
+            cell_len = len(filter_cell[0].split(','))
+            count_row = get_row_count_by_group(filter_cell, cell_len)
+            if cell_len == 2:
+                results_split2.append(row[:SNP_TABLE_HEADER] + count_row)
+            elif cell_len == 3:
+                results_split3.append(row[:SNP_TABLE_HEADER] + count_row)
+            elif cell_len == 4:
+                results_split4.append(row[:SNP_TABLE_HEADER] + count_row)
             else:
-                first_ratio = round(float(first_pos) / (first_pos + second_pos), 2)
-                second_ratio = round(float(second_pos) / (first_pos + second_pos), 2)
-                new_cell = ','.join([str(first_pos), str(second_pos)])
-                results.append([new_cell, str(first_ratio), str(second_ratio)])
-    return results
+                results_splitn.append(row[:SNP_TABLE_HEADER] + count_row)
+    results_split_list = [results_split2, results_split3, results_split4, results_splitn]
+    return results_split_list
 
 
-def get_only_group_data(groupList, groupLen):
+def get_plot_group_data(groupList, groupLen, filter=True):
     results = []
     for each in groupList:
-        filter_cell = [cell for cell in each if cell != '0' and cell != '0,0' and cell != '0,0,0' and cell != '.']
+        filter_cell = [cell for cell in each if cell != '0' and cell != '0,0' and cell != '.']
         if len(filter_cell) == 0:
             results.append('0,0')
         else:
-            # deal three comma numbers
+            # deal split over 3
             for i in range(len(filter_cell)):
                 tmpList = filter_cell[i].split(',')
-                if len(tmpList) == 3:
+                if len(tmpList) >= 3:
                     maxOne = max([int(cell) for cell in tmpList])
                     minOne = min([int(cell) for cell in tmpList])
                     filter_cell[i] = ','.join([str(maxOne), str(minOne)])
 
             first_pos = sum([int(cell.split(',')[0]) for cell in filter_cell]) / groupLen
             second_pos = sum([int(cell.split(',')[1]) for cell in filter_cell]) / groupLen
-            # other condition
-            if first_pos + second_pos == 0:
-                results.append('0,0')
-            else:
-                new_cell = ','.join([str(first_pos), str(second_pos)])
-                results.append(new_cell)
+            new_cell = ','.join([str(first_pos), str(second_pos)])
+            results.append(new_cell)
+    if filter:
+        results = [result for result in results if sum([float(each) for each in result.split(',')]) > 1]
+        return results
     return results
 
 
 def get_merge_group_data(group_info, groupALen, groupBLen,
-                         output, filename, only_group, chrom):
-    results = []
+                         output, filename, chrom):
     filename_chr = '_'.join([filename, chrom])
-    groupAList = [list(each[6:(groupALen+6)]) for each in group_info]
-    groupBList = [list(each[(groupBLen+6):]) for each in group_info]
-    if only_group:
-        header_line = [list(each[:2]) for each in group_info]
-        mergeGroupA = get_only_group_data(groupAList, groupALen)
-        mergeGroupB = get_only_group_data(groupBList, groupBLen)
+    if output:
+        groupAList = [list(each[SNP_TABLE_HEADER:(groupALen + SNP_TABLE_HEADER)]) for each in group_info]
+        groupBList = [list(each[(groupALen + SNP_TABLE_HEADER):]) for each in group_info]
+        header_line = [list(each[:PLOT_HEADER]) for each in group_info]
+        mergeGroupA = get_plot_group_data(groupAList, groupALen)
+        mergeGroupB = get_plot_group_data(groupBList, groupBLen)
         mergeGroup = []
         for eachA, eachB in zip(mergeGroupA, mergeGroupB):
             mergeGroup.append(eachA.split(',') + eachB.split(','))
-    else:
-        header_line = [list(each[:6]) for each in group_info]
-        mergeGroupA = get_group_data(groupAList)
-        mergeGroupB = get_group_data(groupBList)
-        mergeGroup = []
-        for ListA, ListB in zip(mergeGroupA, mergeGroupB):
-            tmpList = []
-            for cellA, cellB in zip(ListA, ListB):
-                tmpList.append(cellA)
-                tmpList.append(cellB)
-            mergeGroup.append(tmpList)
-    if output:
         group_dir = os.path.join(SNP_INDEX_PATH, '_'.join(filename.split('vs')))
         if not os.path.exists(group_dir):
             os.mkdir(group_dir)
-
         with open(os.path.join(group_dir, filename_chr), 'w+') as f:
             for head, each in zip(header_line, mergeGroup):
                 f.write('\t'.join(head + each) + '\n')
+        # return file name
         return filename_chr
     else:
-        for head, each in zip(header_line, mergeGroup):
-            results.append(head + each)
-        return results
+        groupAList = [list(each[:(groupALen + SNP_TABLE_HEADER)]) for each in group_info]
+        groupBList = [list(each[:SNP_TABLE_HEADER] + each[(groupALen + SNP_TABLE_HEADER):]) for each in group_info]
+        mergeGroup_list = [list() for i in range(SPLIT_GROUP)]
+        mergeA_split_list = get_group_data(groupAList)
+        mergeB_split_list = get_group_data(groupBList)
+        for i in range(SPLIT_GROUP):
+            for ListA, ListB in zip(mergeA_split_list[i], mergeB_split_list[i]):
+                tmpList = []
+                tmpList.extend(ListA[:SNP_TABLE_HEADER])
+                for cellA, cellB in zip(ListA[SNP_TABLE_HEADER:], ListB[SNP_TABLE_HEADER:]):  # drop listB's header
+                    tmpList.append(cellA)
+                    tmpList.append(cellB)
+                mergeGroup_list[i].append(tmpList)
+        # results_split2, results_split3, results_split4, results_splitn = mergeGroup_list
+        # print mergeGroup_list
+        return mergeGroup_list
 
 
 def calculate_table(cmd, groupA_len, groupB_len,
                     filename='GroupAvsGroupB',
                     output=False,
-                    only_group=False,
                     chrom=''):
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
-              'GroupA', 'GroupB',
-              'GroupA Frequency Primary Allele',
-              'GroupB Frequency Primary Allele',
-              'GroupA Frequency Second Allele',
-              'GroupB Frequency Second Allele']
-    results = get_merge_group_data(get_db_data(cmd),
-                                   groupA_len,
-                                   groupB_len,
-                                   output,
-                                   filename,
-                                   only_group,
-                                   chrom=chrom)
-    return header, results
+              'GroupA', 'GroupB']
+
+    split_two = ['GroupA Frequency Primary Allele',
+                 'GroupB Frequency Primary Allele',
+                 'GroupA Frequency Second Allele',
+                 'GroupB Frequency Second Allele']
+
+    split_three = ['GroupA Frequency Third Allele',
+                   'GroupB Frequency Third Allele']
+
+    split_four = ['GroupA Frequency Four Allele',
+                  'GroupB Frequency Four Allele']
+    if output:
+        # results is a str for filename
+        results = get_merge_group_data(get_db_data(cmd),
+                                       groupA_len,
+                                       groupB_len,
+                                       output,
+                                       filename,
+                                       chrom=chrom)
+    else:
+        results_split2, results_split3, results_split4, results_splitn = get_merge_group_data(get_db_data(cmd),
+                                                                                              groupA_len,
+                                                                                              groupB_len,
+                                                                                              output,
+                                                                                              filename,
+                                                                                              chrom)
+        results = {}
+        results['split2'] = (header + split_two, results_split2)
+        results['split3'] = (header + split_two + split_three, results_split3)
+        results['split4'] = (header + split_two + split_three + split_four, results_split4)
+        results['splitn'] = (header, results_splitn)
+
+    return results
 
 
 '''
