@@ -6,9 +6,7 @@ from ..utils import login_require, get_db_tables, get_samples_by_table, \
     get_cmd_by_regin, get_cmd_by_gene, calculate_table, map_sample, get_map
 
 db2web_dict, web2db_dict = get_map()
-# print db2web_dict
-# print '--------------------'
-# print web2db_dict
+
 
 @variation.route('/variation/search_by_regin')
 @login_require
@@ -68,11 +66,11 @@ def get_snp_info():
                                                           groupB)
             if not cmd:
                 return jsonify({'msg': 'not search {0} in database'.format(
-                    groupA_len
+                    groupA_len                      # groupA_len is search gene id
                 )})
-        query_header, query_data = calculate_table(cmd,
-                                                   groupA_len,
-                                                   groupB_len)
-        return jsonify({'msg': 'ok',
-                        'headData': query_header,
-                        'bodyData': query_data})
+        query_data = calculate_table(cmd,
+                                     groupA_len,
+                                     groupB_len)
+        data = {'msg': 'ok'}
+        data.update(query_data)
+        return jsonify(data)

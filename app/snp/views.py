@@ -56,15 +56,12 @@ def generate_snp_plot():
                                                        groupB,
                                                        chrom=chrom,
                                                        get_all=True)
-        query_header, query_data = calculate_table(cmd,
-                                                   groupA_len,
-                                                   groupB_len,
-                                                   filename,
-                                                   output=True,
-                                                   only_group=True,
-                                                   chrom=chrom
-                                                   )
-        print query_data
+        query_data = calculate_table(cmd,
+                                     groupA_len,
+                                     groupB_len,
+                                     filename,
+                                     output=True,
+                                     chrom=chrom)
         msg = run_snpplot_script(filepath=os.path.join(SNP_INDEX_PATH,
                                                        '_'.join([groupA_name, groupB_name]),
                                                        query_data),
@@ -73,13 +70,6 @@ def generate_snp_plot():
                                                      'vs'.join([groupA_name, groupB_name]) + '_plot'))
         files = glob.glob(os.path.join(SNP_INDEX_PATH, '_'.join([groupA_name, groupB_name]), 'vs'.join([groupA_name, groupB_name]) + '_plot') + '/*png')
         files_short = [each.rsplit('/', 1)[1] for each in files]
-        '''
-        # test frontend code:
-        # snp_results = basedir
-        # files = glob.glob( + '/*.png')
-        files = ['mhd_vs_whd_chr3D.png', 'mhd_vs_whd_chr4A.png',
-                 'mhd_vs_whd_chr4B.png', 'mhd_vs_whd_chr4D.png']
-        '''
 
         path = os.path.join(RENDER_PATH,
                             '_'.join([groupA_name, groupB_name]),
