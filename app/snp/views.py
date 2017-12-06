@@ -46,7 +46,7 @@ def generate_snp_plot():
         info = json.loads(request.form['info'])
         table = info['table']
         groupA = map_sample(info['groupA'], map_dict=web2db_dict)
-        groupB = map_sample(info['groupB'], map_dict=db2web_dict)
+        groupB = map_sample(info['groupB'], map_dict=web2db_dict)
         groupA_name = info['customGroupA']
         groupB_name = info['customGroupB']
         chrom = info['chrom']
