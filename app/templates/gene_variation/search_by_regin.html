@@ -137,7 +137,13 @@
   <!-- add loading hint -->
   <div id="query_hint"></div>
   <h2>Search Results:</h2>
-  <div id="results-table"></div>
+    <div id="results-table2"></div>
+    <br/>
+    <div id="results-table3"></div>
+    <br/>
+    <div id="results-table4"></div>
+    <br/>
+    <div id="results-tablen"></div>
 {% endblock %}
 
 {% block js %}
@@ -204,7 +210,7 @@ $(document).ready(function(){
     });
   });
   // multiselect plugin
-  select_plugin()
+  select_plugin();
   /*
   $("#search-button").bind('click', function(){
     var searchSample = $("#search-sample").val();
@@ -221,40 +227,50 @@ $(document).ready(function(){
     });
   });
   */
-  $("#submit").bind('click',function(){
-    var info = get_input_data();
-    var error_msg = check_input_data(info);
-    if(error_msg.length > 0){
-      // alert(error_msg);
-        createAlert(error_msg);
-      return;
-    }
-    info = JSON.stringify(info);
-    $("#query_hint").empty();
-    var hint = $('<span><img src="../static/images/hint.gif" />' + 'loading data, please wait...</span>');
-    hint.appendTo('#query_hint');
-    ajaxSend('{{ url_for('variation.get_snp_info') }}',{'info': info}, function(data){
-      if(data.msg == 'error'){
-        createAlert(data.msg);
-        $("#query_hint").empty();
-        return;
-      }else{
-          //console.log(data.headData);
-          //console.log(data.bodyData);
-        $('#query_hint').empty();
-        tableStr = createTable(data.headData, data.bodyData, tableType='snp');
-        $("#results-table").html(tableStr);
-        $("#region_table").DataTable({
-          dom: 'lBfrtip',
-          "scrollX": true,
-          buttons: [
-            'csv'
-          ]
-        });
+  $("#submit").bind('click',function() {
+      var info = get_input_data();
+      var error_msg = check_input_data(info);
+      if (error_msg.length > 0) {
+          // alert(error_msg);
+          createAlert(error_msg);
+          return;
       }
-    }, 'POST');
-    });
-
+      info = JSON.stringify(info);
+      $("#query_hint").empty();
+      var hint = $('<span><img src="../static/images/hint.gif" />' + 'loading data, please wait...</span>');
+      hint.appendTo('#query_hint');
+      ajaxSend('{{ url_for('variation.get_snp_info') }}', {'info': info}, function (data) {
+          $('#query_hint').empty();
+          if (data.msg == 'error') {
+              createAlert(data.msg);
+              return;
+          } else {
+              if (data.split2[1]) {
+                  var tableStr = createTable(data.split2[0], data.split2[1], tableType = 'snp');
+                  $("#results-table2").html(tableStr);
+              };
+              if (data.split3[1]) {
+                  var tableStr = createTable(data.split3[0], data.split3[1], tableType = 'snp');
+                  $("#results-table3").html(tableStr);
+              };
+              if (data.split4[1]) {
+                  var tableStr = createTable(data.split4[0], data.split4[1], tableType = 'snp');
+                  $("#results-table4").html(tableStr);
+              };
+              if (data.splitn[1]) {
+                  var tableStr = createTable(data.splitn[0], data.splitn[1], tableType = 'snp');
+                  $("#results-tablen").html(tableStr);
+              }
+              $(".region_table").DataTable({
+                  dom: 'lBfrtip',
+                  "scrollX": true,
+                  buttons: [
+                      'csv'
+                  ]
+              });
+          }
+      }, 'POST');
+  });
 });
 </script>
 {% endblock %}

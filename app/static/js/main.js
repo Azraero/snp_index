@@ -33,7 +33,7 @@ function createHref(gene) {
 }
 function createTable(headData, bodyData, tableType) {
   var htmlBuffer = [];
-  htmlBuffer.push("<table id='region_table' class='table table-strip table-bordered'>");
+  htmlBuffer.push("<table class='table table-strip table-bordered region_table'>");
   // for header
   htmlBuffer.push("<thead>\n<tr>");
   for(var i = 0; i < headData.length; i++){

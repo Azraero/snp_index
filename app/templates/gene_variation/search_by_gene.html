@@ -85,7 +85,13 @@
 <!-- add loading hint -->
 <div id="query_hint"></div>
 <h2>Search Results:</h2>
-<div id="results-table"></div>
+    <div id="results-table2"></div>
+    <br/>
+    <div id="results-table3"></div>
+    <br/>
+    <div id="results-table4"></div>
+    <br/>
+    <div id="results-tablen"></div>
 {% endblock %}
 
 {% block js %}
@@ -156,12 +162,25 @@ $(document).ready(function(){
         if(data.msg != 'ok'){
           // alert(data.msg);
             createAlert(data.msg);
-          $("#query_hint").empty();
           return;
         }else{
-          tableStr = createTable(data.headData, data.bodyData, tableType='snp');
-          $("#results-table").html(tableStr);
-          $("#region_table").DataTable({
+            if(data.split2[1]){
+                var tableStr = createTable(data.split2[0], data.split2[1], tableType='snp');
+                $("#results-table2").html(tableStr);
+            };
+            if(data.split3[1]){
+                var tableStr = createTable(data.split3[0], data.split3[1], tableType='snp');
+                $("#results-table3").html(tableStr);
+            };
+            if(data.split4[1]){
+                var tableStr = createTable(data.split4[0], data.split4[1], tableType='snp');
+                $("#results-table4").html(tableStr);
+            };
+            if(data.splitn[1]) {
+                var tableStr = createTable(data.splitn[0], data.splitn[1], tableType = 'snp');
+                $("#results-tablen").html(tableStr);
+            }
+          $(".region_table").DataTable({
             dom: 'lBfrtip',
             "scrollX": true,
             buttons: [
