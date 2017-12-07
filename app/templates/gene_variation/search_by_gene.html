@@ -164,19 +164,19 @@ $(document).ready(function(){
             createAlert(data.msg);
           return;
         }else{
-            if(data.split2[1]){
+            if(data.split2[1].length != 0){
                 var tableStr = createTable(data.split2[0], data.split2[1], tableType='snp');
                 $("#results-table2").html(tableStr);
             };
-            if(data.split3[1]){
+            if(data.split3[1].length != 0){
                 var tableStr = createTable(data.split3[0], data.split3[1], tableType='snp');
                 $("#results-table3").html(tableStr);
             };
-            if(data.split4[1]){
+            if(data.split4[1].length != 0){
                 var tableStr = createTable(data.split4[0], data.split4[1], tableType='snp');
                 $("#results-table4").html(tableStr);
             };
-            if(data.splitn[1]) {
+            if(data.splitn[1].length != 0) {
                 var tableStr = createTable(data.splitn[0], data.splitn[1], tableType = 'snp');
                 $("#results-tablen").html(tableStr);
             }
