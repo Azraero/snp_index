@@ -85,13 +85,13 @@
 <!-- add loading hint -->
 <div id="query_hint"></div>
 <h2>Search Results:</h2>
-    <div id="results-table2"></div>
+    <div id="results-table2" class="results-tables"></div>
     <br/>
-    <div id="results-table3"></div>
+    <div id="results-table3" class="results-tables"></div>
     <br/>
-    <div id="results-table4"></div>
+    <div id="results-table4" class="results-tables"></div>
     <br/>
-    <div id="results-tablen"></div>
+    <div id="results-tablen" class="results-tables"></div>
 {% endblock %}
 
 {% block js %}
@@ -159,6 +159,7 @@ $(document).ready(function(){
       hint.appendTo('#query_hint');
       ajaxSend('{{ url_for('variation.get_snp_info') }}',{'info': info}, function(data){
         $('#query_hint').empty();
+	$('.results-tables').empty();
         if(data.msg != 'ok'){
           // alert(data.msg);
             createAlert(data.msg);
