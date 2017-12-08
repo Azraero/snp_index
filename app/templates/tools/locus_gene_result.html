@@ -60,6 +60,26 @@
                         {% endif %}
                         </tbody>
                     </table>
+                    <table width="100%" border="0">
+                        <tbody>
+                            <tr>
+                                <td class="header" colspan="2">Gene CDS Sequence</td>
+                            </tr>
+                            <tr>
+                                {{ locus_result['gene_cds_seq'] }}
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table width="100%" border="0">
+                        <tbody>
+                            <tr>
+                                <td class="header" colspan="2">Gene Protein Sequence</td>
+                            </tr>
+                            <tr>
+                                {{ locus_result['gene_pro_seq'] }}
+                            </tr>
+                        </tbody>
+                    </table>
                 </td>
             </tr>
             </tbody>
