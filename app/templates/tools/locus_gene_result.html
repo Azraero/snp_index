@@ -75,7 +75,7 @@
 				    	<td class="leftsmall">{{ key }}</td>
                             	</tr>
 				<tr>
-					<td class="leftsmall">{{ value }}</td>
+					<td class="leftsmall">{{ value | safe }}</td>
 				</tr>
 				<tr>
 					<td><br/></td>
@@ -99,7 +99,7 @@
 					<td class="leftsmall">{{ key }}</td>
 				</tr>
 				<tr>
-					<td class="leftsmall">{{ value }}</td>
+					<td class="leftsmall">{{ value | safe }}</td>
 				</tr>
 				<tr>
 					<td><br/></td>
