@@ -110,7 +110,7 @@ datatables/extensions/
 .idea/*
 
 app/static/snp_results/
-
+app/static/blast_results/
 # conf and uwsgi
 windows_x64
 uwsgi.ini
