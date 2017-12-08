@@ -11,7 +11,7 @@ BLAST_OUT_PATH = os.path.join(basedir, 'app', 'static', 'blast_results')
 
 def run_blast_result(genename):
     # rm last search results
-    rm_cmd = 'rm {dir}'.format(os.path.join(BLAST_OUT_PATH, '*'))
+    rm_cmd = 'rm {}'.format(os.path.join(BLAST_OUT_PATH, '*'))
     subprocess.call(rm_cmd, shell=True)
 
     blast_cmd = "blastdbcmd -entry {genename} -db '{db}' -out {out}"
