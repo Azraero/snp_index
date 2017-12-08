@@ -54,7 +54,11 @@ create_group_cmd = """
                                    SAMPLE VARCHAR(20),
                                    DESCRIPTION VARCHAR(100),
                    """
-
+create_genetrans_map_cmd = """
+                   create table {}(Id INT PRIMARY KEY AUTO_INCREMENT,
+                                   GENE_TRANS VARCHAR(100),
+                                   GENE VARCHAR(100)
+"""
 snp_table_info = {'cmd': create_snp_cmd,
                   'fixed_column_num': 6,
                   'fixed_column_name': ('CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'),
@@ -74,7 +78,12 @@ func_table_info = {'cmd': create_func_cmd,
                               'Pfam_ID', 'Interpro_ID', 'GO_ID'),
                    'add_key_str': ',key geneindex (GENE_ID)'}
 
+genetrans_map_info = {'cmd':create_genetrans_map_cmd,
+                      'header': ('GENE_TRANS', 'GENE'),
+                      'add_key_str': ',key geneindex (GENE_TRANS)'}
+
 table_info = {'snp': snp_table_info,
               'expr': expr_table_info,
               'func': func_table_info,
-              'locus': locus_table_info}
+              'locus': locus_table_info,
+              'geneTrans_map': genetrans_map_info}
