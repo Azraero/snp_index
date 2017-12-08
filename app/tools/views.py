@@ -4,14 +4,15 @@ import json
 from . import tools
 from flask import render_template, request
 from app.utils import login_require
-from .actions import get_locus_result
+from .actions import get_locus_result, run_blast_result
 
 @tools.route('/tools/locus_identifier_search')
 @login_require
 def locus_identifier_search():
     if request.args.get('gene', ''):
         genename = request.args['gene']
-        locus_result = get_locus_result(genename)
+        blast_results = run_blast_result(genename)
+        locus_result = get_locus_result(genename, blast_results)
         return render_template('tools/locus_gene_result.html',
                                locus_result=locus_result)
     return render_template('tools/locus_gene.html')
