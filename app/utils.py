@@ -273,22 +273,11 @@ def login_require(views):
         return redirect(url_for('auth.login'))
     return wrapper
 
-'''
-def mapSample(func):
-    def wrapper(*args, **kwargs):
-        samples = func(*args, **kwargs)
-        if samples:
-            map_dict = map_sample()
-            return [map_dict[sample] for sample in samples]
-        return samples
-    return wrapper
-'''
 
 def get_db_tables(user, type):
     db = DB()
     get_table_cmd = "select {table} from users where username='{user}'"
     result = db.execute(get_table_cmd.format(table=type + '_table', user=user.encode('utf-8')))
-    #print result
     if not result:
         return []
     else:
@@ -305,7 +294,6 @@ def get_samples_by_table(table, type):
     else:
         return []
     cmd = get_head_cmd.format(table)
-    #print cmd
     db = DB()
     header = db.execute(cmd)
     samples = [each[0] for each in header][fixed_column_num:]

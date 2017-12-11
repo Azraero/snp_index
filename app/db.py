@@ -71,34 +71,3 @@ class DB(object):
             cur.execute(cmd)
 
 
-if __name__ == '__main__':
-    # test code
-    db = DB()
-    db.execute('delete from users where id is not null')
-    db.insert_all('users', [{'username': 'chencheng',
-                             'password': '123',
-                             'email': '291552579@qq.com',
-                             'create_at': '2017-11-28 16:02',
-                             'is_active': 'Y',
-                             'is_admin': 'Y'},
-                            {'username': u'佳绩正',
-                             'password': '123',
-                             'email': 'jiajizhen@test.com',
-                             'create_at': '2017-11-30 11:38',
-                             'is_active': 'Y',
-                             'snp_table': 'snp_mRNA_table',
-                             'expr_table': 'expr_gene_pos',
-                             'desc_table': 'locus_gene_mlocus'}])
-
-    # db.delete('users', {'username': u'佳绩正'})
-
-    # db.update('users', {'snp_table': 'snp_mRNA_table:mRNA_table'}, {'username': u'佳绩正'})
-
-    # results = db.execute('select * from users')
-    # print results
-
-
-
-
-
-
