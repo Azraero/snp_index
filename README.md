@@ -9,6 +9,9 @@ snp index 是一个使用 [ jquery](http://www.juery.com) + [bootstrap](http://w
 - Tools:
 	- blast: 使用开源的 [ViroBLAST](https://els.comotion.uw.edu/licenses/1) 进行在线的 blast 分析;
 	- search locus identidier gene: 获得查询 gene 的基本信息表格;
+- Snp Index:
+    - snp index plot: 利用 [bedtools](http://bedtools.readthedocs.io/en/latest/) 和 [ggplot2](https:www.ggplot2.org)
+    按照输入的比较组信息和染色体进行 snp 位点的可视化;
 
 ## 关于安装与运行
 首先保证已经正确安装 `python2.7.12` 或在其它 `python2.7` 的运行环境和 `pip` 安装工具,然后执行以下代码:
@@ -26,7 +29,8 @@ python manager.py runserver
 - refactor app and add snp index plot.
 
 1.25 (05/12/2017)
-- app download snp index zip and map samples. 
+- app download snp index zip and map samples and auth system.
+
 
 
 
