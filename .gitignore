@@ -116,5 +116,3 @@ windows_x64
 uwsgi.ini
 snpIndex_nginx.conf
 viroblast
-
-test
