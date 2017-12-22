@@ -53,7 +53,7 @@ def get_group_data(groupList):
         # only check split not over 2
         filter_cell = [cell for cell in row[SNP_TABLE_HEADER:] if cell != '0' and cell != '0,0' and cell != '.']
         if len(filter_cell) == 0:
-            results_split2.append(row[:SNP_TABLE_HEADER] + ['0,0', 'NA', 'NA'])
+            results_split2.append(row[:SNP_TABLE_HEADER] + ['0|0', 'NA', 'NA'])
         else:
             # each row's cell len must be same
             cell_len = len(filter_cell[0].split(','))
@@ -128,6 +128,8 @@ def get_merge_group_data(group_info, groupALen, groupBLen,
                 for cellA, cellB in zip(ListA[SNP_TABLE_HEADER:], ListB[SNP_TABLE_HEADER:]):  # drop listB's header
                     tmpList.append(cellA)
                     tmpList.append(cellB)
+                # add extra three columns
+                tmpList = add_direction(tmpList)
                 mergeGroup_list[i].append(tmpList)
         # results_split2, results_split3, results_split4, results_splitn = mergeGroup_list
         # print mergeGroup_list
@@ -141,6 +143,7 @@ def calculate_table(cmd, groupA_len, groupB_len,
     header = ['CHR', 'POS', 'REF', 'ALT',
               'FEATURE', 'GENE',
               'GroupA', 'GroupB']
+    header_end = ['GroupA Direction', 'GroupB Direction', 'Total Depth']
 
     split_two = ['GroupA Frequency Primary Allele',
                  'GroupB Frequency Primary Allele',
@@ -168,10 +171,10 @@ def calculate_table(cmd, groupA_len, groupB_len,
                                                                                               filename,
                                                                                               chrom)
         results = {}
-        results['split2'] = (header + split_two, results_split2)
-        results['split3'] = (header + split_two + split_three, results_split3)
-        results['split4'] = (header + split_two + split_three + split_four, results_split4)
-        results['splitn'] = (header, results_splitn)
+        results['split2'] = (header + split_two + header_end, results_split2)
+        results['split3'] = (header + split_two + split_three + header_end, results_split3)
+        results['split4'] = (header + split_two + split_three + split_four + header_end, results_split4)
+        results['splitn'] = (header + header_end, results_splitn)
 
     return results
 
@@ -322,3 +325,26 @@ def map_sample(samples, map_dict):
     if samples:
         return [map_dict[sample] for sample in samples]
     return []
+
+'''
+add 2017-12-22 add three extra columns on snp table
+'''
+
+
+def get_direction(row):
+    groupList = [int(cell) for cell in row]
+    if groupList[0] < groupList[1]:
+        groupDirect = '1'
+    else:
+        groupDirect = '0'
+    return groupDirect
+
+
+def add_direction(row, sp='|'):
+    groupA = row[SNP_TABLE_HEADER].split(sp)
+    groupB = row[SNP_TABLE_HEADER + 1].split(sp)
+    groupADirect = get_direction(groupA[:2])
+    groupBDirect = get_direction(groupB[:2])
+    totalDepth = sum([int(cell) for cell in groupA + groupB])
+    row.extend([groupADirect, groupBDirect, str(totalDepth)])
+    return row
