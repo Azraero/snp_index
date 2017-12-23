@@ -1,12 +1,13 @@
 from flask import Flask, render_template
 from settings import config
-
+from .exetensions import Mail
 
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     register_blueprint(app)
+    register_exetensions(app)
     register_errorhandlers(app)
     return app
 
@@ -24,6 +25,11 @@ def register_blueprint(app):
     app.register_blueprint(expr_blueprint)
     app.register_blueprint(snp_blueprint)
     app.register_blueprint(auth_blueprint)
+    return None
+
+
+def register_exetensions(app):
+    Mail.init_app(app)
     return None
 
 
