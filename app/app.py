@@ -1,9 +1,16 @@
 from flask import Flask, render_template
-from settings import config
+from settings import config, Config
 from .exetensions import Mail
+from celery import Celery
+
+celery = Celery(__name__,
+                broker=Config.CELERY_BROKER_URL,
+                backend=Config.CELERY_RESULT_BACKEND)
+
 
 def create_app(config_name):
     app = Flask(__name__)
+    celery.conf.update(app.config)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     register_blueprint(app)
