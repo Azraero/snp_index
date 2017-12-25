@@ -22,11 +22,21 @@
                         {% endfor %}
             </select>
         </div>
-        </div>
-      </div>
-    <div class="col-xs-6">
       </div>
     </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupA Name:</span>
+            <input type="text" id="groupA-name" class="form-control input-group-sm"  name="groupA name" value="">
+        </div>
+        </div>
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupB Name:</span>
+            <input type="text" id="groupB-name" class="form-control input-group-sm"  name="groupB name" value="">
+        </div>
+        </div>
     </div>
 </div>
 <div>
@@ -76,6 +86,8 @@
 <script>
 function get_input_data(){
   var table = $("#select_file").find("option:selected").text();
+  var groupA_name = $("#groupA-name").val();
+  var groupB_name = $("#groupB-name").val();
   var groupA = [];
   var groupB = [];
   $("#multi_d_to option").each(function(){
@@ -85,9 +97,11 @@ function get_input_data(){
     groupB.push($(this).text());
   });
   var all_info = {
-    'table': table,
-    'groupA': groupA,
-    'groupB': groupB
+      'table': table,
+      'groupA_name': groupA_name,
+      'groupB_name': groupB_name,
+      'groupA': groupA,
+      'groupB': groupB
   };
   return all_info;
 }
