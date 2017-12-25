@@ -13,6 +13,9 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWD')
     MAIL_SUBJECT_PREFIX = ['SNP INDEX']
     MAIL_SENDER = 'Snp Index Admin <0>'.format(MAIL_USERNAME)
+    # Celery
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
     @staticmethod
     def init_app(app):
