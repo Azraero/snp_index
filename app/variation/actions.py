@@ -1,6 +1,7 @@
 import os
 import subprocess
 from settings import basedir
+from app.app import celery
 from app.mail import send_mail
 from app.db import DB
 
@@ -19,7 +20,8 @@ def create_group_info(groupA, groupB, filename):
             f.write('\t'.join([sample, groupB_name]) + '\n')
 
 
-def run_snp_variations(group_info, user):
+@celery.task
+def run_snp_variations(group_info):
     group_name = group_info.keys()
     groupA = group_info[group_name[0]]
     groupB = group_info[group_name[1]]
@@ -29,15 +31,17 @@ def run_snp_variations(group_info, user):
         input=INPUT_TABLE,
         output=os.path.join(basedir, 'app', 'static', 'variation_results', 'vs'.join(group_name) + '_table'),
         group=os.path.join(SNP_SCRIPT_DIR, 'vs'.join(group_name)),
-        depth=''
+        depth='5'
     )
     subprocess.call(cmd, shell=True)
+    '''
     db = DB()
     results = db.execute("select email from users where username='{0}'".format(user))
     if results[0][0]:
         to = results[0][0]
         send_mail(to, 'Snp Variation Results',
                   'mail/variation_results', user=user, href='')
+    '''
 
 
 
