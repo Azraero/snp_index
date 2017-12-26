@@ -61,8 +61,8 @@ def get_select_table(table):
 
 
 def show_calculate_tables():
-    tables = glob.glob(SNP_INDEX_TABLE_PATH)
+    tables = glob.glob(SNP_INDEX_TABLE_PATH + '/*')
     if tables:
-        return tables
+        return [table.rsplit('/',1)[1] for table in tables if len(table.split('.')) < 2]
     return []
 
