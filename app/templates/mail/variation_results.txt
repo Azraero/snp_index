@@ -1,0 +1,6 @@
+Snp Variation Results
+To download your results please click on the following link:
+{{ url_for('variation.search_all') }}
+Sincerely,
+The Onmath Team
+Note: this file address are not monitored.
