@@ -10,7 +10,7 @@ import glob
 RENDER_PATH = '/static/variation_results'
 SNP_SCRIPT_DIR = '/public/script/snp_index_table'
 SCRIPT_FILE = 'mergeSampleAlleSnpEff.py'
-INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA.filter.hq.snp.ann.table')
+INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA_snp_ann_table')
 SNP_INDEX_TABLE_PATH = os.path.join(basedir, 'app', 'static', 'variation_results')
 NOT_REP_SAMPLES = ['KYP1_1', 'KYP2_1', 'M4_19_1', 'M4_19_2', 'M4_19_3', 'M4_25_1', 'M4_25_2', 'M4_25_3',
                    'M5_3_1', 'M5_3_2', 'M5_3_3', 'M5_9_1', 'M5_9_2', 'M5_9_3', 'M9_2P1_1', 'M9_2P1_3',
