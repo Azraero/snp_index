@@ -22,6 +22,15 @@
                         {% endfor %}
             </select>
         </div>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Compared tables:</span>
+                <select class="selectpicker" data-width="25%" name="table" id="select-table">
+                        <option value= selected="selected"></option>
+                        {% for table in tables %}
+                        <option value={{ table }}>{{ table }}</option>
+                        {% endfor %}
+                </select>
+            </div>
       </div>
     </div>
     <div class="col-xs-6">
@@ -79,11 +88,20 @@
     <input class="btn btn-primary btn-sm"  id="submit" type="submit"  value="Submit">
   </div>
   <hr/>
+    <div id="results-table"></div>
 {% endblock %}
 
 {% block js %}
 <script src="/static/js/main.js"></script>
 <script>
+function createDownloadHref(tablename) {
+    var zip_href = '/static/variation_results/' + tablename + '.zip';
+    var testStr = "<div><h3>Snp Variation Table</h3>" +
+            "<p><a class='btn btn-primary' href='" + zip_href +
+            "' role='button'>Download &raquo;</a></p></div>"
+    return testStr;
+}
+
 function get_input_data(){
   var table = $("#select_file").find("option:selected").text();
   var groupA_name = $("#groupA-name").val();
@@ -138,22 +156,27 @@ $(document).ready(function(){
   });
   // multiselect plugin
   select_plugin();
-  /*
-  $("#search-button").bind('click', function(){
-    var searchSample = $("#search-sample").val();
-    var table = $("#select_file").find("option:selected").text();
-    ajaxSend('/search_sampe', {'table': table, 'sample': searchSample}, function(data){
-      var msg = data.msg;
-      if(msg == 'error'){
-        alert('没有找到相应的样品名称!');
-      }else{
-        sample = data.msg;
-        var tmp = $('<div class="col-xs-2"><div class="checkbox"><label><input type="checkbox" name="dispop" value="' + sample +'">' + sample + '</label></div></div>');
-        tmp.appendTo('.show-samples');
-      }
-    });
-  });
-  */
+  $("#select-table").change(function () {
+      var tableSelect = $(this).find("option:selected").text();
+      ajaxSend('{{ url_for('variation.select_table') }}', {'table': tableSelect }, function (data) {
+          var msg = data.msg;
+          if(msg == 'error'){
+              createAlert('you have not generated a divide table!');
+              return;
+          }else{
+              $("#results-table").empty();
+              if(data.table.length == 0){
+                  createAlert('no table file created! please check your info.');
+                  return;
+              }else{
+                  var tableStr = createDownloadHref(data.table);
+                  $("#results-table").html(tableStr);
+              }
+          }
+
+      })
+
+  })
   $("#submit").bind('click',function() {
       var info = get_input_data();
       var error_msg = check_input_data(info);
