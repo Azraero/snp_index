@@ -50,7 +50,7 @@ def run_snp_variations(group_info, user):
     if results[0][0]:
         to = results[0][0]
         send_mail(to, 'Snp Variation Results',
-                  'mail/variation_results', user=user)
+                  'mail/variation_results', user=user, filename='vs'.join(group_name) + '_table')
     return 'done'
 
 
