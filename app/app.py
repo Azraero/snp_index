@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from settings import config, Config
-from .exetensions import Mail
+from .exetensions import mail
 from celery import Celery
 
 celery = Celery(__name__,
@@ -36,7 +36,7 @@ def register_blueprint(app):
 
 
 def register_exetensions(app):
-    Mail.init_app(app)
+    mail.init_app(app)
     return None
 
 
