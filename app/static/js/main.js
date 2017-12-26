@@ -226,8 +226,9 @@ function createPlotData(groupA, groupB, data){
   return plotInfo;
 }
 
-function createAlert(msg) {
-    var alertStr = "<div class='alert alert-danger alert-dismissable'>" +
+function createAlert(msg, type) {
+    if(!type){type = 'alert-danger'};
+    var alertStr = "<div class='alert " + type + " alert-dismissable'>" +
         "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>" +
         "&times;</button>" +
         msg + "</div>";

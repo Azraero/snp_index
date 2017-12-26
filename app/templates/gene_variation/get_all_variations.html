@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block css %}
+<link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet">
+{% endblock %}
+{% block content %}
+<div class="panel-body">
+<div class="panel">
+  <h2>Get All Variations:</h2>
+    <div class="panel-heading">
+        <h3 class="panel-title">Select a file, chromosome and input a range. (<span class="text-danger">required</span>, &lt;1000kb)</h3>
+    </div>
+<div class="panel-body">
+  <div class="row">
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">File name:</span>
+            <select class="selectpicker" data-width="25%" name="file" id="select_file">
+                        <option value= selected="selected"></option>
+                        {% for file in files %}
+                        <option value={{file}}>{{file}}</option>
+                        {% endfor %}
+            </select>
+        </div>
+            <div class="input-group input-group-sm">
+                <span class="input-group-addon">Compared tables:</span>
+                <select class="selectpicker" data-width="25%" name="table" id="select-table">
+                        <option value= selected="selected"></option>
+                        {% for table in tables %}
+                        <option value={{ table }}>{{ table }}</option>
+                        {% endfor %}
+                </select>
+            </div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupA Name:</span>
+            <input type="text" id="groupA-name" class="form-control input-group-sm"  name="groupA name" value="">
+        </div>
+        </div>
+        <div class="form-group">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon">Custom GroupB Name:</span>
+            <input type="text" id="groupB-name" class="form-control input-group-sm"  name="groupB name" value="">
+        </div>
+        </div>
+    </div>
+</div>
+<div>
+  <h2>Divide groups:</h2>
+  <div class="panel-heading">
+  <h3 class="panel-title">Divide samples which showed below to two groups.</h3>
+  </div>
+  <div class="row">
+    <div class="col-xs-5">
+        <select name="from[]" id="multi_d" class="form-control" size="26" multiple="multiple">
+        </select>
+    </div>
+
+    <div class="col-xs-2">
+        <button type="button" id="multi_d_rightAll" class="btn btn-default btn-block" style="margin-top: 20px;"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+
+        <hr style="margin: 40px 0 60px;" />
+
+        <button type="button" id="multi_d_rightAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-forward"></i>&nbsp;ADD ALL</button>
+        <button type="button" id="multi_d_rightSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i>&nbsp;ADD</button>
+        <button type="button" id="multi_d_leftSelected_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i>&nbsp;REMOVE</button>
+        <button type="button" id="multi_d_leftAll_2" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i>&nbsp;REMOVE ALL</button>
+    </div>
+
+    <div class="col-xs-5">
+        <b>group A</b>
+        <select name="to[]" id="multi_d_to" class="form-control" size="8" multiple="multiple"></select>
+
+        <br/><hr/><br/>
+
+        <b>group B</b>
+        <select name="to_2[]" id="multi_d_to_2" class="form-control" size="8" multiple="multiple"></select>
+    </div>
+</div>
+</div>
+  <div class="panel-body">
+    <input class="btn btn-primary btn-sm"  id="submit" type="submit"  value="Submit">
+  </div>
+  <hr/>
+    <div id="results-table"></div>
+{% endblock %}
+
+{% block js %}
+<script src="/static/js/main.js"></script>
+<script>
+function createDownloadHref(tablename) {
+    var zip_href = '/static/variation_results/' + tablename + '.zip';
+    var testStr = "<div><h3>Snp Variation Table</h3>" +
+            "<p><a class='btn btn-primary' href='" + zip_href +
+            "' role='button'>Download &raquo;</a></p></div>"
+    return testStr;
+}
+
+function get_input_data(){
+  var table = $("#select_file").find("option:selected").text();
+  var groupA_name = $("#groupA-name").val();
+  var groupB_name = $("#groupB-name").val();
+  var groupA = [];
+  var groupB = [];
+  $("#multi_d_to option").each(function(){
+    groupA.push($(this).text());
+  });
+  $("#multi_d_to_2 option").each(function(){
+    groupB.push($(this).text());
+  });
+  var all_info = {
+      'table': table,
+      'groupA_name': groupA_name,
+      'groupB_name': groupB_name,
+      'groupA': groupA,
+      'groupB': groupB
+  };
+  return all_info;
+}
+
+function check_input_data(info){
+  keys = Object.keys(info);
+  var msg = '';
+  for(var i=0; i<keys.length; i++){
+    if(info[keys[i]].length == 0){
+      msg = keys[i] + ' is empty!';
+      return msg;
+    }
+  }
+  return msg;
+}
+$(document).ready(function(){
+  $("#select_file").change(function(){
+    var fileSelect = $(this).find("option:selected").text();
+    ajaxSend('{{ url_for('variation.select_file_by_variation') }}', {'file': fileSelect}, function(data){
+      var msg = data.msg;
+      if(msg == 'error'){
+        // alert('not find samples!');
+          createAlert('not find samples!');
+        $("#multi_d").empty();
+      }else{
+        $("#multi_d").empty();
+        samples = data.msg;
+        for(var i=0;i<samples.length;i++){
+          var tmp = $('<option value="' + samples[i] + '">' + samples[i] + '</option>');
+          tmp.appendTo('#multi_d');
+        }
+      }
+    });
+  });
+  // multiselect plugin
+  select_plugin();
+  $("#select-table").change(function () {
+      var tableSelect = $(this).find("option:selected").text();
+      ajaxSend('{{ url_for('variation.select_table') }}', {'table': tableSelect }, function (data) {
+          var msg = data.msg;
+          if(msg == 'error'){
+              createAlert('you have not generated a divide table!');
+              return;
+          }else{
+              $("#results-table").empty();
+              if(data.table.length == 0){
+                  createAlert('no table file created! please check your info.');
+                  return;
+              }else{
+                  var tableStr = createDownloadHref(data.table);
+                  $("#results-table").html(tableStr);
+              }
+          }
+
+      })
+
+  })
+  $("#submit").bind('click',function() {
+      var info = get_input_data();
+      var error_msg = check_input_data(info);
+      if (error_msg.length > 0) {
+          // alert(error_msg);
+          createAlert(error_msg);
+          return;
+      }
+      info = JSON.stringify(info);
+      ajaxSend('{{ url_for('variation.calculate_snp_variations') }}', {'info': info}, function (data) {
+          if (data.msg == 'error') {
+              createAlert(data.msg);
+              return;
+          } else {
+              createAlert(data.msg, type='alert-success');
+              return
+          }
+      }, 'POST');
+  });
+});
+</script>
+{% endblock %}
