@@ -39,9 +39,10 @@ def run_snp_variations(group_info, user):
         depth='5'
     )
     subprocess.call(cmd, shell=True)
+    os.chdir(os.path.join(basedir, 'app', 'static', 'variation_results'))
     zip_cmd = 'zip {0} {1}'.format(
-        os.path.join(basedir, 'app', 'static', 'variation_results', 'vs'.join(group_name) + '_table.zip'),
-        os.path.join(basedir, 'app', 'static', 'variation_results', 'vs'.join(group_name) + '_table')
+        'vs'.join(group_name) + '_table.zip',
+        'vs'.join(group_name) + '_table'
     )
     subprocess.call(zip_cmd, shell=True)
     db = DB()
