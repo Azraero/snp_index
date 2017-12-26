@@ -4,7 +4,7 @@ from . import variation
 from flask import render_template, jsonify, request, session
 from ..utils import login_require, get_db_tables, get_samples_by_table, \
     get_cmd_by_regin, get_cmd_by_gene, calculate_table, map_sample, get_map
-from .actions import run_snp_variations
+from .actions import run_snp_variations, get_select_table
 
 
 db2web_dict, web2db_dict = get_map()
@@ -97,5 +97,15 @@ def calculate_snp_variations():
         run_snp_variations.delay(group_info)
         return jsonify({'msg': 'job already calculate...'})
 
+
+@variation.route('/variation/select_table/')
+def select_table():
+    selected_table = request.args.get('table')
+    result = get_select_table(selected_table)
+    if result == 'error':
+        return jsonify({'msg': result,
+                        'table': ''})
+    return jsonify({'msg': 'ok',
+                    'table': result})
 
 

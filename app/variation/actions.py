@@ -5,9 +5,12 @@ from app.app import celery
 from app.mail import send_mail
 from app.db import DB
 
+
+RENDER_PATH = '/static/variation_results'
 SNP_SCRIPT_DIR = '/public/script/snp_index_table'
 SCRIPT_FILE = 'mergeSampleAlleSnpEff.py'
 INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA.filter.hq.snp.ann.table')
+SNP_INDEX_TABLE_PATH = os.path.join(basedir, 'app', 'static', 'variation_results')
 
 
 def create_group_info(groupA, groupB, filename):
@@ -21,7 +24,7 @@ def create_group_info(groupA, groupB, filename):
 
 
 @celery.task
-def run_snp_variations(group_info):
+def run_snp_variations(group_info, user):
     group_name = group_info.keys()
     groupA = group_info[group_name[0]]
     groupB = group_info[group_name[1]]
@@ -35,15 +38,25 @@ def run_snp_variations(group_info):
         depth='5'
     )
     subprocess.call(cmd, shell=True)
-    return 'done'
-    '''
+    zip_cmd = 'zip {0} {1}'.format(
+        os.path.join(basedir, 'app', 'static', 'variation_results', 'vs'.join(group_name) + '_table.zip'),
+        os.path.join(basedir, 'app', 'static', 'variation_results', 'vs'.join(group_name) + '_table')
+    )
+    subprocess.call(zip_cmd, shell=True)
     db = DB()
     results = db.execute("select email from users where username='{0}'".format(user))
     if results[0][0]:
         to = results[0][0]
         send_mail(to, 'Snp Variation Results',
-                  'mail/variation_results', user=user, href='')
-    '''
+                  'mail/variation_results', user=user)
+    return 'done'
+
+
+def get_select_table(table):
+    select_table_path = os.path.join(SNP_INDEX_TABLE_PATH, table)
+    if not os.path.exists(select_table_path):
+        return 'error'
+    return table
 
 
 
