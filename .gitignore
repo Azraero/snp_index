@@ -111,6 +111,7 @@ datatables/extensions/
 
 app/static/snp_results/
 app/static/blast_results/
+app/static/variation_results/
 # conf and uwsgi
 windows_x64
 uwsgi.ini
