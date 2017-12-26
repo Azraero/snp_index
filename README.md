@@ -31,6 +31,7 @@ python manager.py runserver
 1.25 (05/12/2017)
 - app download snp index zip and map samples and auth system.
 
-
+1.26 (26/12/2017)
+- add celery,search all snp variation and mail remind user.
 
 
