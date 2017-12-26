@@ -96,7 +96,7 @@ def calculate_snp_variations():
         group_info[info['groupA_name']] = map_sample(info['groupA'], web2db_dict)
         group_info[info['groupB_name']] = map_sample(info['groupB'], web2db_dict)
         run_snp_variations.delay(group_info, user)
-        return jsonify({'msg': 'job already calculate...'})
+        return jsonify({'msg': 'job already calculate, later you will be received a email to remind.'})
 
 
 @variation.route('/variation/select_table/')
