@@ -12,6 +12,11 @@ SNP_SCRIPT_DIR = '/public/script/snp_index_table'
 SCRIPT_FILE = 'mergeSampleAlleSnpEff.py'
 INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA.filter.hq.snp.ann.table')
 SNP_INDEX_TABLE_PATH = os.path.join(basedir, 'app', 'static', 'variation_results')
+NOT_REP_SAMPLES = ['KYP1_1', 'KYP2_1', 'M4_19_1', 'M4_19_2', 'M4_19_3', 'M4_25_1', 'M4_25_2', 'M4_25_3',
+                   'M5_3_1', 'M5_3_2', 'M5_3_3', 'M5_9_1', 'M5_9_2', 'M5_9_3', 'M9_2P1_1', 'M9_2P1_3',
+                   'WTGP1_3', 'WTGP2_1', 'Y4_19_1', 'Y4_19_2', 'Y4_19_3', 'Y4_25_1', 'Y4_25_2', 'Y4_25_3',
+                   'Y5_3_1', 'Y5_3_2', 'Y5_3_3', 'Y5_9_1', 'Y5_9_2', 'Y5_9_3', 'ZYP1_3', 'ZYP2_1',
+                   'CDRY_L_1', 'CDRY_L_2', 'CDRY_L_3', 'CTLY_L_1', 'CTLY_L_2', 'CTLY_L_3']
 
 
 def create_group_info(groupA, groupB, filename):
@@ -19,9 +24,15 @@ def create_group_info(groupA, groupB, filename):
     groupB_name = filename.split('vs')[1]
     with open(os.path.join(SNP_SCRIPT_DIR, filename), 'w+') as f:
         for sample in groupA:
-            f.write('\t'.join([sample.replace('_', '-'), groupA_name]) + '\n')
+            if sample in NOT_REP_SAMPLES:
+                f.write('\t'.join([sample, groupA_name]) + '\n')
+            else:
+                f.write('\t'.join([sample.replace('_', '-'), groupA_name]) + '\n')
         for sample in groupB:
-            f.write('\t'.join([sample.replace('_', '-'), groupB_name]) + '\n')
+            if sample in NOT_REP_SAMPLES:
+                f.write('\t'.join([sample, groupB_name]) + '\n')
+            else:
+                f.write('\t'.join([sample.replace('_', '-'), groupB_name]) + '\n')
 
 
 @celery.task
