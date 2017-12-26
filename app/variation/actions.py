@@ -10,7 +10,7 @@ import glob
 RENDER_PATH = '/static/variation_results'
 SNP_SCRIPT_DIR = '/public/script/snp_index_table'
 SCRIPT_FILE = 'mergeSampleAlleSnpEff.py'
-INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA.filter.hq.snp.ann.table')
+INPUT_TABLE = os.path.join(basedir, 'data', 'mRNA_snp_ann_table')
 SNP_INDEX_TABLE_PATH = os.path.join(basedir, 'app', 'static', 'variation_results')
 
 
