@@ -4,7 +4,7 @@ from . import variation
 from flask import render_template, jsonify, request, session
 from ..utils import login_require, get_db_tables, get_samples_by_table, \
     get_cmd_by_regin, get_cmd_by_gene, calculate_table, map_sample, get_map
-from .actions import run_snp_variations, get_select_table
+from .actions import run_snp_variations, get_select_table, show_calculate_tables
 
 
 db2web_dict, web2db_dict = get_map()
@@ -83,7 +83,8 @@ def get_snp_info():
 def search_all():
     user = session['login_id']
     tables = get_db_tables(user, type='snp')
-    return render_template('gene_variation/get_all_variations.html', files=tables)
+    calculate_tables = show_calculate_tables()
+    return render_template('gene_variation/get_all_variations.html', files=tables, tables=calculate_tables)
 
 
 @variation.route('/variation/calculate_snp_variations/', methods=['POST'])

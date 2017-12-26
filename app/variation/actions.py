@@ -4,6 +4,7 @@ from settings import basedir
 from app.app import celery
 from app.mail import send_mail
 from app.db import DB
+import glob
 
 
 RENDER_PATH = '/static/variation_results'
@@ -59,4 +60,9 @@ def get_select_table(table):
     return table
 
 
+def show_calculate_tables():
+    tables = glob.glob(SNP_INDEX_TABLE_PATH)
+    if tables:
+        return tables
+    return []
 
