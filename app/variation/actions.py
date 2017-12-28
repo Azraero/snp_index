@@ -18,6 +18,12 @@ NOT_REP_SAMPLES = ['KYP1_1', 'KYP2_1', 'M4_19_1', 'M4_19_2', 'M4_19_3', 'M4_25_1
                    'Y5_3_1', 'Y5_3_2', 'Y5_3_3', 'Y5_9_1', 'Y5_9_2', 'Y5_9_3', 'ZYP1_3', 'ZYP2_1',
                    'CDRY_L_1', 'CDRY_L_2', 'CDRY_L_3', 'CTLY_L_1', 'CTLY_L_2', 'CTLY_L_3']
 
+HD_SAMPLES = ['MHd_A3_5_1', 'MHd_A3_5_2', 'MHd_A3_5_3',
+              'MHd_L3_5_1_3', 'MHd_L3_5_2_1', 'MHd_L3_5_3_1']
+
+HD_SAMPLES_DICT = {'MHd_A3_5_1': 'MHd-A3_5_1', 'MHd_A3_5_2': 'MHd-A3_5_2', 'MHd_A3_5_3': 'MHd-A3_5_3',
+                   'MHd_L3_5_1_3': 'MHd-L3_5_1_3', 'MHd_L3_5_2_1': 'MHd-L3_5_2_1', 'MHd_L3_5_3_1': 'MHd-L3_5_3_1'}
+
 
 def create_group_info(groupA, groupB, filename):
     groupA_name = filename.split('vs')[0]
@@ -26,11 +32,15 @@ def create_group_info(groupA, groupB, filename):
         for sample in groupA:
             if sample in NOT_REP_SAMPLES:
                 f.write('\t'.join([sample, groupA_name]) + '\n')
+            elif sample in HD_SAMPLES:
+                f.write('\t'.join([HD_SAMPLES_DICT[sample], groupA_name]) + '\n')
             else:
                 f.write('\t'.join([sample.replace('_', '-'), groupA_name]) + '\n')
         for sample in groupB:
             if sample in NOT_REP_SAMPLES:
                 f.write('\t'.join([sample, groupB_name]) + '\n')
+            elif sample in HD_SAMPLES:
+                f.write('\t'.join([HD_SAMPLES_DICT[sample], groupB_name]) + '\n')
             else:
                 f.write('\t'.join([sample.replace('_', '-'), groupB_name]) + '\n')
 
