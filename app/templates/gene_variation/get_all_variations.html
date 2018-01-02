@@ -133,9 +133,9 @@ function check_input_data(info){
     if(info[keys[i]].length == 0){
       msg = keys[i] + ' is empty!';
       return msg;
-    }else if(key[i] == 'groupA_name' || key[i] == 'groupB_name'){
+    }else if(keys[i] == 'groupA_name' || keys[i] == 'groupB_name'){
         var pattern = /\s+/g;
-        if(pattern.test(key[i])){
+        if(pattern.test(info[keys[i]])){
             return 'custom group name not allowed includes space.';
         }
     }
