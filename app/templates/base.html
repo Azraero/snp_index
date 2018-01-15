@@ -42,12 +42,6 @@
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Snp Index<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="{{ url_for('snp.get_snp_plot') }}">Get Snp Index Plot</a></li>
-                </ul>
-              </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Genomic Variation<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
@@ -64,6 +58,8 @@
                     <li><a href="http://120.76.160.204/viroblast/viroblast.php">Blast</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ url_for('tools.locus_identifier_search') }}">Search Locus Identidier Gene</a></li>
+                     <li class="divider"></li>
+                     <li><a href="{{ url_for('tools.get_snp_plot') }}">Get Snp Index Plot</a></li>
                 </ul>
               </li>
               <li class="dropdown">

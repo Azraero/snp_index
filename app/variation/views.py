@@ -2,27 +2,25 @@
 import json
 from . import variation
 from flask import render_template, jsonify, request, session
-from ..utils import login_require, get_db_tables, get_samples_by_table, \
+from ..utils import get_table, get_samples_by_table, \
     get_cmd_by_regin, get_cmd_by_gene, calculate_table, map_sample, get_map
 from .actions import run_snp_variations, get_select_table, show_calculate_tables
-
+from flask_login import login_required, current_user
 
 db2web_dict, web2db_dict = get_map()
 
 
 @variation.route('/variation/search_by_regin')
-@login_require
+@login_required
 def search_by_regin():
-    user = session['login_id']
-    tables = get_db_tables(user, type='snp')
+    tables = get_table(current_user.username, type='snp')
     return render_template('gene_variation/search_by_regin.html', files=tables)
 
 
 @variation.route('/variation/search_by_gene')
-@login_require
+@login_required
 def search_by_gene():
-    user = session['login_id']
-    tables = get_db_tables(user, type='snp')
+    tables = get_table(current_user.username, type='snp')
     return render_template('gene_variation/search_by_gene.html', files=tables)
 
 
@@ -79,10 +77,9 @@ def get_snp_info():
 
 
 @variation.route('/variation/search_all/')
-@login_require
+@login_required
 def search_all():
-    user = session['login_id']
-    tables = get_db_tables(user, type='snp')
+    tables = get_table(current_user.username, type='snp')
     calculate_tables = show_calculate_tables()
     return render_template('gene_variation/get_all_variations.html', files=tables, tables=calculate_tables)
 
@@ -90,12 +87,11 @@ def search_all():
 @variation.route('/variation/calculate_snp_variations/', methods=['POST'])
 def calculate_snp_variations():
     if request.method == 'POST':
-        user = session['login_id']
         info = json.loads(request.form['info'])
         group_info = {}
         group_info[info['groupA_name']] = map_sample(info['groupA'], web2db_dict)
         group_info[info['groupB_name']] = map_sample(info['groupB'], web2db_dict)
-        run_snp_variations.delay(group_info, user)
+        run_snp_variations.delay(group_info, current_user.username)
         return jsonify({'msg': 'job already calculate, later you will be received a email to remind.'})
 
 

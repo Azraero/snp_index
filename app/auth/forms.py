@@ -24,11 +24,11 @@ class RegisterForm(FlaskForm):
         if not initial_validation:
             return False
 
-        self.user = User.query.filter_by(username=self.username).first()
+        self.user = User.query.filter_by(username=self.username.data).first()
         if self.user:
             self.username.errors.append('Username already registered')
             return False
-        self.user = User.query.filter_by(email=self.email).first()
+        self.user = User.query.filter_by(email=self.email.data).first()
         if self.user:
             self.email.errors.append('Email already registerd')
             return False
@@ -50,17 +50,14 @@ class LoginForm(FlaskForm):
         if not initial_validation:
             return False
 
-        self.user = User.query.filter_by(username=self.username).first()
+        self.user = User.query.filter_by(username=self.username.data).first()
         if not self.user:
-            self.username.errors.append('User not register')
-            return False
+            self.user = User.query.filter_by(email=self.username.data).first()
+            if not self.user:
+                self.username.errors.append('User/Email not register')
+                return False
 
-        self.user = User.query.filter_by(email=self.username).first()
-        if not self.user:
-            self.username.errors.append('Email not register')
-            return False
-
-        if not self.user.verify_password(self.password):
+        if not self.user.verify_password(self.password.data):
             self.password.errors.append('Password Error')
             return False
 

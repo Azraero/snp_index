@@ -4,7 +4,7 @@ from flask_migrate import MigrateCommand
 
 from app.app import create_app
 
-app = create_app('test')
+app = create_app('prod')
 manager = Manager(app)
 manager.add_command('runserver',
                     Server(host='0.0.0.0',

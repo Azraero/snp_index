@@ -2,8 +2,9 @@
 from . import auth
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User
-from app.exetensions import login_manager
+from app.exetensions import login_manager, db
 from .forms import RegisterForm, LoginForm
+from .models import Snptable
 from flask import render_template, \
     request, redirect, url_for, flash
 from settings import Config
@@ -23,6 +24,19 @@ def before_request():
             and request.endpoint[:5] != 'auth.' \
             and request.endpoint != 'static':
         return redirect(url_for('auth.unconfirmed'))
+
+
+@auth.before_app_first_request
+def create_test_table():
+    Snptable.query.delete()
+    tables = [Snptable(tablename='snp_mRNA_ann_table',
+                       tabletype='snp',
+                       owner='chencheng'),
+              Snptable(tablename='expr_gene_tmp_pos',
+                       tabletype='expr',
+                       owner='chencheng')]
+    db.session.add_all(tables)
+    db.session.commit()
 
 
 @auth.route('/unconfirmed')
@@ -45,11 +59,12 @@ def logout():
 def confirm(token):
     user = User.confirm(token)
     if user:
-        if user.is_active:
+        if user.active:
             flash('you have update your email infomation.', 'success')
             login_user(user)
             return redirect(url_for('main.index'))
-        if not user.is_active:
+        if not user.active:
+            user.update(active=True)
             flash('you have confirm your account. Thanks!', 'success')
             return redirect(url_for('main.index'))
     else:
@@ -81,7 +96,7 @@ def login():
         if form.validate_on_submit():
             login_user(form.user)
             flash('You are loggin in.', 'success')
-            redicret_url = request.args.get('next') or url_for('users.members')
+            redicret_url = request.args.get('next') or url_for('main.index')
             return redirect(redicret_url)
     return render_template('auth/login.html', form=form)
 

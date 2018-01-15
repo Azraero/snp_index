@@ -17,8 +17,8 @@ class Config(object):
     CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
     CELERY_BROKER_URL = 'redis://localhost:6379/0'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    MAIL_MAP = {'qq': '',
-                '163': ''}
+    MAIL_MAP = {'qq.com': 'https://mail.qq.com',
+                '163.com': 'https://mail.163.com'}
 
     @staticmethod
     def init_app(app):
