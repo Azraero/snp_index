@@ -1,5 +1,6 @@
 from flask import render_template, request, jsonify, session
-from app.utils import get_db_tables, get_samples_by_table, login_require, get_map, map_sample
+from app.utils import get_db_tables, get_samples_by_table, get_map, map_sample
+from flask_login import login_required
 import re
 import json
 from . import expr
@@ -10,7 +11,7 @@ db2web_dict, web2db_dict = get_map()
 
 
 @expr.route('/expr/show_by_gene')
-@login_require
+@login_required
 def show_by_gene():
     user = session['login_id']
     tables = get_db_tables(user, type='expr')

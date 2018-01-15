@@ -7,6 +7,7 @@ from .actions import get_select_group_info, get_snp_info, run_snpplot_script
 from . import snp
 from settings import basedir
 import glob
+
 SNP_INDEX_PATH = os.path.join(basedir, 'app', 'static', 'snp_results')
 RENDER_PATH = '/static/snp_results'
 db2web_dict, web2db_dict = get_map()

@@ -2,8 +2,8 @@ import os
 
 HOSTNAME = 'localhost'
 DATABASE = 'snp_index'
-USERNAME = os.environ.get('USERNAME', 'onmaisiadmin')
-PASSWORD = os.environ.get('PASSWORD', 'onmaisiadmin')
+USERNAME = os.environ.get('DB_USERNAME', '')
+PASSWORD = os.environ.get('DB_PASSWORD', '')
 DB_URI = 'mysql://{}:{}@{}/{}'.format(
     USERNAME, PASSWORD, HOSTNAME, DATABASE)
 

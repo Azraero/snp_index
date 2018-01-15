@@ -13,15 +13,15 @@ class User(UserMixin, db.Model):
     id = Column(db.Integer, primary_key=True)
     username = Column(db.String(80), nullable=False, unique=True)
     password_hash = Column(db.String(128))
-    email = Column(db.String(50))
+    email = Column(db.String(50), unique=True)
     create_at = Column(db.DateTime, default=datetime.now())
-    is_active = Column(db.Boolean, default=False)
+    active = Column(db.Boolean, default=False)
     is_admin = Column(db.Boolean, default=False)
 
-    def __init__(self, username, email, password, is_actvie=False, is_admin=False, create_at=datetime.now()):
+    def __init__(self, username, email, password, actvie=False, is_admin=False, create_at=datetime.now()):
         self.username = username
         self.email = email
-        self.is_active = is_actvie
+        self.active = actvie
         self.is_admin = is_admin
         self.create_at = create_at
         if password:
@@ -31,16 +31,16 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expiration)
         return s.dumps({'confirm': self.id})
 
-    def confirm(self, token):
+
+    @classmethod
+    def confirm(cls, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
             data = s.loads(token)
         except:
-            return False
-        if data.get('confirm') != self.id:
-            return False
-        self.update(is_active=True)
-        return True
+            return None
+        user = cls.query.filter_by(id=data.get('confirm', '')).first()
+        return user
 
     def save(self, commit=True):
         db.session.add(self)

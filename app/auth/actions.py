@@ -19,6 +19,7 @@ def check_login(form_data):
         return False, 'user not active'
     return False, 'user not found'
 
+
 def save_register(form_data):
     db = DB()
     user = form_data['user']
