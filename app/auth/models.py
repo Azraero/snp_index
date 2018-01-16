@@ -9,7 +9,7 @@ Column = db.Column
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = Column(db.Integer, primary_key=True)
     username = Column(db.String(80), nullable=False, unique=True)
     password_hash = Column(db.String(128))

@@ -2,9 +2,8 @@
 from . import auth
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User
-from app.exetensions import login_manager, db
+from app.exetensions import login_manager
 from .forms import RegisterForm, LoginForm
-from .models import Snptable
 from flask import render_template, \
     request, redirect, url_for, flash
 from settings import Config
@@ -26,6 +25,7 @@ def before_request():
         return redirect(url_for('auth.unconfirmed'))
 
 
+'''
 @auth.before_app_first_request
 def create_test_table():
     Snptable.query.delete()
@@ -37,6 +37,7 @@ def create_test_table():
                        owner='chencheng')]
     db.session.add_all(tables)
     db.session.commit()
+'''
 
 
 @auth.route('/unconfirmed')
