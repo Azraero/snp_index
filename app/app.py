@@ -4,7 +4,7 @@ from .exetensions import mail, db, migrate, login_manager
 from flask_admin import Admin
 from admin.views import authModelView, myAdminIndex
 from auth.models import User
-
+import assets
 
 from celery import Celery
 
@@ -29,14 +29,12 @@ def register_blueprint(app):
     from .main import main as main_blueprint
     from .tools import tools as tools_blueprint
     from .expr import expr as expr_blueprint
-    from .snp import snp as snp_blueprint
     from .auth import auth as auth_blueprint
     from .variation import variation as variation_blueprint
     app.register_blueprint(main_blueprint)
     app.register_blueprint(variation_blueprint)
     app.register_blueprint(tools_blueprint)
     app.register_blueprint(expr_blueprint)
-    app.register_blueprint(snp_blueprint)
     app.register_blueprint(auth_blueprint)
     return None
 
@@ -46,6 +44,7 @@ def register_exetensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    assets.init_app(app)
     return None
 
 
