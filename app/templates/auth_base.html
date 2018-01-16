@@ -11,10 +11,9 @@
     <title>snp index</title>
 
     <!-- Bootstrap core CSS -->
-    <link href={{ url_for('static', filename='css/bootstrap.css') }} rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href={{ url_for('static', filename='css/auth_base.css') }} rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+    {% assets 'css_auth' -%}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {%- endassets %}
     {% block css %}
     {% endblock %}
   </head>
@@ -22,6 +21,7 @@
   <body>
 
     <nav class="navbar navbar-default navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -41,6 +41,7 @@
                 <li><a href='http://www.onmath.com'>Contact</a></li>
             </ul>
         </div><!--/.nav-collapse -->
+        </div>
     </nav>
 
     <div class="container">
@@ -59,8 +60,9 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src={{ url_for('static', filename='js/jquery.min.js') }}></script>
-    <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
+    {% assets 'js_comment' -%}
+        <script src="{{ ASSET_URL }}"></script>
+    {%- endassets %}
     {% block script %}
     {% endblock %}
   </body>
