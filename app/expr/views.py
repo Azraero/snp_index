@@ -1,5 +1,6 @@
-from flask import render_template, request, jsonify, session
-from app.utils import get_db_tables, get_samples_by_table, login_require, get_map, map_sample
+from flask import render_template, request, jsonify
+from app.utils import get_table, get_samples_by_table, get_map, map_sample
+from flask_login import login_required, current_user
 import re
 import json
 from . import expr
@@ -9,15 +10,14 @@ from .actions import get_expr_table
 db2web_dict, web2db_dict = get_map()
 
 
-@expr.route('/expr/show_by_gene')
-@login_require
+@expr.route('/show_by_gene')
+@login_required
 def show_by_gene():
-    user = session['login_id']
-    tables = get_db_tables(user, type='expr')
+    tables = get_table(current_user.username, type='expr')
     return render_template('expr/show_by_gene.html', files=tables)
 
 
-@expr.route('/expr/select_file', methods=['GET'])
+@expr.route('/select_file', methods=['GET'])
 def select_file_by_expr():
     filename = request.args.get('file', '')
     if filename:
@@ -29,7 +29,7 @@ def select_file_by_expr():
     return jsonify({'msg': 'error'})
 
 
-@expr.route('/expr/get_expr_info', methods=['POST'])
+@expr.route('/get_expr_info', methods=['POST'])
 def get_expr_info():
     if request.method == 'POST':
         info = request.form['info']

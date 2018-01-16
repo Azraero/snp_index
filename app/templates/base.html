@@ -9,22 +9,10 @@
     <meta name="author" content="">
 
     <title>show SNP Index1.12</title>
-    <link href={{ url_for('static', filename='datatables/jquery.dataTables.min.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='css/jquery.dataTables.min.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='datatables/extensions/Buttons/css/buttons.dataTables.min.css') }} rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href={{ url_for('static', filename='css/bootstrap-select.css') }} rel="stylesheet">
-    <link href={{ url_for('static', filename='css/main.css') }} rel="stylesheet">
-    <script type="text/javascript" src='/static/js/jquery.min.js'></script>
-    <script type="text/javascript" src='/static/js/bootstrap.min.js'></script>
-    <script type="text/javascript" src='/static/datatables/jquery.dataTables.min.js'></script>
-    <script type="text/javascript" src='/static/js/bootstrap-select.js'></script>
-    <script type="text/javascript" src="/static/js/multiselect.min.js"></script>
-    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/dataTables.buttons.min.js'></script>
-    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.colVis.min.js'></script>
-    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.flash.min.js'></script>
-    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.html5.min.js'></script>
-    <script type="text/javascript" src='/static/datatables/extensions/Buttons/js/buttons.print.min.js'></script>
+    {% assets "css_all" -%}
+        <link rel="stylesheet" href="{{ ASSET_URL }}">
+    {%- endassets %}
     {% block css %}
     {% endblock %}
     <link rel="apple-touch-icon-precomposed" href="{{url_for('static', filename='images/logo_icon.png') }}">
@@ -42,12 +30,6 @@
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
             <ul class="nav navbar-nav navbar-right">
-                <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Snp Index<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="{{ url_for('snp.get_snp_plot') }}">Get Snp Index Plot</a></li>
-                </ul>
-              </li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Genomic Variation<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
@@ -64,6 +46,8 @@
                     <li><a href="http://120.76.160.204/viroblast/viroblast.php">Blast</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ url_for('tools.locus_identifier_search') }}">Search Locus Identidier Gene</a></li>
+                     <li class="divider"></li>
+                     <li><a href="{{ url_for('tools.get_snp_plot') }}">Get Snp Index Plot</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -81,6 +65,12 @@
 </div>
 <div class="container">
     <div class="myalert"></div>
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+    </div>
+    {% endfor %}
   {% block content %}
   {% endblock %}
     <hr/>
@@ -90,6 +80,9 @@
     </footer>
 </div>
 </body>
+  {% assets "js_all" -%}
+      <script src="{{ ASSET_URL }}"></script>
+  {%- endassets %}
 {% block js %}
 {% endblock %}
 </html>

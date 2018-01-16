@@ -366,3 +366,15 @@ def humanize_bytes(bytesize, precision=2):
             break
 
     return '%.*f %s' % (precision, bytesize / factor, suffix)
+
+
+'''
+add on 2018-01-15 
+'''
+
+
+def get_table(user, type):
+    from auth.models import Snptable
+    results = Snptable.query.filter_by(owner=user, tabletype=type)
+    tables = [result.tablename for result in results]
+    return tables

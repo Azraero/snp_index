@@ -1,5 +1,5 @@
 {% extends 'auth_base.html' %}
-
+{% from 'auth/_authform.html' import render_field %}
 {% block css %}
 {% endblock %}
 
@@ -10,80 +10,16 @@
 {% block content %}
 <div class="row">
 <h2 style="text-align: center">Registration</h2>
-<form class="form-horizontal" method="post" action="">
-<fieldset>
-<div class="form-group">
-  <label class="col-md-4 control-label">Name</label>
-  <div class="col-md-4">
-  <input id="username" placeholder="Insert your Name" class="form-control input-md" required="" type="text">
-  <span class="help-block"> </span>
-  </div>
-</div>
-
-    <div class="form-group">
-  <label class="col-md-4 control-label">Email</label>
-  <div class="col-md-4">
-  <input id="email" placeholder="Insert your Email" class="form-control input-md" required="" type="text">
-  <span class="help-block"> </span>
-  </div>
-</div>
-
-<div class="form-group">
-  <label class="col-md-4 control-label">Password</label>
-  <div class="col-md-4">
-  <input type="password" id="password1" placeholder="Insert your Password" class="form-control input-md" required="" type="text">
-  <span class="help-block"> </span>
-  </div>
-</div>
-
-<div class="form-group">
-  <label class="col-md-4 control-label">Confirm Password</label>
-  <div class="col-md-4">
-  <input type="password" id="password2" placeholder="Confirm your Password" class="form-control input-md" required="" type="text">
-  <span class="help-block"> </span>
-  </div>
-</div>
-
-<div class="form-group">
-  <label class="col-md-4 control-label"> </label>
-  <div class="col-md-4">
-    <button id="singlebutton" class="btn btn-primary">Submit</button>
-  </div>
-</div>
-
-</fieldset>
+<form class="form form-register" method="post" action="{{ url_for('auth.register') }}">
+    {{ form.csrf_token }}
+    {{ render_field(form.username, placeholder="Username", class_="form-control") }}
+    {{ render_field(form.email, placeholder="Username", class_="form-control") }}
+    {{ render_field(form.password, placeholder="Password", class_="form-control") }}
+    {{ render_field(form.confirm, placeholder="Verify Password", class_="form-control") }}
+    <p align="center"><input class="btn btn-primary" type="submit" value="submit"/></p>
 </form>
-	</div>
+</div>
 {% endblock %}
 
 {% block script %}
-    <script src="/static/js/main.js"></script>
-<script>
-$(document).ready(function() {
-    //$.ajaxSetup({async:false});
-    $("#singlebutton").click(function (event) {
-        event.preventDefault();
-        var user = $("#username").val();
-        var password1 = $("#password1").val();
-        var password2 = $("#password2").val();
-        var email = $("#email").val();
-        if (password1 == '' || password2 == '' || user == '' || email == '') {
-            createAlert('user and password and email is required!');
-        } else if (password1 !== password2) {
-            createAlert('twice password not equal!');
-        } else {
-            var data = JSON.stringify({'user': user, 'password': password1, 'email': email});
-            ajaxSend("{{ url_for('auth.register') }}",{'data': data}, function (data) {
-                var msg = data.msg;
-                if (msg == 'ok') {
-                    window.location.href = "{{url_for('auth.login')}}";
-                } else {
-                    createAlert(data.msg);
-                }
-            }, 'post')
-        }
-        ;
-    });
-});
-</script>
 {% endblock %}
