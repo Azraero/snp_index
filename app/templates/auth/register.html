@@ -10,13 +10,13 @@
 {% block content %}
 <div class="row">
 <h2 style="text-align: center">Registration</h2>
-<form class="form-horizontal" method="post" action="{{ url_for('auth.register') }}">
+<form class="form form-register" method="post" action="{{ url_for('auth.register') }}">
     {{ form.csrf_token }}
     {{ render_field(form.username, placeholder="Username", class_="form-control") }}
     {{ render_field(form.email, placeholder="Username", class_="form-control") }}
     {{ render_field(form.password, placeholder="Password", class_="form-control") }}
     {{ render_field(form.confirm, placeholder="Verify Password", class_="form-control") }}
-    <p><input class="btn btn-primary" type="submit" value="submit"/></p>
+    <p align="center"><input class="btn btn-primary" type="submit" value="submit"/></p>
 </form>
 </div>
 {% endblock %}

@@ -10,11 +10,11 @@
 
 {% block content %}
     <h2 style="text-align: center">Sign In</h2>
-    <form class="form" method="post" action="{{ url_for('auth.login') }}">
+    <form class="form form-sigin" method="post" action="{{ url_for('auth.login') }}">
         {{ form.csrf_token }}
         {{ render_field(form.username, placeholder="Username", class_="form-control") }}
         {{ render_field(form.password, placeholder="Password", class_="form-control") }}
-        <p><input type="submit" class="btn btn-primary" value="submit"></p>
+        <p align="center"><input type="submit" class="btn btn-primary" value="submit"></p>
     </form>
 {% endblock %}
 
