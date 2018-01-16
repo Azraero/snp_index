@@ -15,7 +15,7 @@ RENDER_PATH = '/static/snp_results'
 db2web_dict, web2db_dict = get_map()
 
 
-@tools.route('/locus_identifier_search')
+@tools.route('/locus_identifier_search/')
 @login_required
 def locus_identifier_search():
     if request.args.get('gene', ''):
@@ -27,7 +27,7 @@ def locus_identifier_search():
     return render_template('tools/locus_gene.html')
 
 
-@tools.route('/select_file')
+@tools.route('/select_file/')
 def select_file_by_plot():
     filename = request.args.get('file', '')
     if filename:
@@ -39,13 +39,13 @@ def select_file_by_plot():
     return jsonify({'msg': 'error'})
 
 
-@tools.route('/get_snp_plot')
+@tools.route('/get_snp_plot/')
 def get_snp_plot():
     tables, groups = get_snp_info(current_user.username)
     return render_template('tools/get_snp_plot.html', files=tables, groups=groups)
 
 
-@tools.route('/select_group')
+@tools.route('/select_group/')
 def select_group():
     select_group = request.args.get('group')
     plot_files = get_select_group_info(select_group)
@@ -54,7 +54,7 @@ def select_group():
                     'name': 'vs'.join(select_group.split('_'))})
 
 
-@tools.route('/generate_snp_plot', methods=['POST'])
+@tools.route('/generate_snp_plot/', methods=['POST'])
 def generate_snp_plot():
     if request.method == 'POST':
         info = json.loads(request.form['info'])
