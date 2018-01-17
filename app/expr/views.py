@@ -10,14 +10,14 @@ from .actions import get_expr_table
 db2web_dict, web2db_dict = get_map()
 
 
-@expr.route('/show_by_gene')
+@expr.route('/show_by_gene/')
 @login_required
 def show_by_gene():
     tables = get_table(current_user.username, type='expr')
     return render_template('expr/show_by_gene.html', files=tables)
 
 
-@expr.route('/select_file', methods=['GET'])
+@expr.route('/select_file/', methods=['GET'])
 def select_file_by_expr():
     filename = request.args.get('file', '')
     if filename:
@@ -29,7 +29,7 @@ def select_file_by_expr():
     return jsonify({'msg': 'error'})
 
 
-@expr.route('/get_expr_info', methods=['POST'])
+@expr.route('/get_expr_info/', methods=['POST'])
 def get_expr_info():
     if request.method == 'POST':
         info = request.form['info']

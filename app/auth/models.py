@@ -18,10 +18,10 @@ class User(UserMixin, db.Model):
     active = Column(db.Boolean, default=False)
     is_admin = Column(db.Boolean, default=False)
 
-    def __init__(self, username, email, password, actvie=False, is_admin=False, create_at=datetime.now()):
+    def __init__(self, username, email, password, active=False, is_admin=False, create_at=datetime.now()):
         self.username = username
         self.email = email
-        self.active = actvie
+        self.active = active
         self.is_admin = is_admin
         self.create_at = create_at
         if password:
