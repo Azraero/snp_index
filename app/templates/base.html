@@ -57,7 +57,10 @@
                 </ul>
               </li>
               <li><a href='http://www.onmath.com'>Contact</a></li>
-                <li><a href='{{ url_for('auth.logout') }}'>logout</a></li>
+                {% if current_user.is_admin %}
+                    <li><a href="/admin">Admin</a></li>
+                {% endif %}
+                <li><a href='{{ url_for('auth.logout') }}'>Logout</a></li>
             </ul>
     </div>
   </div>
