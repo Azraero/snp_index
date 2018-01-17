@@ -13,7 +13,7 @@ $(document).ready(function(){
   select_plugin()
   $("#select_file").change(function(){
     var fileSelect = $(this).find("option:selected").text();
-    ajaxSend('/expr/select_file_by_expr', {'file': fileSelect}, function(data){
+    ajaxSend('/expr/select_file/', {'file': fileSelect}, function(data){
       var msg = data.msg;
       if(msg == 'error'){
         createAlert('not find samples!');
