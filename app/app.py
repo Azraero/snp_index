@@ -3,7 +3,7 @@ from settings import config, Config
 from .exetensions import mail, db, migrate, login_manager
 from flask_admin import Admin
 from admin.views import authModelView, myAdminIndex
-from auth.models import User
+from auth.models import User, Snptable
 import assets
 
 from celery import Celery
@@ -63,3 +63,4 @@ def register_errorhandlers(app):
 def register_admin(app):
     admin = Admin(app, index_view=myAdminIndex(), base_template='admin/nav.html')
     admin.add_view(authModelView(User, db.session))
+    admin.add_view(authModelView(Snptable, db.session))
