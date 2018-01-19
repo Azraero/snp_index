@@ -34,4 +34,6 @@ python manager.py runserver
 1.26 (26/12/2017)
 - add celery,search all snp variation and mail remind user.
 
+2.00 (19/01/2018)
+- refactor auth system, mail verify and so on. 
 
