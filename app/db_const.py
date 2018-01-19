@@ -2,8 +2,8 @@ import os
 
 HOSTNAME = 'localhost'
 DATABASE = 'snp_index'
-USERNAME = os.environ.get('DB_USERNAME', '')
-PASSWORD = os.environ.get('DB_PASSWORD', '')
+USERNAME = os.environ.get('DB_USER', 'onmaisiadmin')
+PASSWORD = os.environ.get('DB_PASSWD', 'onmaisiadmin')
 DB_URI = 'mysql://{}:{}@{}/{}'.format(
     USERNAME, PASSWORD, HOSTNAME, DATABASE)
 
@@ -30,6 +30,7 @@ create_snp_cmd = """
                                    ALT VARCHAR(10),
                                    FEATURE VARCHAR(50),
                                    GENE VARCHAR(100),
+                                   ALLE VARCHAR(20),
                    """
 
 create_locus_cmd = """
@@ -60,8 +61,8 @@ create_genetrans_map_cmd = """
                                    GENE VARCHAR(100)
 """
 snp_table_info = {'cmd': create_snp_cmd,
-                  'fixed_column_num': 6,
-                  'fixed_column_name': ('CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'),
+                  'fixed_column_num': 7,
+                  'fixed_column_name': ('CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE', 'ALLE'),
                   'add_key_str': ',key chrindex (CHR), key posindex (POS)'}
 
 expr_table_info = {'cmd': create_expr_cmd,

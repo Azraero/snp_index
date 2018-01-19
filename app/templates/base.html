@@ -56,11 +56,11 @@
                   <li><a href="{{ url_for('expr.show_by_gene') }}">Search for Expression by Gene</a></li>
                 </ul>
               </li>
-              <li><a href='http://www.onmath.com'>Contact</a></li>
                 {% if current_user.is_admin %}
                     <li><a href="/admin">Admin</a></li>
                 {% endif %}
                 <li><a href='{{ url_for('auth.logout') }}'>Logout</a></li>
+                <li><a href='http://www.onmath.com'>Contact</a></li>
             </ul>
     </div>
   </div>
@@ -68,10 +68,10 @@
 </div>
 <div class="container">
     <div class="myalert"></div>
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning">
+    {% for message in get_flashed_messages(with_categories=true) %}
+    <div class="alert alert-{{ message[0] }}">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{ message }}
+        {{ message[1] }}
     </div>
     {% endfor %}
   {% block content %}
@@ -79,7 +79,7 @@
     <hr/>
     <footer>
         <p class="pull-right"><a href="#">Back to top</a></p>
-        <p>&copy; 2017 <a href="http://www.onmath.com">OnMath, Inc.</a> &middot; Privacy &middot; <a href="#">Terms</a></p>
+        <p>&copy; 2018 <a href="http://www.onmath.com">OnMath, Inc.</a> &middot; Privacy &middot; <a href="#">Terms</a></p>
     </footer>
 </div>
 </body>

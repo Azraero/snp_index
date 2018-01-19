@@ -11,7 +11,7 @@ MAP_GROUP_PATH = os.path.join(basedir, 'data', 'mRNA_group_cut')
 RENDER_PATH = '/static/snp_results'
 PLOT_HEADER = 2
 SPLIT_GROUP = 4
-SNP_TABLE_HEADER = 6
+SNP_TABLE_HEADER = 7
 
 
 def get_db_data(cmd, fetchall=True):
@@ -141,7 +141,7 @@ def calculate_table(cmd, groupA_len, groupB_len,
                     output=False,
                     chrom=''):
     header = ['CHR', 'POS', 'REF', 'ALT',
-              'FEATURE', 'GENE',
+              'FEATURE', 'GENE', 'ALLE',
               'GroupA', 'GroupB']
     header_end = ['GroupA Direction', 'GroupB Direction', 'Total Depth']
 
@@ -195,7 +195,7 @@ def get_cmd_by_regin(table, groupA, groupB, get_all=False, chrom='', start_pos='
     :param end_pos:
     :return: mysql raw cmd and groups length
     '''
-    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
+    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE', 'ALLE'] + groupA + groupB
     select_columns_str = ','.join(select_columns)
     if get_all:
         get_group_cmd = "select {columns} from {table} where CHR='{chrom}';"
@@ -226,7 +226,7 @@ def get_cmd_by_gene(table, gene_id, up, down, groupA, groupB):
     :param groupB:
     :return:
     '''
-    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE'] + groupA + groupB
+    select_columns = ['CHR', 'POS', 'REF', 'ALT', 'FEATURE', 'GENE', 'ALLE'] + groupA + groupB
     get_group_cmd = "select POS from {table} where GENE='{gene_id}';"
     select_columns_str = ','.join(select_columns)
     cmd = get_group_cmd.format(
@@ -291,7 +291,7 @@ def get_db_tables(user, type):
 def get_samples_by_table(table, type):
     # expr 5
     if type == 'snp':
-        fixed_column_num = 7
+        fixed_column_num = 8
     elif type == 'expr':
         fixed_column_num = 5
     else:

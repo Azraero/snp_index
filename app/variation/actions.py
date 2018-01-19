@@ -66,12 +66,14 @@ def run_snp_variations(group_info, user):
         'vs'.join(group_name) + '_table'
     )
     subprocess.call(zip_cmd, shell=True)
+    '''
     rm_cmd = 'rm -rf {0}'.format(
         'vs'.join(group_name) + '_table'
     )
     subprocess.call(rm_cmd, shell=True)
+    '''
     db = DB()
-    results = db.execute("select email from users where username='{0}'".format(user))
+    results = db.execute("select email from user where username='{0}'".format(user))
     if results[0][0]:
         to = results[0][0]
         send_mail(to, 'Snp Variation Results',
