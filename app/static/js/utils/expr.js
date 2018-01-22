@@ -46,9 +46,9 @@ $(document).ready(function(){
     if(check_gene(info)){
       info = JSON.stringify(info);
       $("#query_hint").empty();
-      var hint = $('<span><img src="../static/images/hint.gif" />' + 'loading data, please wait...</span>');
+      var hint = $('<span><img src="../../static/images/hint.gif" />' + 'loading data, please wait...</span>');
       hint.appendTo('#query_hint');
-      ajaxSend('/expr/get_expr_info',{'info': info}, function(data){
+      ajaxSend('/expr/get_expr_info/',{'info': info}, function(data){
         if(data.msg != 'ok'){
           createAlert(data.msg);
           $("#query_hint").empty();
@@ -61,7 +61,7 @@ $(document).ready(function(){
           generate_plot(createPlotData(groupA, groupB, data.bodyData));
           tableStr = createTable(data.headData, data.bodyData, tableType='expr');
           $("#results-table").html(tableStr);
-          $("#region_table").DataTable({
+          $("#results_table").DataTable({
             dom: 'lBfrtip',
             "scrollX": true,
             buttons: [

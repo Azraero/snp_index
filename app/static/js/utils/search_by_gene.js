@@ -56,7 +56,7 @@ $(document).ready(function(){
     if(check_gene(info)){
       info = JSON.stringify(info);
       $("#query_hint").empty();
-      var hint = $('<span><img src="../static/images/hint.gif" />' + 'loading data, please wait...</span>');
+      var hint = $('<span><img src="../../static/images/hint.gif" />' + 'loading data, please wait...</span>');
       hint.appendTo('#query_hint');
       ajaxSend('/variation/get_snp_info/',{'info': info}, function(data){
         $('#query_hint').empty();
