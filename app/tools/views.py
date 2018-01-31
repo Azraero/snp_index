@@ -40,6 +40,7 @@ def select_file_by_plot():
 
 
 @tools.route('/get_snp_plot/')
+@login_required
 def get_snp_plot():
     tables, groups = get_snp_info(current_user.username)
     return render_template('tools/get_snp_plot.html', files=tables, groups=groups)
