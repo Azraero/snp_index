@@ -4,11 +4,14 @@ snp index 是一个使用 [ jquery](http://www.juery.com) + [bootstrap](http://w
 - Gene Variation:
 	- search gene by regin: 根据染色体的区域搜索 gene 的 snp;
 	- search gene by name: 根据 gene 的名字进行搜索 snp;
+	- search all variations: 根据选择的比较组自动生成结果文件;
 - Gene Expression:
 	- search expression by gene: 根据 gene 名字（可以输入多个查询 gene）查询 gene 的表达;
 - Tools:
 	- blast: 使用开源的 [ViroBLAST](https://els.comotion.uw.edu/licenses/1) 进行在线的 blast 分析;
 	- search locus identidier gene: 获得查询 gene 的基本信息表格;
+	- get snp index plot: 通过选择染色体,以及填写自定义化的组名,生成 snp index plot;
+	- get pca plot: 通过自己上传的 pca 分析数据结果在线生成 pca 图;
 - Snp Index:
     - snp index plot: 利用 [bedtools](http://bedtools.readthedocs.io/en/latest/) 和 [ggplot2](https:www.ggplot2.org)
     按照输入的比较组信息和染色体进行 snp 位点的可视化;
@@ -36,4 +39,7 @@ python manager.py runserver
 
 2.00 (19/01/2018)
 - refactor auth system, mail verify and so on. 
+
+2.01 (31/01/2018)
+- add pca plot.
 
