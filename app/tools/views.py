@@ -45,6 +45,11 @@ def get_snp_plot():
     return render_template('tools/get_snp_plot.html', files=tables, groups=groups)
 
 
+@tools.route('/get_pca_plot/')
+def get_pca_plot():
+    return render_template('tools/get_pca_plot.html')
+
+
 @tools.route('/select_group/')
 def select_group():
     select_group = request.args.get('group')
