@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-body">
+    <div class="panel">
+        <h2>Get Pca Plot:</h2>
+        <div class="page-heading">
+            <h3 class="panel-title">Get a scatter plot by upload your pca table.&nbsp;<span><a href="/static/download/pca.xlsx">Download example table</a></span></h3>
+        </div>
+        <div class="panel-body">
+            <span>
+                <label>Pca Table:</label>
+                <input id="files" type="file"/>
+            </span>
+        </div>
+    </div>
+  <div id="query_hint"></div>
+  <h2>Plot Results:</h2>
+  <div id="result-plot" style="width: 1200px; height: 800px;"></div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://unpkg.com/echarts@3.5.3/dist/echarts.js"></script>
+    <script src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils/get_pca.js') }}"></script>
+{% endblock %}
