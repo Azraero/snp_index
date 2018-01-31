@@ -10,11 +10,9 @@ snp index 是一个使用 [ jquery](http://www.juery.com) + [bootstrap](http://w
 - Tools:
 	- blast: 使用开源的 [ViroBLAST](https://els.comotion.uw.edu/licenses/1) 进行在线的 blast 分析;
 	- search locus identidier gene: 获得查询 gene 的基本信息表格;
-	- get snp index plot: 通过选择染色体,以及填写自定义化的组名,生成 snp index plot;
-	- get pca plot: 通过自己上传的 pca 分析数据结果在线生成 pca 图;
-- Snp Index:
-    - snp index plot: 利用 [bedtools](http://bedtools.readthedocs.io/en/latest/) 和 [ggplot2](https:www.ggplot2.org)
+	- get snp index plot: 利用 [bedtools](http://bedtools.readthedocs.io/en/latest/) 和 [ggplot2](https:www.ggplot2.org)
     按照输入的比较组信息和染色体进行 snp 位点的可视化;
+	- get pca plot: 通过自己上传的 pca 分析数据结果在线生成 pca 图;
 
 ## 关于安装与运行
 首先保证已经正确安装 `python2.7.12` 或在其它 `python2.7` 的运行环境和 `pip` 安装工具,然后执行以下代码:
